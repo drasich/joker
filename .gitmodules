@@ -1,0 +1,3 @@
+[submodule "lib/cypher"]
+	path = lib/cypher
+	url = https://github.com/drasich/cypher.git
