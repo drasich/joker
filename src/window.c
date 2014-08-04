@@ -54,6 +54,7 @@ _draw_gl(Evas_Object *obj)
     Shader* ss = shader_init_string(sr->vert, sr->frag, sr->att);
     shader_use(ss);
     lastshader = ss;
+    sr->cb(55);
   }
 
   EINA_LIST_FREE(shader_requests, sr){
