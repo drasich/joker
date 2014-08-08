@@ -31,7 +31,69 @@ _resize_gl(Evas_Object *obj)
 }
 
 static Shader* lastshader = NULL;
+static void
+_shader_request_handle()
+{
+  Eina_List *l;
+  ShaderRequest *sr;
+  Eina_List* shader_requests = shader_request_get();
+  EINA_LIST_FOREACH(shader_requests, l, sr) {
+    Shader* ss = shader_init_string(sr->vert, sr->frag, sr->att);
+    shader_use(ss);
+    lastshader = ss;
+    sr->cb(sr->material, 55, ss);
+  }
+
+  EINA_LIST_FREE(shader_requests, sr){
+   free(sr);
+  }
+
+  eina_list_free(shader_requests);
+}
+
 static Buffer* lastbuf = NULL;
+static void
+_buffer_request_handle()
+{
+  Eina_List *l;
+  BufferRequest* br;
+  Eina_List* buffer_requests = buffer_request_get();
+  EINA_LIST_FOREACH(buffer_requests, l, br) {
+    //printf("init shader : %s, %s \n", request->vert, request->frag);
+    Buffer* bs = buffer_init(br->vertex, br->count);
+    lastbuf = bs;
+  }
+
+  EINA_LIST_FREE(buffer_requests, br){
+   free(br);
+  }
+  eina_list_free(buffer_requests);
+
+}
+
+static void
+_draw_handle()
+{
+  /*
+  Eina_List *l;
+  DrawRequest* dr;
+  Eina_List* draw_requests = draw_request_get();
+  EINA_LIST_FOREACH(draw_requests, l, dr) {
+    shader_draw(dr->shader, dr->buffer);
+  }
+
+  EINA_LIST_FREE(buffer_requests, br){
+   free(br);
+  }
+  eina_list_free(buffer_requests);
+  */
+
+  if (lastshader && lastbuf){
+    shader_draw(lastshader, lastbuf);
+  }
+
+}
+
 static void
 _draw_gl(Evas_Object *obj)
 {
@@ -46,38 +108,10 @@ _draw_gl(Evas_Object *obj)
   glEnable(GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  
-  Eina_List *l;
-  ShaderRequest *sr;
-  Eina_List* shader_requests = shader_request_get();
-  EINA_LIST_FOREACH(shader_requests, l, sr) {
-    Shader* ss = shader_init_string(sr->vert, sr->frag, sr->att);
-    shader_use(ss);
-    lastshader = ss;
-    sr->cb(sr->material, 55, ss);
-  }
+  _shader_request_handle();
+  _buffer_request_handle();
 
-  EINA_LIST_FREE(shader_requests, sr){
-   free(sr);
-  }
-  eina_list_free(shader_requests);
-
-  BufferRequest* br;
-  Eina_List* buffer_requests = buffer_request_get();
-  EINA_LIST_FOREACH(buffer_requests, l, br) {
-    //printf("init shader : %s, %s \n", request->vert, request->frag);
-    Buffer* bs = buffer_init(br->vertex, br->count);
-    lastbuf = bs;
-  }
-
-  EINA_LIST_FREE(buffer_requests, br){
-   free(br);
-  }
-  eina_list_free(buffer_requests);
-
-  if (lastshader && lastbuf){
-    shader_draw(lastshader, lastbuf);
-  }
+  _draw_handle();
 
   glFinish();
 }
