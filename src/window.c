@@ -62,6 +62,7 @@ _buffer_request_handle()
     //printf("init shader : %s, %s \n", request->vert, request->frag);
     Buffer* bs = buffer_init(br->vertex, br->count);
     lastbuf = bs;
+    br->cb(br->mesh, 66, bs);
   }
 
   EINA_LIST_FREE(buffer_requests, br){
