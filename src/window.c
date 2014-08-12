@@ -1,6 +1,7 @@
 #include "glview.h"
 #include "shader.h"
 #include "buffer.h"
+#include "drawable.h"
 
 static void
 _init_gl(Evas_Object *obj)
@@ -89,9 +90,20 @@ _draw_handle()
   eina_list_free(buffer_requests);
   */
 
+  const Drawable* dr = getZADATA();
+  if (dr == NULL) return;
+  else
+   {
+    shader_draw(dr->shader, dr->buffer);
+    return;
+   }
+
+  /*
+
   if (lastshader && lastbuf){
     shader_draw(lastshader, lastbuf);
   }
+  */
 
 }
 
