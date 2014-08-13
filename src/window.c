@@ -1,22 +1,19 @@
 #include "glview.h"
 #include "shader.h"
 #include "buffer.h"
-#include "drawable.h"
+#include "cypher.h"
+//#include "drawable.h"
 
 static void
 _init_gl(Evas_Object *obj)
 {
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_STENCIL_TEST);
-  glDepthFunc(GL_LEQUAL);
-  glClearDepthf(1.0f);
-  glClearStencil(0);
+  cypher_init();
 }
 
 static void
 _del_gl(Evas_Object *obj)
 {
-  //TODO delete stuff
+  cypher_del();
 }
 
 static void
@@ -25,86 +22,7 @@ _resize_gl(Evas_Object *obj)
   int w, h;
   elm_glview_size_get(obj, &w, &h);
 
-  // GL Viewport stuff. you can avoid doing this if viewport is all the
-  // same as last frame if you want
-  glViewport(0, 0, w, h);
-
-}
-
-static Shader* lastshader = NULL;
-static void
-_shader_request_handle()
-{
-  Eina_List *l;
-  ShaderRequest *sr;
-  Eina_List* shader_requests = shader_request_get();
-  EINA_LIST_FOREACH(shader_requests, l, sr) {
-    Shader* ss = shader_init_string(sr->vert, sr->frag, sr->att);
-    shader_use(ss);
-    lastshader = ss;
-    sr->cb(sr->material, 55, ss);
-  }
-
-  EINA_LIST_FREE(shader_requests, sr){
-   free(sr);
-  }
-
-  eina_list_free(shader_requests);
-}
-
-static Buffer* lastbuf = NULL;
-static void
-_buffer_request_handle()
-{
-  Eina_List *l;
-  BufferRequest* br;
-  Eina_List* buffer_requests = buffer_request_get();
-  EINA_LIST_FOREACH(buffer_requests, l, br) {
-    //printf("init shader : %s, %s \n", request->vert, request->frag);
-    Buffer* bs = buffer_init(br->vertex, br->count);
-    lastbuf = bs;
-    br->cb(br->mesh, 66, bs);
-  }
-
-  EINA_LIST_FREE(buffer_requests, br){
-   free(br);
-  }
-  eina_list_free(buffer_requests);
-
-}
-
-static void
-_draw_handle()
-{
-  /*
-  Eina_List *l;
-  DrawRequest* dr;
-  Eina_List* draw_requests = draw_request_get();
-  EINA_LIST_FOREACH(draw_requests, l, dr) {
-    shader_draw(dr->shader, dr->buffer);
-  }
-
-  EINA_LIST_FREE(buffer_requests, br){
-   free(br);
-  }
-  eina_list_free(buffer_requests);
-  */
-
-  const Drawable* dr = getZADATA();
-  if (dr == NULL) return;
-  else
-   {
-    shader_draw(dr->shader, dr->buffer);
-    return;
-   }
-
-  /*
-
-  if (lastshader && lastbuf){
-    shader_draw(lastshader, lastbuf);
-  }
-  */
-
+  cypher_resize(w,h);
 }
 
 static void
@@ -113,20 +31,7 @@ _draw_gl(Evas_Object *obj)
   int w, h;
   elm_glview_size_get(obj, &w, &h);
 
-  glViewport(0, 0, w, h);
-
-  glClearColor(0.2, 0.4, 0.2, 1.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glEnable(GL_BLEND);
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  _shader_request_handle();
-  _buffer_request_handle();
-
-  _draw_handle();
-
-  glFinish();
+  cypher_draw(w, h);
 }
 
 
@@ -161,7 +66,8 @@ create_simple_window()
   elm_glview_render_func_set(glview, _draw_gl);
 
 
-  evas_object_resize(win, 256, 256);
+  //evas_object_resize(win, 256, 256);
+  evas_object_resize(win, 64, 64);
   evas_object_show(win);
 }
 
