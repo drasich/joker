@@ -108,10 +108,3 @@ elm_simple_window_main()
   elmmain(0,0);
 }
 
-void
-simple_window_init()
-{
-  eina_init();
-  shader_request_init();
-}
-
