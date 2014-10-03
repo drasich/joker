@@ -3,6 +3,8 @@
 #include "buffer.h"
 #include "cypher.h"
 //#include "drawable.h"
+#include "window.h"
+#include "tree.h"
 
 static void
 _init_gl(Evas_Object *obj)
@@ -42,12 +44,12 @@ simple_window_del(void *data, Evas_Object *obj, void *event_info)
   elm_exit();
 }
 
+//extern Evas_Object* win;
 
 void
 create_simple_window()
 {
-  Evas_Object *win;
-  win = elm_win_util_standard_add("simple_window", "simple_window");
+  Evas_Object* win = elm_win_util_standard_add("simple_window", "simple_window");
   elm_win_autodel_set(win, EINA_TRUE);
   evas_object_smart_callback_add(win, "delete,request", simple_window_del, NULL);
 
@@ -71,7 +73,7 @@ create_simple_window()
   evas_object_show(win);
 }
 
-void create_glview()
+void jk_init()
 {
   eina_init();
   eet_init();
@@ -80,13 +82,14 @@ void create_glview()
   elm_config_preferred_engine_set("opengl_x11");
   elm_config_focus_highlight_animate_set(EINA_TRUE);
   elm_config_focus_highlight_enabled_set(EINA_TRUE);
-  create_simple_window();
+  //create_simple_window();
 }
 
 EAPI_MAIN int
 simple_window_main(int argc, char **argv)
 {
-  create_glview();
+  jk_init();
+  init_callback_call();
   elm_run();
   elm_shutdown();
   return 0;
@@ -108,3 +111,58 @@ elm_simple_window_main()
   elmmain(0,0);
 }
 
+Creator*
+creator_new()
+{
+  Creator* c = calloc(1, sizeof *c);
+
+  Evas_Object* win = elm_win_util_standard_add("simple_window", "simple_window");
+  c->win = win;
+  elm_win_autodel_set(win, EINA_TRUE);
+  evas_object_smart_callback_add(win, "delete,request", simple_window_del, NULL);
+
+  Evas_Object* box = elm_box_add(win);
+  evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, box);
+  evas_object_show(box);
+
+  Evas_Object* glview = _create_glview(win);
+  elm_box_pack_end(box, glview);
+
+  //callbacks
+  elm_glview_init_func_set(glview, _init_gl);
+  elm_glview_del_func_set(glview, _del_gl);
+  elm_glview_resize_func_set(glview, _resize_gl);
+  elm_glview_render_func_set(glview, _draw_gl);
+
+
+  //evas_object_resize(win, 256, 256);
+  evas_object_resize(win, 64, 64);
+  evas_object_show(win);
+
+  return c;
+}
+
+
+static rust_init_callback _init_callback_cb = 0;
+
+void init_callback_set(rust_init_callback cb)
+{
+  _init_callback_cb = cb;
+}
+
+bool init_callback_call()
+{
+  if (_init_callback_cb) {
+    _init_callback_cb();
+    return true;
+  }
+
+  return false;
+}
+
+
+void creator_tree_new(Creator* c)
+{
+  Tree* t = tree_widget_new(c->win);
+}
