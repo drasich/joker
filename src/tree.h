@@ -3,6 +3,12 @@
 //#include "object.h"
 //#include "context.h"
 //#include "view.h"
+#include "stdbool.h"
+
+typedef const char* (*tree_object_name_get)(void* data);
+typedef void (*tree_object_select)(void* data);
+typedef bool (*tree_object_can_expand)(void* data);
+typedef void (*tree_object_expand)(void* data);
 
 typedef struct _Tree Tree;
 
@@ -17,7 +23,23 @@ struct _Tree
   //Control* control;
 
   //Eina_Hash* objects;
+
+  const Elm_Genlist_Item_Class* class_tree;
+  const Elm_Genlist_Item_Class* class_simple;
+
+  tree_object_name_get name_get;
+  tree_object_select select;
+  tree_object_can_expand can_expand;
+  tree_object_expand expand;
 };
+
+void tree_register_cb(
+      Tree* t,
+      tree_object_name_get name,
+      tree_object_select select,
+      tree_object_can_expand can_expand,
+      tree_object_expand expand);
+
 
 Tree* tree_widget_new(Evas_Object* win);
 //void tree_object_add(Tree* t,  struct _Object* o);
@@ -31,4 +53,7 @@ Tree* tree_widget_new(Evas_Object* win);
 
 //void tree_unselect_all(Tree* t);
 
+void tree_object_add(Tree* t, void* o);
+
 #endif
+

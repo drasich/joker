@@ -5,7 +5,8 @@ typedef struct _JkList JkList;
 
 struct _JkList
 {
-  int test;
+  JkList* next;
+  void* data;
 };
 
 JkList* jk_list_new();

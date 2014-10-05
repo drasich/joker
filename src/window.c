@@ -1,3 +1,9 @@
+/* Enable access to unstable EFL API that are still in beta */
+#define EFL_BETA_API_SUPPORT 1
+
+/* Enable access to unstable EFL EO API. */
+#define EFL_EO_API_SUPPORT 1
+
 #include "glview.h"
 #include "shader.h"
 #include "buffer.h"
@@ -111,6 +117,30 @@ elm_simple_window_main()
   elmmain(0,0);
 }
 
+static Evas_Object *create_edje(Evas_Object* win)
+{
+  Evas_Object *edje;
+  Evas* canvas = evas_object_evas_get(win);
+
+  edje = edje_object_add(canvas);
+  if (!edje) {
+    EINA_LOG_CRIT("could not create edje object!");
+    return NULL;
+   }
+
+  if (!edje_object_file_set(edje, "edc/test.edj", "example_group")) {
+    int err = edje_object_load_error_get(edje);
+    const char *errmsg = edje_load_error_str(err);
+    EINA_LOG_ERR("could not load 'my_group' from .edj file : %s",
+          errmsg);
+
+    evas_object_del(edje);
+    return NULL;
+   }
+
+  return edje;
+}
+
 Creator*
 creator_new()
 {
@@ -118,16 +148,44 @@ creator_new()
 
   Evas_Object* win = elm_win_util_standard_add("simple_window", "simple_window");
   c->win = win;
+  printf("pointer win %p \n", win);
   elm_win_autodel_set(win, EINA_TRUE);
   evas_object_smart_callback_add(win, "delete,request", simple_window_del, NULL);
 
+  Eo* table = elm_table_add(win);
+  evas_object_size_hint_weight_set(table, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  //elm_win_resize_object_add(win, table);
+  evas_object_show(table);
+  elm_table_homogeneous_set(table, EINA_TRUE);
+
+  Eo* edje = create_edje(win);
+  c->edje = edje;
+  elm_win_resize_object_add(win, edje);
+  evas_object_move(edje, 0, 0);
+  evas_object_resize(edje, 200, 200);
+  evas_object_show(edje);
+  edje_object_part_swallow(edje, "part_glview", table);
+  //elm_win_resize_object_add(win, edje);
+  //evas_object_size_hint_weight_set(edje, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+
+  /*
   Evas_Object* box = elm_box_add(win);
   evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, box);
+  //elm_win_resize_object_add(win, box);
   evas_object_show(box);
+  */
 
   Evas_Object* glview = _create_glview(win);
-  elm_box_pack_end(box, glview);
+  elm_table_pack(table, glview, 0, 0, 1, 5);
+  //elm_table_pack(table, edje, 0, 5, 1, 5);
+  //elm_table_pack(table, glview, 0, 0, 1, 1);
+  //elm_box_pack_end(box, table);
+  //elm_box_pack_end(box, glview);
+  //elm_box_pack_end(box, edje);
+
+  //Tree* t = tree_widget_new(win);
+  //edje_object_part_swallow(edje, "part_tree", t->root);
+
 
   //callbacks
   elm_glview_init_func_set(glview, _init_gl);
@@ -135,9 +193,8 @@ creator_new()
   elm_glview_resize_func_set(glview, _resize_gl);
   elm_glview_render_func_set(glview, _draw_gl);
 
-
-  //evas_object_resize(win, 256, 256);
-  evas_object_resize(win, 64, 64);
+  evas_object_resize(win, 456, 456);
+  //evas_object_resize(win, 64, 64);
   evas_object_show(win);
 
   return c;
@@ -145,24 +202,49 @@ creator_new()
 
 
 static rust_init_callback _init_callback_cb = 0;
+static void* _init_callback_data = 0;
 
-void init_callback_set(rust_init_callback cb)
+void init_callback_set(rust_init_callback cb, void * data)
 {
   _init_callback_cb = cb;
+  _init_callback_data = data;
 }
 
 bool init_callback_call()
 {
-  if (_init_callback_cb) {
-    _init_callback_cb();
+  if (_init_callback_cb && _init_callback_data) {
+    _init_callback_cb(_init_callback_data);
     return true;
   }
 
   return false;
 }
 
-
-void creator_tree_new(Creator* c)
+Tree* creator_tree_new(Creator* c)
 {
   Tree* t = tree_widget_new(c->win);
+  edje_object_part_swallow(c->edje, "part_tree", t->root);
+  return t;
 }
+
+void creator_button_new(Creator* c)
+{
+  printf("create button\n");
+  Eo* bt = eo_add(ELM_BUTTON_CLASS, c->win);
+  //Eo* bt = elm_button_add(c->win);
+  //eo_do(bt,
+  //  evas_object_resize(100,100));
+  evas_object_resize(bt, 100,100);
+  evas_object_show(bt);
+
+  int r,g,b,a;
+  evas_object_color_get(bt, &r,&g,&b,&a);
+  float f = 0.7f;
+  r *= f;
+  g *= f;
+  b *= f;
+  a *= f;
+
+  evas_object_color_set(bt, r,g,b,a);
+}
+

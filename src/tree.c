@@ -8,7 +8,7 @@
 static Elm_Genlist_Item_Class *itc1;
 static Elm_Genlist_Item_Class *itc4;
 
-static char *gl4_text_get(void *data, Evas_Object *obj __UNUSED__, const char *part __UNUSED__)
+static char *gl4_text_get(void *data, Evas_Object *obj, const char *part __UNUSED__)
 {
   /*
   char buf[256];
@@ -16,7 +16,17 @@ static char *gl4_text_get(void *data, Evas_Object *obj __UNUSED__, const char *p
   snprintf(buf, sizeof(buf), "%s", o->name);
   return strdup(buf);
   */
-  return "test";
+  //TODO rust tree->get_name(data)
+  Tree* t = evas_object_data_get(obj, "tree");
+  if (t->name_get) {
+    printf("object name text get %p \n", data);
+    //return strdup("testcaca");
+    const char* name = t->name_get(data);
+    printf("object name :::::::::: %s \n ", name);
+    //printf("object name %s \n ", evas_object_name_get(obj));
+    return strdup(name);
+  }
+  return strdup("test");
 }
 
 Evas_Object *gl4_content_get(void *data __UNUSED__, Evas_Object *obj, const char *part)
@@ -58,6 +68,7 @@ void gl4_del(void *data __UNUSED__, Evas_Object *obj __UNUSED__)
 static void
 gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
+  //TODO rust tree->select(data)
    Elm_Object_Item *glit = event_info;
    //int depth = elm_genlist_item_expanded_depth_get(glit);
    //printf("expanded depth for selected item is %d", depth);
@@ -80,10 +91,10 @@ gl4_exp(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    Elm_Object_Item *glit = event_info;
    Evas_Object *gl = elm_object_item_widget_get(glit);
 
-   /*
-   Object* o = elm_object_item_data_get(glit);
-   View* v = data;
+   void* o = elm_object_item_data_get(glit);
+   Tree* t = data;
 
+   /*
    Eina_List*l;
    Object* child;
    EINA_LIST_FOREACH(o->children, l, child) {
@@ -193,7 +204,7 @@ _context_tree_msg_receive(Context* c, void* tree, const char* msg)
 Tree* 
 tree_widget_new(Evas_Object* win)//, struct _View* v)
 {
-  printf("tree widget new !!\n");
+  printf("tree widget new !!win: %p \n",win);
   Tree *t = calloc(1, sizeof *t);
 
   Evas_Object *gli, *bx, *rd1, *rd2, *frame;
@@ -205,6 +216,8 @@ tree_widget_new(Evas_Object* win)//, struct _View* v)
   t->root = bx;
 
   gli = elm_genlist_add(win);
+  evas_object_name_set(gli, "yoyoyoyoyoyee");
+  evas_object_data_set(gli, "tree", t);
   t->gl = gli;
   evas_object_size_hint_align_set(gli, EVAS_HINT_FILL, EVAS_HINT_FILL);
   evas_object_size_hint_weight_set(gli, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -228,6 +241,8 @@ tree_widget_new(Evas_Object* win)//, struct _View* v)
   itc4->func.state_get = gl4_state_get;
   itc4->func.del = gl4_del;
 
+  t->class_tree = itc4;
+  t->class_simple = itc1;
 
   elm_genlist_item_class_ref(itc1);
   elm_genlist_item_class_free(itc1);
@@ -241,8 +256,63 @@ tree_widget_new(Evas_Object* win)//, struct _View* v)
   elm_box_pack_end(bx, gli);
 
   //t->objects = eina_hash_pointer_new(NULL);
+  printf("pointer win, t %p , %p \n", win, t);
+  /*
+  tree_object_add(t);
+  tree_object_add(t);
+  tree_object_add(t);
+  tree_object_add(t);
+  */
 
   return t;
 }
 
+void
+tree_object_add(Tree* t, void* o)
+{
+  printf("tree object add ::  %p\n", o);
+  static Elm_Object_Item* parent = NULL;
+  //if (o->parent)
+  //parent = _tree_get_item(t, o);
+
+  const Elm_Genlist_Item_Class* class = t->class_simple;
+  //if (eina_list_count(o->children) > 0) {
+  bool b = false;
+  Elm_Genlist_Item_Type type = ELM_GENLIST_ITEM_NONE;
+  if (t->can_expand) {
+    b = t->can_expand(o);
+  }
+
+  if (b) {
+    t->class_tree;
+    type = ELM_GENLIST_ITEM_TREE;
+  }
+
+  Elm_Object_Item* eoi = elm_genlist_item_append(
+        t->gl,
+        class,
+        o,
+        parent,
+        type,
+        gl4_sel,
+        t);
+
+    //EINA_LOG_DBG("I add parent %p, object pointer %p, object name pointer %p", eoi, o, &o->name );
+    //eina_hash_add(t->objects, &o, eoi);
+    //property_holder_genlist_item_add(&o->name, eoi);
+}
+
+
+void tree_register_cb(
+      Tree* t,
+      tree_object_name_get name,
+      tree_object_select select,
+      tree_object_can_expand can_expand,
+      tree_object_expand expand)
+{
+  t->name_get = name;
+  t->select = select;
+  t->can_expand = can_expand;
+  t->expand = expand;
+}
 
