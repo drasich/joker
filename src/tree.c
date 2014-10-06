@@ -68,8 +68,14 @@ void gl4_del(void *data __UNUSED__, Evas_Object *obj __UNUSED__)
 static void
 gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
+   Tree* t = data;
   //TODO rust tree->select(data)
    Elm_Object_Item *glit = event_info;
+   void* o = elm_object_item_data_get(glit);
+    if (t->select) {
+      t->select(o);
+    }
+
    //int depth = elm_genlist_item_expanded_depth_get(glit);
    //printf("expanded depth for selected item is %d", depth);
 

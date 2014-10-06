@@ -193,8 +193,8 @@ creator_new()
   elm_glview_resize_func_set(glview, _resize_gl);
   elm_glview_render_func_set(glview, _draw_gl);
 
-  evas_object_resize(win, 456, 456);
-  //evas_object_resize(win, 64, 64);
+  //evas_object_resize(win, 456, 456);
+  evas_object_resize(win, 64, 64);
   evas_object_show(win);
 
   return c;
