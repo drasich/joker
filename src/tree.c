@@ -140,9 +140,9 @@ gl4_exp(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 static void
 gl4_con(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
-  /*
-  View* v = data;
+  Tree* v = data;
   Elm_Object_Item *glit = event_info;
+  /*
   Object* o = elm_object_item_data_get(glit);
 
   Eina_List* l;
@@ -150,9 +150,9 @@ gl4_con(void *data, Evas_Object *obj __UNUSED__, void *event_info)
   EINA_LIST_FOREACH(o->children, l, child) {
     eina_hash_del_by_key(v->tree->objects, &child);
   }
+  */
 
   elm_genlist_item_subitems_clear(glit);
-  */
 }
 
 static void
