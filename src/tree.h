@@ -5,12 +5,13 @@
 //#include "view.h"
 #include "stdbool.h"
 
+typedef struct _Tree Tree;
+
 typedef const char* (*tree_object_name_get)(void* data);
 typedef void (*tree_object_select)(void* data);
 typedef bool (*tree_object_can_expand)(void* data);
-typedef void (*tree_object_expand)(void* data);
+typedef void (*tree_object_expand)(Tree* t, void* data, Elm_Object_Item* parent);
 
-typedef struct _Tree Tree;
 
 struct _Tree
 {
@@ -53,7 +54,7 @@ Tree* tree_widget_new(Evas_Object* win);
 
 //void tree_unselect_all(Tree* t);
 
-void tree_object_add(Tree* t, void* o);
+void tree_object_add(Tree* t, void* o, Elm_Object_Item* parent);
 
 #endif
 

@@ -100,6 +100,10 @@ gl4_exp(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    void* o = elm_object_item_data_get(glit);
    Tree* t = data;
 
+    if (t->expand) {
+      t->expand(t,o, glit);
+    }
+
    /*
    Eina_List*l;
    Object* child;
@@ -255,9 +259,9 @@ tree_widget_new(Evas_Object* win)//, struct _View* v)
 
   evas_object_smart_callback_add(gli, "expand,request", gl4_exp_req, gli);
   evas_object_smart_callback_add(gli, "contract,request", gl4_con_req, gli);
-  evas_object_smart_callback_add(gli, "expanded", gl4_exp, NULL);
-  evas_object_smart_callback_add(gli, "contracted", gl4_con, NULL);
-  evas_object_smart_callback_add(gli, "unselected", gl4_unselect, NULL);
+  evas_object_smart_callback_add(gli, "expanded", gl4_exp, t);
+  evas_object_smart_callback_add(gli, "contracted", gl4_con, t);
+  evas_object_smart_callback_add(gli, "unselected", gl4_unselect, t);
 
   elm_box_pack_end(bx, gli);
 
@@ -274,10 +278,9 @@ tree_widget_new(Evas_Object* win)//, struct _View* v)
 }
 
 void
-tree_object_add(Tree* t, void* o)
+tree_object_add(Tree* t, void* o, Elm_Object_Item* parent)
 {
   printf("tree object add ::  %p\n", o);
-  static Elm_Object_Item* parent = NULL;
   //if (o->parent)
   //parent = _tree_get_item(t, o);
 
