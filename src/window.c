@@ -11,6 +11,7 @@
 //#include "drawable.h"
 #include "window.h"
 #include "tree.h"
+#include "property.h"
 
 static void
 _init_gl(Evas_Object *obj)
@@ -74,8 +75,8 @@ create_simple_window()
   elm_glview_render_func_set(glview, _draw_gl);
 
 
-  //evas_object_resize(win, 256, 256);
-  evas_object_resize(win, 64, 64);
+  evas_object_resize(win, 256, 256);
+  //evas_object_resize(win, 64, 64);
   evas_object_show(win);
 }
 
@@ -193,8 +194,8 @@ creator_new()
   elm_glview_resize_func_set(glview, _resize_gl);
   elm_glview_render_func_set(glview, _draw_gl);
 
-  //evas_object_resize(win, 456, 456);
-  evas_object_resize(win, 64, 64);
+  evas_object_resize(win, 456, 456);
+  //evas_object_resize(win, 64, 64);
   evas_object_show(win);
 
   return c;
@@ -225,6 +226,13 @@ Tree* creator_tree_new(Creator* c)
   Tree* t = tree_widget_new(c->win);
   edje_object_part_swallow(c->edje, "part_tree", t->root);
   return t;
+}
+
+Property* creator_property_new(Creator* c)
+{
+  Property* p = property_entry_new(c->win);
+  edje_object_part_swallow(c->edje, "part_property_test", p->root);
+  return p;
 }
 
 void creator_button_new(Creator* c)

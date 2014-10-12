@@ -1,25 +1,36 @@
 #include "property.h"
 #include "Elementary.h"
 
-Evas_Object* 
-//_property_add_entry(ComponentProperties* cp, const Property* p, void* data, Evas_Object* box)
-_property_add_entry(Evas_Object* win, void* data, const char* name)
+static void
+_entry_changed_cb(void *data, Evas_Object *obj, void *event)
 {
-  Evas_Object *en, *bx2, *label;
+  const char* s = elm_object_text_get(obj);
+  Property* p = data;
 
-  bx2 = elm_box_add(win);
-  elm_box_horizontal_set(bx2, EINA_TRUE);
-  evas_object_size_hint_weight_set(bx2, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(bx2, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  if (p->changed)
+  p->changed(p, s);
+}
+
+Property*
+property_entry_new(Evas_Object* win)
+{
+  Property* p = calloc(1, sizeof *p);
+  Evas_Object *en, *bx, *label;
+
+  bx = elm_box_add(win);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
   label = elm_label_add(win);
   char s[256];
 
-  sprintf(s, "<b> %s </b> : ", name);
+  //sprintf(s, "<b> %s </b> : ", name);
+  sprintf(s, "<b> %s </b> : ", "thename");
 
   elm_object_text_set(label, s);
   evas_object_show(label);
-  elm_box_pack_end(bx2, label);
+  elm_box_pack_end(bx, label);
 
   en = elm_entry_add(win);
   elm_entry_scrollable_set(en, EINA_TRUE);
@@ -31,16 +42,12 @@ _property_add_entry(Evas_Object* win, void* data, const char* name)
   elm_entry_single_line_set(en, EINA_TRUE);
   //elm_entry_select_all(en);
   evas_object_show(en);
-  elm_box_pack_end(bx2, en);
+  elm_box_pack_end(bx, en);
 
-  evas_object_name_set(en, name);
+  //evas_object_name_set(en, name);
 
-  //evas_object_data_set(en, "property", p);
-  evas_object_data_set(en, "data", data );
-  //cp->entries = eina_list_append(cp->entries, en);
-
+  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, p);
   /*
-  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, cp);
   evas_object_smart_callback_add(en, "activated", _entry_activated_cb, cp);
   evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
   evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
@@ -50,13 +57,19 @@ _property_add_entry(Evas_Object* win, void* data, const char* name)
 
   elm_entry_context_menu_disabled_set(en, EINA_TRUE);
   
-  //elm_box_pack_end(box, bx2);
-  evas_object_show(bx2);
+  evas_object_show(bx);
 
-  //property_holder_object_add(data + p->offset, p, en);
+  p->en = en;
+  p->root = bx;
 
-  //return en;
-  return en;
+  return p;
+}
+
+void property_register_cb(
+      Property* t,
+      property_changed changed)
+{
+  t->changed = changed;
 }
 
 
