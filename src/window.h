@@ -3,18 +3,18 @@
 #include "stdbool.h"
 #include "tree.h"
 
-typedef struct _Creator Creator;
+typedef struct _Window Window;
 
-struct _Creator
+struct _Window
 {
   int test;
   Evas_Object* win;
   Evas_Object* edje;
 };
 
-Creator* creator_new();
-Tree* creator_tree_new(Creator* c);
-void creator_button_new(Creator* c);
+Window* window_new();
+Tree* window_tree_new(Window* c);
+void window_button_new(Window* c);
 
 typedef void (*rust_init_callback)(void* data);
 

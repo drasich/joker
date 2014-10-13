@@ -142,13 +142,13 @@ static Evas_Object *create_edje(Evas_Object* win)
   return edje;
 }
 
-Creator*
-creator_new()
+Window*
+window_new()
 {
-  Creator* c = calloc(1, sizeof *c);
+  Window* w = calloc(1, sizeof *w);
 
   Evas_Object* win = elm_win_util_standard_add("simple_window", "simple_window");
-  c->win = win;
+  w->win = win;
   printf("pointer win %p \n", win);
   elm_win_autodel_set(win, EINA_TRUE);
   evas_object_smart_callback_add(win, "delete,request", simple_window_del, NULL);
@@ -160,7 +160,7 @@ creator_new()
   elm_table_homogeneous_set(table, EINA_TRUE);
 
   Eo* edje = create_edje(win);
-  c->edje = edje;
+  w->edje = edje;
   elm_win_resize_object_add(win, edje);
   evas_object_move(edje, 0, 0);
   evas_object_resize(edje, 200, 200);
@@ -198,7 +198,7 @@ creator_new()
   //evas_object_resize(win, 64, 64);
   evas_object_show(win);
 
-  return c;
+  return w;
 }
 
 
@@ -221,24 +221,24 @@ bool init_callback_call()
   return false;
 }
 
-Tree* creator_tree_new(Creator* c)
+Tree* window_tree_new(Window* w)
 {
-  Tree* t = tree_widget_new(c->win);
-  edje_object_part_swallow(c->edje, "part_tree", t->root);
+  Tree* t = tree_widget_new(w->win);
+  edje_object_part_swallow(w->edje, "part_tree", t->root);
   return t;
 }
 
-Property* creator_property_new(Creator* c)
+Property* window_property_new(Window* w)
 {
-  Property* p = property_entry_new(c->win);
-  edje_object_part_swallow(c->edje, "part_property_test", p->root);
+  Property* p = property_entry_new(w->win);
+  edje_object_part_swallow(w->edje, "part_property_test", p->root);
   return p;
 }
 
-void creator_button_new(Creator* c)
+void window_button_new(Window* w)
 {
   printf("create button\n");
-  Eo* bt = eo_add(ELM_BUTTON_CLASS, c->win);
+  Eo* bt = eo_add(ELM_BUTTON_CLASS, w->win);
   //Eo* bt = elm_button_add(c->win);
   //eo_do(bt,
   //  evas_object_resize(100,100));

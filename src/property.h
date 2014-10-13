@@ -13,7 +13,7 @@ struct _Property
   Evas_Object* box;
   Evas_Object* en;
 
-  void* data;
+  //void* data;
 
   property_changed changed;
 };
