@@ -8,7 +8,7 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   Property* p = data;
 
   if (p->changed)
-  p->changed(p, s);
+  p->changed(p->data, s);
 }
 
 Property*
@@ -67,9 +67,30 @@ property_entry_new(Evas_Object* win)
 
 void property_register_cb(
       Property* t,
-      property_changed changed)
+      property_changed changed,
+      property_get get
+      )
 {
   t->changed = changed;
+  t->get = get;
+}
+
+void property_data_set(
+      Property* p,
+      const void* data
+      )
+{
+  p->data = data;
+
+  if (p->get){
+
+    const char* name = p->get(data);
+    //printf("object name :::::::::: %s \n ", name);
+    //printf("object name %s \n ", evas_object_name_get(obj));
+    //return strdup(name);
+
+    elm_object_text_set(p->en, strdup(name));
+  }
 }
 
 
