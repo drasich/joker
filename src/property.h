@@ -33,4 +33,21 @@ void property_data_set(
       const void* data
       );
 
+typedef struct _PropertySet PropertySet;
+
+struct _PropertySet
+{
+  Evas_Object* root;
+  Evas_Object* box;
+
+  const void* data;
+
+  property_changed changed;
+  property_get get;
+
+  Eina_Hash* fields;
+};
+
+PropertySet* property_set_new(Evas_Object* win);
+
 #endif
