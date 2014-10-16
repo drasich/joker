@@ -83,12 +83,7 @@ void property_data_set(
   p->data = data;
 
   if (p->get){
-
     const char* name = p->get(data);
-    //printf("object name :::::::::: %s \n ", name);
-    //printf("object name %s \n ", evas_object_name_get(obj));
-    //return strdup(name);
-
     elm_object_text_set(p->en, strdup(name));
   }
 }
