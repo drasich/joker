@@ -5,16 +5,16 @@ static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
 {
   const char* s = elm_object_text_get(obj);
-  Property* p = data;
+  JkProperty* p = data;
 
   if (p->changed)
   p->changed(p->data, s);
 }
 
-Property*
+JkProperty*
 property_entry_new(Evas_Object* win)
 {
-  Property* p = calloc(1, sizeof *p);
+  JkProperty* p = calloc(1, sizeof *p);
   Evas_Object *en, *bx, *label;
 
   bx = elm_box_add(win);
@@ -66,7 +66,7 @@ property_entry_new(Evas_Object* win)
 }
 
 void property_register_cb(
-      Property* t,
+      JkProperty* t,
       property_changed changed,
       property_get get
       )
@@ -76,7 +76,7 @@ void property_register_cb(
 }
 
 void property_data_set(
-      Property* p,
+      JkProperty* p,
       const void* data
       )
 {
@@ -84,6 +84,7 @@ void property_data_set(
 
   if (p->get){
     const char* name = p->get(data);
+    printf("yo my name is %s\n", name);
     elm_object_text_set(p->en, strdup(name));
   }
 }

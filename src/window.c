@@ -13,6 +13,8 @@
 #include "tree.h"
 #include "property.h"
 
+#define __UNUSED__
+
 static void
 _init_gl(Evas_Object *obj)
 {
@@ -43,13 +45,25 @@ _draw_gl(Evas_Object *obj)
   cypher_draw(w, h);
 }
 
-
-
 static void
 simple_window_del(void *data, Evas_Object *obj, void *event_info)
 {
   elm_exit();
 }
+
+static void
+_key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
+{
+  Evas_Event_Key_Down *ev = (Evas_Event_Key_Down*)event_info;
+  EINA_LOG_DBG("KEY: down, keyname: %s , key %s", ev->keyname, ev->key);
+  printf("KEY: down, keyname: %s , key %s\n", ev->keyname, ev->key);
+
+  //View* v = evas_object_data_get(o, "view");
+  //Control* cl = v->control;
+  //control_key_down(cl, ev);
+}
+
+
 
 //extern Evas_Object* win;
 
@@ -194,6 +208,17 @@ window_new()
   elm_glview_resize_func_set(glview, _resize_gl);
   elm_glview_render_func_set(glview, _draw_gl);
 
+  //TODO
+  //evas_object_event_callback_add(glview, EVAS_CALLBACK_DEL, _del, glview);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, NULL);
+  /*
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_DOWN, _mouse_down, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_WHEEL, _mouse_wheel, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_IN, _mouse_in, NULL);
+  */
+
   //evas_object_resize(win, 456, 456);
   evas_object_resize(win, 64, 64);
   evas_object_show(win);
@@ -228,9 +253,9 @@ Tree* window_tree_new(Window* w)
   return t;
 }
 
-Property* window_property_new(Window* w)
+JkProperty* window_property_new(Window* w)
 {
-  Property* p = property_entry_new(w->win);
+  JkProperty* p = property_entry_new(w->win);
   edje_object_part_swallow(w->edje, "part_property_test", p->root);
   return p;
 }

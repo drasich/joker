@@ -2,7 +2,7 @@
 #define __property__
 #include "Elementary.h"
 
-typedef struct _Property Property;
+typedef struct _Property JkProperty;
 
 //typedef void (*property_object_set)(void* object, void* data);
 typedef void (*property_changed)(const void* object, const void* data);
@@ -21,15 +21,15 @@ struct _Property
 };
 
 
-Property* property_entry_new(Evas_Object* win);
+JkProperty* property_entry_new(Evas_Object* win);
 void property_register_cb(
-      Property* t,
+      JkProperty* t,
       property_changed changed,
       property_get get
       );
 
 void property_data_set(
-      Property* t,
+      JkProperty* t,
       const void* data
       );
 
