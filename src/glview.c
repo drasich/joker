@@ -23,6 +23,9 @@ _create_glview(Evas_Object* win)
 
   glview = elm_glview_add(win);
 
+  Ecore_Animator *ani = ecore_animator_add(_anim, glview);
+  evas_object_data_set(glview, "ani", ani);
+
   if (!gl)
   gl = elm_glview_gl_api_get(glview);
 

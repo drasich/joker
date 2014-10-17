@@ -191,6 +191,7 @@ window_new()
   */
 
   Evas_Object* glview = _create_glview(win);
+  w->glview = glview;
   elm_table_pack(table, glview, 0, 0, 1, 5);
   //elm_table_pack(table, edje, 0, 5, 1, 5);
   //elm_table_pack(table, glview, 0, 0, 1, 1);
@@ -219,8 +220,8 @@ window_new()
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_IN, _mouse_in, NULL);
   */
 
-  //evas_object_resize(win, 456, 456);
-  evas_object_resize(win, 64, 64);
+  evas_object_resize(win, 456, 456);
+  //evas_object_resize(win, 64, 64);
   evas_object_show(win);
 
   return w;

@@ -10,11 +10,12 @@ struct _Window
   int test;
   Evas_Object* win;
   Evas_Object* edje;
+  Evas_Object* glview;
 };
 
 Window* window_new();
-Tree* window_tree_new(Window* c);
-void window_button_new(Window* c);
+Tree* window_tree_new(Window* w);
+void window_button_new(Window* w);
 
 typedef void (*rust_init_callback)(void* data);
 
