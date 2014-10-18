@@ -56,12 +56,145 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 {
   Evas_Event_Key_Down *ev = (Evas_Event_Key_Down*)event_info;
   EINA_LOG_DBG("KEY: down, keyname: %s , key %s", ev->keyname, ev->key);
-  printf("KEY: down, keyname: %s , key %s\n", ev->keyname, ev->key);
+  //printf("KEY: down, keyname: %s , key %s\n", ev->keyname, ev->key);
+
+  Window* w = data;
+  if (w->key_down) {
+    w->key_down(w, "", ev->keyname, ev->key, ev->timestamp);
+  }
 
   //View* v = evas_object_data_get(o, "view");
   //Control* cl = v->control;
   //control_key_down(cl, ev);
 }
+
+static void
+_mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+{
+  //elm_object_focus_set(o, EINA_TRUE);
+  Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
+
+  Evas_Coord x, y, w, h;
+  evas_object_geometry_get (o, &x, &y, &w, &h);
+  int curx = ev->cur.canvas.x - x;
+  int cury = ev->cur.canvas.y - y;
+
+  int prevx = ev->prev.canvas.x - x;
+  int prevy = ev->prev.canvas.y - y;
+  //View* v = evas_object_data_get(o, "view");
+  //
+  Window* win = data;
+  if (win->mouse_move) {
+    win->mouse_move(win, "", ev->buttons, curx, cury, prevx, prevy, ev->timestamp);
+  }
+
+  /*
+  const Evas_Modifier * mods = ev->modifiers;
+  if ( evas_key_modifier_is_set(mods, "Control") &&
+        (ev->buttons & 1) != 0 ) {
+    //_handle_rect_select(v,ev);
+    return;
+  }
+  */
+
+  //Control* cl = v->control;
+  //control_mouse_move(cl, ev);
+}
+
+static void
+_mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+{
+  Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*) event_info;
+  //elm_object_focus_set(o, EINA_TRUE);
+
+  Window* w = data;
+  if (w->mouse_down) {
+    w->mouse_down(w, "", ev->button, ev->canvas.x, ev->canvas.y, ev->timestamp);
+  }
+
+  /*
+  View* v = evas_object_data_get(o, "view");
+  Scene* s = v->context->scene;
+  Control* cl = v->control;
+  if (control_mouse_down(cl, ev))
+    return;
+
+  //if (ev->button == 3 ){
+  const Evas_Modifier * mods = ev->modifiers;
+  if ( ev->button == 1 && evas_key_modifier_is_set(mods, "Control")) {
+    _makeRect(v, ev);
+    return;
+  }
+
+  if (ev->button == 3) {
+    Evas_Object* win = evas_object_top_get (evas_object_evas_get(o));
+    Evas_Object* menu = _context_menu_create(win, v);
+    evas_object_show(menu);
+    elm_menu_move(menu, ev->canvas.x, ev->canvas.y);
+    return;
+  }
+  */
+}
+
+static void
+_mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+{
+  Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
+  //if (ev->button != 1) return;
+  //printf("MOUSE: up   @ %4i %4i\n", ev->canvas.x, ev->canvas.y);
+
+  Window* w = data;
+  if (w->mouse_up) {
+    w->mouse_up(w, "", ev->button, ev->canvas.x, ev->canvas.y, ev->timestamp);
+  }
+
+  //evas_object_hide(indicator[0]);
+  //
+  /*
+  View* v = evas_object_data_get(o, "view");
+  Evas_Object* rect = v->select_rect;
+  evas_object_hide(rect);
+
+  Control* cl = v->control;
+  if (control_mouse_up(cl, ev))
+  return;
+
+  _mouse_up_select(v, ev);
+  */
+}
+
+
+
+static void
+_mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+{
+  Evas_Event_Mouse_Wheel *ev = (Evas_Event_Mouse_Wheel*) event_info;
+
+  Window* w = data;
+  if (w->mouse_wheel) {
+    w->mouse_wheel(
+          w,
+          "",
+          ev->direction,
+          ev->z,
+          ev->canvas.x,
+          ev->canvas.y,
+          ev->timestamp);
+  }
+
+
+  /*
+  View* v = evas_object_data_get(o, "view");
+  //float x = ev->cur.canvas.x - ev->prev.canvas.x;
+  //float y = ev->cur.canvas.y - ev->prev.canvas.y;
+  Vec3 axis = {0, 0, ev->z};
+  axis = vec3_mul(axis, 1.5f);
+  camera_pan(v->camera, axis);
+  */
+}
+
+
+
 
 
 
@@ -211,12 +344,12 @@ window_new()
 
   //TODO
   //evas_object_event_callback_add(glview, EVAS_CALLBACK_DEL, _del, glview);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, w);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move, w);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_DOWN, _mouse_down, w);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, w);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_WHEEL, _mouse_wheel, w);
   /*
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move, NULL);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_DOWN, _mouse_down, NULL);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, NULL);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_WHEEL, _mouse_wheel, NULL);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_IN, _mouse_in, NULL);
   */
 
@@ -282,3 +415,21 @@ void window_button_new(Window* w)
   evas_object_color_set(bt, r,g,b,a);
 }
 
+void
+window_callback_set(
+      Window* w,
+      const char* data,
+      window_mouse_down mouse_down,
+      window_mouse_up mouse_up,
+      window_mouse_move mouse_move,
+      window_mouse_wheel mouse_wheel,
+      window_key_down key_down
+      )
+{
+  w->data = data;
+  w->mouse_down = mouse_down;
+  w->mouse_up = mouse_up;
+  w->mouse_move = mouse_move;
+  w->mouse_wheel = mouse_wheel;
+  w->key_down = key_down;
+}
