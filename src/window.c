@@ -60,7 +60,7 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 
   Window* w = data;
   if (w->key_down) {
-    w->key_down(w, "", ev->keyname, ev->key, ev->timestamp);
+    w->key_down(w->data, "", ev->keyname, ev->key, ev->timestamp);
   }
 
   //View* v = evas_object_data_get(o, "view");
@@ -85,7 +85,7 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   //
   Window* win = data;
   if (win->mouse_move) {
-    win->mouse_move(win, "", ev->buttons, curx, cury, prevx, prevy, ev->timestamp);
+    win->mouse_move(win->data, "", ev->buttons, curx, cury, prevx, prevy, ev->timestamp);
   }
 
   /*
@@ -109,7 +109,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   Window* w = data;
   if (w->mouse_down) {
-    w->mouse_down(w, "", ev->button, ev->canvas.x, ev->canvas.y, ev->timestamp);
+    w->mouse_down(w->data, "", ev->button, ev->canvas.x, ev->canvas.y, ev->timestamp);
   }
 
   /*
@@ -145,7 +145,7 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
 
   Window* w = data;
   if (w->mouse_up) {
-    w->mouse_up(w, "", ev->button, ev->canvas.x, ev->canvas.y, ev->timestamp);
+    w->mouse_up(w->data, "", ev->button, ev->canvas.x, ev->canvas.y, ev->timestamp);
   }
 
   //evas_object_hide(indicator[0]);
@@ -173,7 +173,7 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   Window* w = data;
   if (w->mouse_wheel) {
     w->mouse_wheel(
-          w,
+          w->data,
           "",
           ev->direction,
           ev->z,
