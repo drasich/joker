@@ -73,7 +73,7 @@ void window_callback_set(
       window_mouse_wheel mouse_wheel,
       window_key_down key_down
       );
-Tree* window_tree_new(Window* w);
+JkTree* window_tree_new(Window* w);
 void window_button_new(Window* w);
 
 typedef void (*rust_init_callback)(void* data);

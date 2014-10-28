@@ -17,7 +17,7 @@ static char *gl4_text_get(void *data, Evas_Object *obj, const char *part __UNUSE
   return strdup(buf);
   */
   //TODO rust tree->get_name(data)
-  Tree* t = evas_object_data_get(obj, "tree");
+  JkTree* t = evas_object_data_get(obj, "tree");
   if (t->name_get) {
     printf("object name text get %p \n", data);
     //return strdup("testcaca");
@@ -68,7 +68,7 @@ void gl4_del(void *data __UNUSED__, Evas_Object *obj __UNUSED__)
 static void
 gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
-   Tree* t = data;
+   JkTree* t = data;
   //TODO rust tree->select(data)
    Elm_Object_Item *glit = event_info;
    void* o = elm_object_item_data_get(glit);
@@ -98,7 +98,7 @@ gl4_exp(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    Evas_Object *gl = elm_object_item_widget_get(glit);
 
    void* o = elm_object_item_data_get(glit);
-   Tree* t = data;
+   JkTree* t = data;
 
     if (t->expand) {
       t->expand(t,o, glit);
@@ -140,7 +140,7 @@ gl4_exp(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 static void
 gl4_con(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
-  Tree* v = data;
+  JkTree* v = data;
   Elm_Object_Item *glit = event_info;
   /*
   Object* o = elm_object_item_data_get(glit);
@@ -211,11 +211,11 @@ _context_tree_msg_receive(Context* c, void* tree, const char* msg)
 }
 */
 
-Tree* 
+JkTree* 
 tree_widget_new(Evas_Object* win)//, struct _View* v)
 {
   printf("tree widget new !!win: %p \n",win);
-  Tree *t = calloc(1, sizeof *t);
+  JkTree *t = calloc(1, sizeof *t);
 
   Evas_Object *gli, *bx, *rd1, *rd2, *frame;
 
@@ -278,7 +278,7 @@ tree_widget_new(Evas_Object* win)//, struct _View* v)
 }
 
 void
-tree_object_add(Tree* t, void* o, Elm_Object_Item* parent)
+tree_object_add(JkTree* t, void* o, Elm_Object_Item* parent)
 {
   printf("tree object add ::  %p\n", o);
   //if (o->parent)
@@ -313,7 +313,7 @@ tree_object_add(Tree* t, void* o, Elm_Object_Item* parent)
 
 
 void tree_register_cb(
-      Tree* t,
+      JkTree* t,
       tree_object_name_get name,
       tree_object_select select,
       tree_object_can_expand can_expand,
@@ -325,3 +325,50 @@ void tree_register_cb(
   t->expand = expand;
 }
 
+void tree_object_code_select(JkTree* t, void* o)
+{
+  // deselect already selected objects if it's not 'o'
+  Eina_List* items = elm_genlist_realized_items_get(t->gl);
+  Elm_Object_Item* i;
+  Eina_List* l;
+
+  EINA_LIST_FOREACH(items, l, i) {
+    void* eo = elm_object_item_data_get(i);
+    if (o == eo) {
+      elm_genlist_item_selected_set(i, EINA_TRUE);
+    }
+    else {
+      elm_genlist_item_selected_set(i, EINA_FALSE);
+    }
+  }
+
+  eina_list_free(items);
+
+  ///////////////
+
+  /*
+  Elm_Object_Item* eoi = eina_hash_find(t->objects, &o);
+  if (eoi) {
+    elm_genlist_item_selected_set(eoi, EINA_TRUE);
+  }
+  else {
+      Eina_List* path = object_parents_path_get(o);
+      Eina_List* pl;
+      Object* po;
+      EINA_LIST_FOREACH(path, pl, po) {
+        eoi = eina_hash_find(t->objects, &po);
+        if (eoi) {
+          elm_genlist_item_expanded_set(eoi, EINA_TRUE);
+        }
+      }
+      eoi = eina_hash_find(t->objects, &o);
+      if (eoi) {
+        elm_genlist_item_show(eoi, ELM_GENLIST_ITEM_SCROLLTO_MIDDLE);
+        elm_genlist_item_selected_set(eoi, EINA_TRUE);
+      }
+
+      */
+
+
+
+}

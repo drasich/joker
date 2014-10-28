@@ -332,7 +332,7 @@ window_new()
   //elm_box_pack_end(box, glview);
   //elm_box_pack_end(box, edje);
 
-  //Tree* t = tree_widget_new(win);
+  //JkTree* t = tree_widget_new(win);
   //edje_object_part_swallow(edje, "part_tree", t->root);
 
 
@@ -380,9 +380,9 @@ bool init_callback_call()
   return false;
 }
 
-Tree* window_tree_new(Window* w)
+JkTree* window_tree_new(Window* w)
 {
-  Tree* t = tree_widget_new(w->win);
+  JkTree* t = tree_widget_new(w->win);
   edje_object_part_swallow(w->edje, "part_tree", t->root);
   return t;
 }

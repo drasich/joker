@@ -5,13 +5,12 @@
 //#include "view.h"
 #include "stdbool.h"
 
-typedef struct _Tree Tree;
+typedef struct _Tree JkTree;
 
 typedef const char* (*tree_object_name_get)(void* data);
 typedef void (*tree_object_select)(void* data);
 typedef bool (*tree_object_can_expand)(void* data);
-typedef void (*tree_object_expand)(Tree* t, void* data, Elm_Object_Item* parent);
-
+typedef void (*tree_object_expand)(JkTree* t, void* data, Elm_Object_Item* parent);
 
 struct _Tree
 {
@@ -35,26 +34,27 @@ struct _Tree
 };
 
 void tree_register_cb(
-      Tree* t,
+      JkTree* t,
       tree_object_name_get name,
       tree_object_select select,
       tree_object_can_expand can_expand,
       tree_object_expand expand);
 
 
-Tree* tree_widget_new(Evas_Object* win);
-//void tree_object_add(Tree* t,  struct _Object* o);
-//void tree_object_remove(Tree* t,  struct _Object* o);
+JkTree* tree_widget_new(Evas_Object* win);
+//void tree_object_add(JkTree* t,  struct _Object* o);
+//void tree_object_remove(JkTree* t,  struct _Object* o);
 
-//void tree_object_select(Tree* t, struct _Object* o);
-//void tree_objects_select(Tree* t, Eina_List* objects);
-//void tree_object_update(Tree* t, struct _Object* o);
+//void tree_object_select(JkTree* t, struct _Object* o);
+//void tree_objects_select(JkTree* t, Eina_List* objects);
+//void tree_object_update(JkTree* t, struct _Object* o);
 
-//void tree_scene_set(Tree* t, struct _Scene* s);
+//void tree_scene_set(JkTree* t, struct _Scene* s);
 
-//void tree_unselect_all(Tree* t);
+//void tree_unselect_all(JkTree* t);
 
-void tree_object_add(Tree* t, void* o, Elm_Object_Item* parent);
+void tree_object_add(JkTree* t, void* o, Elm_Object_Item* parent);
+void tree_object_code_select(JkTree* t, void* o);
 
 #endif
 
