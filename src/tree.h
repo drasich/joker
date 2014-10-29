@@ -53,7 +53,7 @@ JkTree* tree_widget_new(Evas_Object* win);
 
 //void tree_unselect_all(JkTree* t);
 
-void tree_object_add(JkTree* t, void* o, Elm_Object_Item* parent);
+Elm_Object_Item* tree_object_add(JkTree* t, void* o, Elm_Object_Item* parent);
 void tree_object_code_select(JkTree* t, void* o);
 
 #endif

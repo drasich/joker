@@ -277,7 +277,7 @@ tree_widget_new(Evas_Object* win)//, struct _View* v)
   return t;
 }
 
-void
+Elm_Object_Item*
 tree_object_add(JkTree* t, void* o, Elm_Object_Item* parent)
 {
   printf("tree object add ::  %p\n", o);
@@ -309,6 +309,8 @@ tree_object_add(JkTree* t, void* o, Elm_Object_Item* parent)
     //EINA_LOG_DBG("I add parent %p, object pointer %p, object name pointer %p", eoi, o, &o->name );
     //eina_hash_add(t->objects, &o, eoi);
     //property_holder_genlist_item_add(&o->name, eoi);
+
+  return eoi;
 }
 
 
