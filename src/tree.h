@@ -8,9 +8,10 @@
 typedef struct _Tree JkTree;
 
 typedef const char* (*tree_object_name_get)(void* data);
-typedef void (*tree_object_select)(void* data);
+typedef void (*tree_object_selected)(void* data);
 typedef bool (*tree_object_can_expand)(void* data);
-typedef void (*tree_object_expand)(JkTree* t, void* data, Elm_Object_Item* parent);
+//typedef void (*tree_object_expand)(JkTree* t, void* data, Elm_Object_Item* parent);
+typedef void (*tree_object_expand)(void* data, void* object, Elm_Object_Item* parent);
 
 struct _Tree
 {
@@ -28,15 +29,18 @@ struct _Tree
   const Elm_Genlist_Item_Class* class_simple;
 
   tree_object_name_get name_get;
-  tree_object_select select;
+  tree_object_selected selected;
   tree_object_can_expand can_expand;
   tree_object_expand expand;
+
+  void* data;
 };
 
 void tree_register_cb(
       JkTree* t,
+      void* data,
       tree_object_name_get name,
-      tree_object_select select,
+      tree_object_selected select,
       tree_object_can_expand can_expand,
       tree_object_expand expand);
 
@@ -54,7 +58,8 @@ JkTree* tree_widget_new(Evas_Object* win);
 //void tree_unselect_all(JkTree* t);
 
 Elm_Object_Item* tree_object_add(JkTree* t, void* o, Elm_Object_Item* parent);
-void tree_object_code_select(JkTree* t, void* o);
+void tree_object_select(JkTree* t, void* o);
+void tree_item_select(JkTree* t, Elm_Object_Item* item);
 
 #endif
 

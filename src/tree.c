@@ -72,8 +72,8 @@ gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
   //TODO rust tree->select(data)
    Elm_Object_Item *glit = event_info;
    void* o = elm_object_item_data_get(glit);
-    if (t->select) {
-      t->select(o);
+    if (t->selected) {
+      t->selected(o);
     }
 
    //int depth = elm_genlist_item_expanded_depth_get(glit);
@@ -101,7 +101,7 @@ gl4_exp(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    JkTree* t = data;
 
     if (t->expand) {
-      t->expand(t,o, glit);
+      t->expand(t->data,o, glit);
     }
 
    /*
@@ -316,18 +316,21 @@ tree_object_add(JkTree* t, void* o, Elm_Object_Item* parent)
 
 void tree_register_cb(
       JkTree* t,
+      void* data,
       tree_object_name_get name,
-      tree_object_select select,
+      tree_object_selected selected,
       tree_object_can_expand can_expand,
       tree_object_expand expand)
 {
   t->name_get = name;
-  t->select = select;
+  t->selected = selected;
   t->can_expand = can_expand;
   t->expand = expand;
+
+  t->data = data;
 }
 
-void tree_object_code_select(JkTree* t, void* o)
+void tree_object_select(JkTree* t, void* o)
 {
   // deselect already selected objects if it's not 'o'
   Eina_List* items = elm_genlist_realized_items_get(t->gl);
@@ -370,7 +373,9 @@ void tree_object_code_select(JkTree* t, void* o)
       }
 
       */
+}
 
-
-
+void tree_item_select(JkTree* t, Elm_Object_Item* item)
+{
+  elm_genlist_item_selected_set(item, EINA_TRUE);
 }
