@@ -375,7 +375,27 @@ void tree_object_select(JkTree* t, void* o)
       */
 }
 
-void tree_item_select(JkTree* t, Elm_Object_Item* item)
+void tree_item_select(Elm_Object_Item* item)
 {
+  elm_genlist_item_show(item, ELM_GENLIST_ITEM_SCROLLTO_MIDDLE);
   elm_genlist_item_selected_set(item, EINA_TRUE);
+}
+
+void tree_deselect_all(JkTree *t)
+{
+  Eina_List* items = elm_genlist_realized_items_get(t->gl);
+  Elm_Object_Item* i;
+  Eina_List* l;
+
+  EINA_LIST_FOREACH(items, l, i) {
+    void* eo = elm_object_item_data_get(i);
+      elm_genlist_item_selected_set(i, EINA_FALSE);
+  }
+
+  eina_list_free(items);
+}
+
+void tree_item_expand(Elm_Object_Item* item)
+{
+  elm_genlist_item_expanded_set(item, EINA_TRUE);
 }
