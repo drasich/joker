@@ -194,6 +194,20 @@ gl4_unselect(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_inf
    */
 }
 
+static void
+gl4_select(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_info)
+{
+   Elm_Object_Item *glit = event_info;
+
+   void* o = elm_object_item_data_get(glit);
+   JkTree* t = data;
+
+    if (t->sel) {
+      t->sel(t->data,o, glit);
+    }
+}
+
+
 
 
 /*
@@ -262,6 +276,7 @@ tree_widget_new(Evas_Object* win)//, struct _View* v)
   evas_object_smart_callback_add(gli, "expanded", gl4_exp, t);
   evas_object_smart_callback_add(gli, "contracted", gl4_con, t);
   evas_object_smart_callback_add(gli, "unselected", gl4_unselect, t);
+  evas_object_smart_callback_add(gli, "selected", gl4_select, t);
 
   elm_box_pack_end(bx, gli);
 
@@ -320,12 +335,14 @@ void tree_register_cb(
       tree_object_name_get name,
       tree_object_selected selected,
       tree_object_can_expand can_expand,
-      tree_object_expand expand)
+      tree_object_expand expand,
+      tree_sel sel)
 {
   t->name_get = name;
   t->selected = selected;
   t->can_expand = can_expand;
   t->expand = expand;
+  t->sel = sel;
 
   t->data = data;
 }

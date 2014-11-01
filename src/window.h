@@ -66,7 +66,7 @@ struct _Window
 Window* window_new();
 void window_callback_set(
       Window* w,
-      const char* data,
+      const void* data,
       window_mouse_down mouse_down,
       window_mouse_up mouse_up,
       window_mouse_move mouse_move,

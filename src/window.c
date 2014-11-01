@@ -418,7 +418,7 @@ void window_button_new(Window* w)
 void
 window_callback_set(
       Window* w,
-      const char* data,
+      const void* data,
       window_mouse_down mouse_down,
       window_mouse_up mouse_up,
       window_mouse_move mouse_move,
