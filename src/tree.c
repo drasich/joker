@@ -72,8 +72,8 @@ gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
   //TODO rust tree->select(data)
    Elm_Object_Item *glit = event_info;
    void* o = elm_object_item_data_get(glit);
-    if (t->selected) {
-      t->selected(o);
+    if (t->item_selected) {
+      t->item_selected(o);
     }
 
    //int depth = elm_genlist_item_expanded_depth_get(glit);
@@ -202,8 +202,8 @@ gl4_select(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_info)
    void* o = elm_object_item_data_get(glit);
    JkTree* t = data;
 
-    if (t->sel) {
-      t->sel(t->data,o, glit);
+    if (t->selected) {
+      t->selected(t->data,o, glit);
     }
 }
 
@@ -333,16 +333,16 @@ void tree_register_cb(
       JkTree* t,
       void* data,
       tree_object_name_get name,
-      tree_object_selected selected,
+      tree_item_selected item_selected,
       tree_object_can_expand can_expand,
       tree_object_expand expand,
-      tree_sel sel)
+      tree_selected selected)
 {
   t->name_get = name;
-  t->selected = selected;
+  t->item_selected = item_selected;
   t->can_expand = can_expand;
   t->expand = expand;
-  t->sel = sel;
+  t->selected = selected;
 
   t->data = data;
 }
