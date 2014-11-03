@@ -2,6 +2,7 @@
 #define __window__
 #include "stdbool.h"
 #include "tree.h"
+#include "property.h"
 
 typedef struct _Window Window;
 
@@ -80,5 +81,8 @@ typedef void (*rust_init_callback)(void* data);
 
 void init_callback_set(rust_init_callback cb, void* data);
 bool init_callback_call();
+
+JkProperty* window_property_new(Window* w);
+JkPropertySet* jk_window_property_set_new(Window* w);
 
 #endif

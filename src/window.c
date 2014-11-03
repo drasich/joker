@@ -10,8 +10,6 @@
 #include "cypher.h"
 //#include "drawable.h"
 #include "window.h"
-#include "tree.h"
-#include "property.h"
 
 #define __UNUSED__
 
@@ -393,6 +391,14 @@ JkProperty* window_property_new(Window* w)
   edje_object_part_swallow(w->edje, "part_property_test", p->root);
   return p;
 }
+
+JkPropertySet* jk_property_set_new(Window* w)
+{
+  JkPropertySet* ps = property_set_new(w->win);
+  edje_object_part_swallow(w->edje, "part_property_test", ps->root);
+  return ps;
+}
+
 
 void window_button_new(Window* w)
 {

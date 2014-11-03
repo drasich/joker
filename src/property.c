@@ -91,10 +91,10 @@ void property_data_set(
 
 
 
-PropertySet*
+JkPropertySet*
 property_set_new(Evas_Object* win)
 {
-  PropertySet* p = calloc(1, sizeof *p);
+  JkPropertySet* p = calloc(1, sizeof *p);
   Evas_Object *bx;
 
   bx = elm_box_add(win);
@@ -104,50 +104,42 @@ property_set_new(Evas_Object* win)
 
   evas_object_show(bx);
   p->root = bx;
+  p->box = bx;
 
   p->fields = eina_hash_stringshared_new(NULL);
 
   return p;
 }
 
-static void
-_property_set_entry_changed_cb(void *data, Evas_Object *obj, void *event)
+void
+property_set_data_set(JkPropertySet* set, void* data)
 {
-  const char* s = elm_object_text_get(obj);
-  PropertySet* ps = data;
-
-  const char* field = evas_object_name_get(obj);
-
-  //if (ps->changed)
-  //ps->changed(ps->data, field, s);
+  set->data = data;
 }
-
 
 void
 property_set_string_add(
-      PropertySet* ps,
+      JkPropertySet* ps,
       const char* name,
       const char* value
-      // changed,
-      // set,
-      // get
       )
 {
-  //TODO
-  Evas_Object* bx = elm_box_add(ps->root);
+  Evas_Object* bx = elm_box_add(ps->box);
   elm_box_horizontal_set(bx, EINA_TRUE);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  evas_object_show(bx);
 
-  Evas_Object* label = elm_label_add(ps->root);
+  Evas_Object* label = elm_label_add(ps->box);
   char s[256];
   sprintf(s, "<b> %s </b> : ", name);
 
   elm_object_text_set(label, s);
   evas_object_show(label);
   elm_box_pack_end(bx, label);
+  evas_object_show(label);
 
-  Evas_Object* en = elm_entry_add(ps->root);
+  Evas_Object* en = elm_entry_add(ps->box);
   elm_entry_scrollable_set(en, EINA_TRUE);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
@@ -176,9 +168,15 @@ property_set_string_add(
 }
 
 void
-property_set_float_add(PropertySet* ps, const char* name, float value)
+property_set_float_add(JkPropertySet* ps, const char* name, float value)
 {
   //TODO
 }
 
+void
+property_set_clear(JkPropertySet* ps)
+{
+  elm_box_clear(ps->box);
+
+}
 

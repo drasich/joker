@@ -33,7 +33,7 @@ void property_data_set(
       const void* data
       );
 
-typedef struct _PropertySet PropertySet;
+typedef struct _PropertySet JkPropertySet;
 
 struct _PropertySet
 {
@@ -42,12 +42,40 @@ struct _PropertySet
 
   const void* data;
 
-  property_changed changed;
-  property_get get;
-
   Eina_Hash* fields;
 };
 
-PropertySet* property_set_new(Evas_Object* win);
+JkPropertySet* property_set_new(Evas_Object* win);
+void property_set_data_set(JkPropertySet* set, void* data);
+
+void property_set_clear(JkPropertySet* set);
+
+void property_set_string_add(
+      JkPropertySet* ps,
+      const char* name,
+      const char* value
+      );
+
+/////////////////
+
+/*
+typedef struct _PropertyEntry JkPropertyEntry;
+
+struct _PropertyEntry
+{
+  Evas_Object* box;
+  Evas_Object* label;
+  Evas_Object* entry;
+
+  const char* property_path;
+  const JkProperty* container;
+
+  property_changed changed;
+  property_get get;
+};
+*/
+
+
+
 
 #endif
