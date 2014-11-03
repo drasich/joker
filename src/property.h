@@ -56,6 +56,11 @@ void property_set_string_add(
       const char* value
       );
 
+void property_set_float_add(
+      JkPropertySet* ps, 
+      const char* name,
+      float value);
+
 /////////////////
 
 /*

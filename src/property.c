@@ -168,9 +168,53 @@ property_set_string_add(
 }
 
 void
-property_set_float_add(JkPropertySet* ps, const char* name, float value)
+property_set_float_add(
+      JkPropertySet* ps, 
+      const char* name,
+      float value)
 {
   //TODO
+  Evas_Object* bx = elm_box_add(ps->box);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  evas_object_show(bx);
+
+  Evas_Object* label = elm_label_add(ps->box);
+   {
+  char s[256];
+  sprintf(s, "<b> %s </b> : ", name);
+
+  elm_object_text_set(label, s);
+  evas_object_show(label);
+  elm_box_pack_end(bx, label);
+  evas_object_show(label);
+   }
+
+  Evas_Object* sp = elm_spinner_add(ps->box);
+  evas_object_name_set(sp, name);
+
+  evas_object_size_hint_weight_set(sp, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(sp, EVAS_HINT_FILL, 0.5);
+  evas_object_size_hint_min_set(sp,1,1);
+  //elm_spinner_value_set(en, atof(value));
+  evas_object_show(sp);
+  //elm_box_pack_end(cp->box, en);
+  elm_box_pack_end(bx, sp);
+
+  elm_spinner_step_set(sp, 0.1);
+  elm_spinner_min_max_set(sp, -DBL_MAX, DBL_MAX);
+  //elm_object_style_set (en, "vertical");
+  elm_spinner_editable_set(sp, EINA_TRUE);
+
+  char ff[50];
+    //sprintf(ff, "%s : %s", name, "%.3f");
+    sprintf(ff, "%s", "%.3f");
+
+  elm_spinner_label_format_set(sp, ff);
+  elm_spinner_value_set(sp,value);
+
+  elm_box_pack_end(ps->box, bx);
 }
 
 void
