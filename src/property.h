@@ -50,6 +50,7 @@ void property_set_data_set(JkPropertySet* set, void* data);
 
 void property_set_clear(JkPropertySet* set);
 
+//TODO change name to path OR make a PropertyParent node
 void property_set_string_add(
       JkPropertySet* ps,
       const char* name,
@@ -60,6 +61,11 @@ void property_set_float_add(
       JkPropertySet* ps, 
       const char* name,
       float value);
+
+
+//TODO
+void property_set_string_update(JkPropertySet* set, const char* path, const char* value);
+void property_set_float_update(JkPropertySet* set, const char* path, float value);
 
 /////////////////
 
