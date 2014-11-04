@@ -92,7 +92,7 @@ void property_set_float_add(
 
 void property_set_node_add(
       JkPropertySet* ps, 
-      const char* name);
+      const char* path);
 
 //TODO TO BE TESTED
 void property_set_string_update(

@@ -185,9 +185,12 @@ property_set_string_add(
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
   evas_object_show(bx);
 
+  unsigned int num;
+  char** ss = eina_str_split_full(name, "/", 0, &num);
+
   Evas_Object* label = elm_label_add(ps->box);
   char s[256];
-  sprintf(s, "<b> %s </b> : ", name);
+  sprintf(s, "<b> %s </b> : ", ss[num-1]);//name);
 
   elm_object_text_set(label, s);
   evas_object_show(label);
@@ -253,8 +256,11 @@ property_set_float_add(
 
   Evas_Object* label = elm_label_add(ps->box);
    {
+    unsigned int num;
+    char** ss = eina_str_split_full(name, "/", 0, &num);
+
   char s[256];
-  sprintf(s, "<b> %s </b> : ", name);
+  sprintf(s, "<b> %s </b> : ", ss[num-1]);//name);
 
   elm_object_text_set(label, s);
   evas_object_show(label);
@@ -336,5 +342,19 @@ void jk_property_set_register_cb(
 {
   ps->data = data;
   ps->changed = changed;
+}
+
+void property_set_node_add(
+      JkPropertySet* ps, 
+      const char* path)
+{
+  PropertyNode* node = _property_node_find(ps, path);
+  if (node) {
+    unsigned int num;
+    char** s = eina_str_split_full(path, "/", 0, &num);
+    PropertyNode* child = property_node_new();
+    eina_hash_add(node->nodes, s[num-1], child);
+  }
+
 }
 
