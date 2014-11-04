@@ -89,6 +89,14 @@ void property_data_set(
   }
 }
 
+PropertyNode* property_node_new()
+{
+  PropertyNode* node = calloc(1, sizeof *node);
+  node->leafs = eina_hash_stringshared_new(NULL);
+  node->nodes = eina_hash_stringshared_new(NULL);
+
+  return node;
+}
 
 
 JkPropertySet*
@@ -106,7 +114,8 @@ property_set_new(Evas_Object* win)
   p->root = bx;
   p->box = bx;
 
-  p->fields = eina_hash_stringshared_new(NULL);
+  //p->fields = eina_hash_stringshared_new(NULL);
+  p->node = property_node_new();
 
   return p;
 }
@@ -115,6 +124,52 @@ void
 property_set_data_set(JkPropertySet* set, void* data)
 {
   set->data = data;
+}
+
+PropertyNode* _property_node_find(
+      JkPropertySet* ps,
+      const char* path)
+{
+  char** s = eina_str_split(path, "/", 0);
+
+  PropertyNode* node = ps->node;
+
+  int i = 0;
+  while (s[i]) {
+    printf("%s\n", s[i]);
+
+    if (s[i+1]) {
+      PropertyNode* next = eina_hash_find(node->nodes, s[i]);
+      if (next) {
+        node = next;
+        i++;
+      }
+      else {
+        break;
+      }
+    }
+    else {
+      break;
+    }
+  }
+
+   free(s[0]);
+   free(s);
+
+   return node;
+}
+
+Evas_Object* _property_leaf_find(
+      JkPropertySet* ps,
+      const char* path)
+{
+  PropertyNode* node = _property_node_find(ps, path);
+
+  if (node) {
+    return eina_hash_find(node->leafs, path);
+  }
+
+  return NULL;
 }
 
 void
@@ -153,6 +208,7 @@ property_set_string_add(
 
   evas_object_name_set(en, name);
 
+
   /*
   evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, p);
   evas_object_smart_callback_add(en, "activated", _entry_activated_cb, cp);
@@ -165,6 +221,21 @@ property_set_string_add(
   elm_entry_context_menu_disabled_set(en, EINA_TRUE);
 
   elm_box_pack_end(ps->box, bx);
+
+  PropertyNode* node = _property_node_find(ps, name);
+  eina_hash_add(node->leafs, eina_stringshare_add(name), en);
+}
+
+static void
+_spinner_changed_cb(void* data, Evas_Object *obj, void* event)
+{
+  JkPropertySet* ps = data;
+  const char* name = evas_object_name_get(obj);
+  double v =  elm_spinner_value_get(obj);
+  if (ps->changed) {
+    ps->changed(ps->data, name, &v);
+  }
+
 }
 
 void
@@ -215,6 +286,11 @@ property_set_float_add(
   elm_spinner_value_set(sp,value);
 
   elm_box_pack_end(ps->box, bx);
+
+  PropertyNode* node = _property_node_find(ps, name);
+  eina_hash_add(node->leafs, eina_stringshare_add(name), sp);
+
+  evas_object_smart_callback_add(sp, "changed", _spinner_changed_cb, ps );
 }
 
 void
@@ -222,5 +298,43 @@ property_set_clear(JkPropertySet* ps)
 {
   elm_box_clear(ps->box);
 
+}
+
+void property_set_string_update(
+      JkPropertySet* set,
+      const char* path,
+      const char* value)
+{
+  Evas_Object* o = _property_leaf_find(set, path);
+
+  if (o) {
+    elm_object_text_set(o, value);
+  }
+  else {
+    printf("could not find string property with path '%s'\n", path);
+  }
+}
+
+void property_set_float_update(JkPropertySet* set, const char* path, float value)
+{
+  Evas_Object* o = _property_leaf_find(set, path);
+
+  if (o) {
+    elm_spinner_value_set(o, value);
+  }
+  else {
+    printf("could not find float property with path '%s'\n", path);
+  }
+
+}
+
+void jk_property_set_register_cb(
+      JkPropertySet* ps,
+      void * data,
+      property_set_changed changed
+      )
+{
+  ps->data = data;
+  ps->changed = changed;
 }
 
