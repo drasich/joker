@@ -11,6 +11,18 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   p->changed(p->data, s);
 }
 
+static void
+_entry_changed_cb_ps(void *data, Evas_Object *obj, void *event)
+{
+  const char* s = elm_object_text_get(obj);
+  JkPropertySet* ps = data;
+
+  const char* name = evas_object_name_get(obj);
+  if (ps->changed_string) {
+    ps->changed_string(ps->data, name, s);
+  }
+}
+
 JkProperty*
 property_entry_new(Evas_Object* win)
 {
@@ -211,9 +223,8 @@ property_set_string_add(
 
   evas_object_name_set(en, name);
 
-
+  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb_ps, ps);
   /*
-  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, p);
   evas_object_smart_callback_add(en, "activated", _entry_activated_cb, cp);
   evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
   evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
@@ -235,10 +246,9 @@ _spinner_changed_cb(void* data, Evas_Object *obj, void* event)
   JkPropertySet* ps = data;
   const char* name = evas_object_name_get(obj);
   double v =  elm_spinner_value_get(obj);
-  if (ps->changed) {
-    ps->changed(ps->data, name, &v);
+  if (ps->changed_float) {
+    ps->changed_float(ps->data, name, &v);
   }
-
 }
 
 void
@@ -337,11 +347,13 @@ void property_set_float_update(JkPropertySet* set, const char* path, float value
 void jk_property_set_register_cb(
       JkPropertySet* ps,
       void * data,
-      property_set_changed changed
+      property_set_changed changed_float,
+      property_set_changed changed_string
       )
 {
   ps->data = data;
-  ps->changed = changed;
+  ps->changed_float = changed_float;
+  ps->changed_string = changed_string;
 }
 
 void property_set_node_add(

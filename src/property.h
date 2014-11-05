@@ -64,7 +64,9 @@ struct _PropertySet
   //Eina_Hash* fields;
 
   PropertyNode* node;
-  property_set_changed changed;
+
+  property_set_changed changed_float;
+  property_set_changed changed_string;
 };
 
 PropertyNode* property_node_new();
@@ -73,7 +75,8 @@ JkPropertySet* property_set_new(Evas_Object* win);
 void jk_property_set_register_cb(
       JkPropertySet* ps,
       void * data,
-      property_set_changed changed
+      property_set_changed changed_float,
+      property_set_changed changed_string
       );
 void property_set_data_set(JkPropertySet* set, void* data);
 
