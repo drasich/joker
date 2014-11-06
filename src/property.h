@@ -106,24 +106,22 @@ void property_set_float_update(JkPropertySet* set, const char* path, float value
 
 /////////////////
 
-/*
-typedef struct _PropertyEntry JkPropertyEntry;
+typedef struct _PropertyList JkPropertyList;
 
-struct _PropertyEntry
+struct _PropertyList
 {
-  Evas_Object* box;
-  Evas_Object* label;
-  Evas_Object* entry;
+  Evas_Object* root;
+  Evas_Object* list;
 
-  const char* property_path;
-  const JkProperty* container;
+  const void* data;
 
-  property_changed changed;
-  property_get get;
+  PropertyNode* node;
+
+  property_set_changed changed_float;
+  property_set_changed changed_string;
 };
-*/
 
 
-
+JkPropertyList* property_list_new(Evas_Object* win);
 
 #endif

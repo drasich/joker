@@ -126,7 +126,6 @@ property_set_new(Evas_Object* win)
   p->root = bx;
   p->box = bx;
 
-  //p->fields = eina_hash_stringshared_new(NULL);
   p->node = property_node_new();
 
   return p;
@@ -379,5 +378,132 @@ void property_set_node_add(
   evas_object_show(label);
   elm_box_pack_end(ps->box, label);
   evas_object_show(label);
+}
+
+static void
+gl4_sel(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
+{
+   Elm_Object_Item *glit = event_info;
+   int depth = elm_genlist_item_expanded_depth_get(glit);
+   printf("expanded depth for selected item is %d", depth);
+}
+
+static char *
+gl_text_get(void *data, Evas_Object *obj EINA_UNUSED, const char *part EINA_UNUSED)
+{
+   char buf[256];
+   snprintf(buf, sizeof(buf), "Item # %i", (int)(uintptr_t)data);
+   return strdup(buf);
+}
+
+Evas_Object *gl_content_get(void *data EINA_UNUSED, Evas_Object *obj, const char *part)
+{
+   char buf[PATH_MAX];
+   Evas_Object *ic = elm_icon_add(obj);
+   if (!strcmp(part, "elm.swallow.end"))
+     snprintf(buf, sizeof(buf), "%s/images/bubble.png", elm_app_data_dir_get());
+   else
+     snprintf(buf, sizeof(buf), "%s/images/logo_small.png", elm_app_data_dir_get());
+   elm_image_file_set(ic, buf, NULL);
+   evas_object_size_hint_aspect_set(ic, EVAS_ASPECT_CONTROL_VERTICAL, 1, 1);
+   return ic;
+}
+
+Eina_Bool gl_state_get(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, const char *part EINA_UNUSED)
+{
+   return EINA_FALSE;
+}
+
+char *gl8_text_get(void *data, Evas_Object *obj EINA_UNUSED, const char *part EINA_UNUSED)
+{
+   char buf[256];
+   snprintf(buf, sizeof(buf), "Group Index # %i (Item # %i)", (int)((uintptr_t)data / 10), (int)(uintptr_t)data);
+   return strdup(buf);
+}
+
+JkPropertyList*
+property_list_new(Evas_Object* win)
+{
+  JkPropertyList* p = calloc(1, sizeof *p);
+
+  Evas_Object *bx = elm_box_add(win);
+  p->root = bx;
+  //p->box = bx;
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_show(bx);
+
+  Evas_Object* gl = elm_genlist_add(win);
+  //evas_object_smart_callback_add(gl, "clicked,double", _gl_double_clicked, NULL);
+  evas_object_size_hint_weight_set(gl, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(gl, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  evas_object_show(gl);
+  elm_box_pack_end(bx, gl);
+
+  Elm_Genlist_Item_Class *itc1, *itc2;
+  itc1 = elm_genlist_item_class_new();
+  itc1->item_style = "default";
+  itc1->func.text_get = gl_text_get;
+  itc1->func.content_get = gl_content_get;
+  itc1->func.state_get = gl_state_get;
+  itc1->func.del = NULL;
+
+  itc2 = elm_genlist_item_class_new();
+  itc2->item_style = "group_index";
+  itc2->func.text_get = gl8_text_get;
+  itc2->func.content_get = NULL;
+  itc2->func.state_get = NULL;
+  itc2->func.del = NULL;
+
+  Elm_Object_Item* git;
+
+   git = elm_genlist_item_append(gl, itc2,
+                                 (void *)0/* item data */,
+                                 NULL/* parent */,
+                                 ELM_GENLIST_ITEM_GROUP,
+                                 gl4_sel/* func */,
+                                 NULL/* func data */);
+   elm_genlist_item_select_mode_set(git, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY);
+
+   elm_genlist_item_append(gl, itc1,
+                           (void *)1/* item data */, git/* parent */, ELM_GENLIST_ITEM_TREE, gl4_sel/* func */,
+                           NULL/* func data */);
+   elm_genlist_item_append(gl, itc1,
+                           (void *)2/* item data */, git/* parent */, ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
+                           NULL/* func data */);
+   elm_genlist_item_append(gl, itc1,
+                           (void *)3/* item data */, git/* parent */, ELM_GENLIST_ITEM_TREE, gl4_sel/* func */,
+                           NULL/* func data */);
+   git = elm_genlist_item_append(gl, itc2,
+                                 (void *)4/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_GROUP, gl4_sel/* func */,
+                                 NULL/* func data */);
+   elm_genlist_item_select_mode_set(git, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY);
+
+   elm_genlist_item_append(gl, itc1,
+                           (void *)5/* item data */, git/* parent */, ELM_GENLIST_ITEM_TREE, gl4_sel/* func */,
+                           NULL/* func data */);
+   elm_genlist_item_append(gl, itc1,
+                           (void *)6/* item data */, git/* parent */, ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
+                           NULL/* func data */);
+   elm_genlist_item_append(gl, itc1,
+                           (void *)7/* item data */, git/* parent */, ELM_GENLIST_ITEM_TREE, gl4_sel/* func */,
+                           NULL/* func data */);
+
+
+  //elm_genlist_item_class_free(itc1);
+  //elm_genlist_item_class_free(itc2);
+
+  /*
+  evas_object_smart_callback_add(gl, "expand,request", gl9_exp_req, api);
+  evas_object_smart_callback_add(gl, "contract,request", gl9_con_req, api);
+  evas_object_smart_callback_add(gl, "expanded", gl9_exp, api);
+  evas_object_smart_callback_add(gl, "contracted", gl9_con, api);
+  */
+
+  p->list = gl;
+
+  p->node = property_node_new();
+
+  return p;
+
 }
 

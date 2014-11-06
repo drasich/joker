@@ -395,9 +395,17 @@ JkProperty* window_property_new(Window* w)
 JkPropertySet* jk_property_set_new(Window* w)
 {
   JkPropertySet* ps = property_set_new(w->win);
-  edje_object_part_swallow(w->edje, "part_property_test", ps->root);
+  //edje_object_part_swallow(w->edje, "part_property_test", ps->root);
   return ps;
 }
+
+JkPropertyList* jk_property_list_new(Window* w)
+{
+  JkPropertyList* pl = property_list_new(w->win);
+  edje_object_part_swallow(w->edje, "part_property_test", pl->root);
+  return pl;
+}
+
 
 
 void window_button_new(Window* w)
