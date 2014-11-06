@@ -361,12 +361,23 @@ void property_set_node_add(
       const char* path)
 {
   PropertyNode* node = _property_node_find(ps, path);
-  if (node) {
-    unsigned int num;
-    char** s = eina_str_split_full(path, "/", 0, &num);
-    PropertyNode* child = property_node_new();
-    eina_hash_add(node->nodes, s[num-1], child);
+  if (!node) {
+    printf("$s, could not find a root\n", __FUNCTION__);
+    return;
   }
 
+  unsigned int num;
+  char** s = eina_str_split_full(path, "/", 0, &num);
+  PropertyNode* child = property_node_new();
+  eina_hash_add(node->nodes, s[num-1], child);
+  
+  Evas_Object* label = elm_label_add(ps->box);
+  char ls[256];
+  sprintf(ls, "<b> %s </b> : ", s[num-1]);
+
+  elm_object_text_set(label, ls);
+  evas_object_show(label);
+  elm_box_pack_end(ps->box, label);
+  evas_object_show(label);
 }
 
