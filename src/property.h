@@ -46,6 +46,7 @@ struct _PropertyNode
   //name =>  PropertyNode;  
   //example position or parameter or life
   Eina_Hash* nodes;
+  Elm_Object_Item* item;
 };
 
 
@@ -123,5 +124,10 @@ struct _PropertyList
 
 
 JkPropertyList* property_list_new(Evas_Object* win);
+void property_list_clear(JkPropertyList* pl);
+
+void property_list_node_add(
+      JkPropertyList* pl, 
+      const char* path);
 
 #endif

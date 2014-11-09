@@ -351,8 +351,8 @@ window_new()
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_IN, _mouse_in, NULL);
   */
 
-  evas_object_resize(win, 456, 456);
-  //evas_object_resize(win, 64, 64);
+  //evas_object_resize(win, 456, 456);
+  evas_object_resize(win, 464, 64);
   evas_object_show(win);
 
   return w;
@@ -405,8 +405,6 @@ JkPropertyList* jk_property_list_new(Window* w)
   edje_object_part_swallow(w->edje, "part_property_test", pl->root);
   return pl;
 }
-
-
 
 void window_button_new(Window* w)
 {
