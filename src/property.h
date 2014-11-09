@@ -130,4 +130,9 @@ void property_list_node_add(
       JkPropertyList* pl, 
       const char* path);
 
+void property_list_float_add(
+      JkPropertyList* ps, 
+      const char* path,
+      float value);
+
 #endif

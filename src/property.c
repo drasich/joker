@@ -1,6 +1,6 @@
 #include "property.h"
 #include "Elementary.h"
-static Elm_Genlist_Item_Class *class_entry, *class_group, *class_node;
+static Elm_Genlist_Item_Class *class_entry, *class_group, *class_node,*class_float;
 
 static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
@@ -105,8 +105,8 @@ void property_data_set(
 PropertyNode* property_node_new()
 {
   PropertyNode* node = calloc(1, sizeof *node);
-  node->leafs = eina_hash_stringshared_new(NULL);
-  node->nodes = eina_hash_stringshared_new(NULL);
+  node->leafs = eina_hash_string_superfast_new(NULL);
+  node->nodes = eina_hash_string_superfast_new(NULL);
 
   return node;
 }
@@ -138,6 +138,15 @@ property_set_data_set(JkPropertySet* set, void* data)
   set->data = data;
 }
 
+static Eina_Bool _nodes_print(
+      const Eina_Hash *hash,
+      const void *key,
+      void *data,
+      void *fdata)
+{
+  printf("key : '%s'\n", key);
+}
+
 PropertyNode* _property_node_find(
       PropertyNode* node,
       const char* path)
@@ -146,7 +155,6 @@ PropertyNode* _property_node_find(
 
   int i = 0;
   while (s[i]) {
-    printf("%s\n", s[i]);
 
     if (s[i+1]) {
       PropertyNode* next = eina_hash_find(node->nodes, s[i]);
@@ -155,6 +163,7 @@ PropertyNode* _property_node_find(
         i++;
       }
       else {
+        //eina_hash_foreach(node->nodes,_nodes_print, NULL);
         break;
       }
     }
@@ -446,65 +455,19 @@ Evas_Object *gl_content_full_get(
       Evas_Object *obj,
       const char *part)
 {
-   //Evas_Object *fr, *bx, *ic, *bt, *ck;
-   Evas_Object *bx, *ic, *bt, *ck;
+   Evas_Object *bx, *bt, *ck;
 
    if (strcmp(part, "elm.swallow.content") != 0) return NULL;
 
-   /*
-   fr = elm_frame_add(obj);
-   elm_layout_text_set(fr, NULL, "A Frame");
-   */
-
-   //bx = elm_box_add(fr);
    bx = elm_box_add(obj);
    elm_box_horizontal_set(bx, EINA_TRUE);
 
-   //unsigned int num;
-   //char** ss = eina_str_split_full(name, "/", 0, &num);
-
    Evas_Object* label = elm_label_add(bx);
-   //char s[256];
-   //sprintf(s, "<b> %s </b> : ", ss[num-1]);//name);
 
-   elm_object_text_set(label, "position:"); //s);
+   elm_object_text_set(label, "position:");
    evas_object_show(label);
    elm_box_pack_end(bx, label);
    evas_object_show(label);
-
-   /*
-   ic = elm_icon_add(bx);
-   elm_icon_standard_set(ic, "home");
-   evas_object_size_hint_min_set(ic, 32 * elm_config_scale_get(),
-                                 32 * elm_config_scale_get());
-   evas_object_size_hint_align_set(ic, 0.5, EVAS_HINT_FILL);
-   evas_object_show(ic);
-   elm_box_pack_end(bx, ic);
-   */
-
-   /*
-   bt = elm_button_add(bx);
-   evas_object_size_hint_align_set(bt, EVAS_HINT_FILL, EVAS_HINT_FILL);
-   evas_object_size_hint_weight_set(bt, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-   //evas_object_smart_callback_add(bt, "clicked", on_bt_clicked, NULL);
-   elm_layout_text_set(bt, NULL, "Click Me");
-   evas_object_show(bt);
-   elm_box_pack_end(bx, bt);
-   */
-
-   /*
-   ck = elm_check_add(bx);
-   evas_object_size_hint_align_set(ck, EVAS_HINT_FILL, EVAS_HINT_FILL);
-   evas_object_size_hint_weight_set(ck, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-   //evas_object_smart_callback_add(ck, "changed", on_ck_changed, NULL);
-   elm_layout_text_set(ck, NULL, "some checkbox");
-   evas_object_show(ck);
-   elm_box_pack_end(bx, ck);
-   */
-
-   //elm_layout_content_set(fr, NULL, bx);
-   //evas_object_size_hint_min_set(bt, 200 * elm_config_scale_get(),
-    //     200 * elm_config_scale_get());
 
   Evas_Object* en = elm_entry_add(obj);
   elm_entry_scrollable_set(en, EINA_TRUE);
@@ -518,10 +481,50 @@ Evas_Object *gl_content_full_get(
   evas_object_show(en);
   elm_box_pack_end(bx, en);
 
-
    //return fr;
    return bx;
 }
+
+Evas_Object *gl_content_float_get(
+      void *data EINA_UNUSED,
+      Evas_Object *obj,
+      const char *part)
+{
+  //TODO this replace position with 'x', 'y'.... after, handle the value.:w
+
+  Evas_Object *bx, *bt, *ck;
+
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+
+  bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+
+  Evas_Object* label = elm_label_add(bx);
+
+  const char* t = data;
+
+  //elm_object_text_set(label, "position:");
+  elm_object_text_set(label, t);
+  evas_object_show(label);
+  elm_box_pack_end(bx, label);
+  evas_object_show(label);
+
+  Evas_Object* en = elm_entry_add(obj);
+  elm_entry_scrollable_set(en, EINA_TRUE);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  elm_object_text_set(en, "none");
+  //elm_entry_scrollbar_policy_set(en, 
+  //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
+  elm_entry_single_line_set(en, EINA_TRUE);
+  //elm_entry_select_all(en);
+  evas_object_show(en);
+  elm_box_pack_end(bx, en);
+
+  //return fr;
+  return bx;
+}
+
 
 static void
 gl9_exp_req(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
@@ -540,6 +543,8 @@ gl9_con_req(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_in
 static void
 gl9_exp(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
 {
+  return;
+
    Elm_Object_Item *glit = event_info;
    Evas_Object *gl = elm_object_item_widget_get(glit);
    int val = (int)(uintptr_t) elm_object_item_data_get(glit);
@@ -597,6 +602,13 @@ property_list_new(Evas_Object* win)
   class_entry->func.content_get = gl_content_full_get;
   class_entry->func.state_get = gl_state_get;
   class_entry->func.del = NULL;
+
+  class_float = elm_genlist_item_class_new();
+  class_float->item_style = "full";//"default";
+  class_float->func.text_get = NULL;//gl_text_get;
+  class_float->func.content_get = gl_content_float_get;
+  class_float->func.state_get = gl_state_get;
+  class_float->func.del = NULL;
 
   class_group = elm_genlist_item_class_new();
   class_group->item_style = "group_index";
@@ -683,7 +695,6 @@ property_list_new(Evas_Object* win)
   p->node = property_node_new();
 
   return p;
-
 }
 
 void
@@ -721,5 +732,33 @@ void property_list_node_add(
                            ELM_GENLIST_ITEM_TREE,
                            gl4_sel/* func */,
                            NULL/* func data */);
+
+  printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
+        node, s[num-1],child, child->item);
+}
+
+void
+property_list_float_add(
+      JkPropertyList* pl, 
+      const char* path,
+      float value)
+{
+  PropertyNode* node = _property_list_node_find(pl, path);
+  if (!node) {
+    printf("$s, could not find a root\n", __FUNCTION__);
+    return;
+  }
+
+  unsigned int num;
+  char** s = eina_str_split_full(path, "/", 0, &num);
+  
+  Elm_Object_Item* item = elm_genlist_item_append(pl->list, class_float,
+                           strdup(s[num-1]), 
+                           node->item, 
+                           ELM_GENLIST_ITEM_NONE,
+                           gl4_sel,
+                           NULL);
+
+  eina_hash_add(node->leafs, eina_stringshare_add(path), item);
 }
 
