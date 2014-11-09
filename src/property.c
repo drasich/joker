@@ -102,7 +102,7 @@ void property_data_set(
   }
 }
 
-PropertyNode* property_node_new()
+PropertyNode* property_set_node_new()
 {
   PropertyNode* node = calloc(1, sizeof *node);
   node->leafs = eina_hash_string_superfast_new(NULL);
@@ -127,7 +127,7 @@ property_set_new(Evas_Object* win)
   p->root = bx;
   p->box = bx;
 
-  p->node = property_node_new();
+  p->node = property_set_node_new();
 
   return p;
 }
@@ -266,6 +266,7 @@ _spinner_changed_cb(void* data, Evas_Object *obj, void* event)
   }
 }
 
+
 void
 property_set_float_add(
       JkPropertySet* ps, 
@@ -383,7 +384,7 @@ void property_set_node_add(
 
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
-  PropertyNode* child = property_node_new();
+  PropertyNode* child = property_set_node_new();
   eina_hash_add(node->nodes, s[num-1], child);
   
   Evas_Object* label = elm_label_add(ps->box);
@@ -485,8 +486,24 @@ Evas_Object *gl_content_full_get(
    return bx;
 }
 
+static void
+_spinner_changed_cb_list(void* data, Evas_Object *obj, void* event)
+{
+  PropertyValue* val = data;
+  JkPropertyList* pl = val->list;
+  const char* name = evas_object_name_get(obj);
+  double v =  elm_spinner_value_get(obj);
+  float f = v;
+  memcpy(val->data, &f, sizeof f);
+
+  if (pl->changed_float) {
+    pl->changed_float(pl->data, val->path, &v);
+  }
+}
+
+
 Evas_Object *gl_content_float_get(
-      void *data EINA_UNUSED,
+      void *data,
       Evas_Object *obj,
       const char *part)
 {
@@ -498,6 +515,7 @@ Evas_Object *gl_content_float_get(
 
   bx = elm_box_add(obj);
   elm_box_horizontal_set(bx, EINA_TRUE);
+  /*
 
   Evas_Object* label = elm_label_add(bx);
 
@@ -522,6 +540,57 @@ Evas_Object *gl_content_float_get(
   elm_box_pack_end(bx, en);
 
   //return fr;
+  return bx;
+  */
+
+  PropertyValue* val = data;
+
+  const char* name;
+
+  Evas_Object* label = elm_label_add(obj);
+   {
+    unsigned int num;
+    char** ss = eina_str_split_full(val->path, "/", 0, &num);
+    name = ss[num-1];
+
+  char s[256];
+  sprintf(s, "<b> %s </b> : ", name);
+
+  elm_object_text_set(label, s);
+  evas_object_show(label);
+  elm_box_pack_end(bx, label);
+  evas_object_show(label);
+   }
+
+  Evas_Object* sp = elm_spinner_add(obj);
+  evas_object_name_set(sp, name);
+
+  evas_object_size_hint_weight_set(sp, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(sp, EVAS_HINT_FILL, 0.5);
+  evas_object_size_hint_min_set(sp,1,1);
+  //elm_spinner_value_set(en, atof(value));
+  evas_object_show(sp);
+  //elm_box_pack_end(cp->box, en);
+  elm_box_pack_end(bx, sp);
+
+  elm_spinner_step_set(sp, 0.1);
+  elm_spinner_min_max_set(sp, -DBL_MAX, DBL_MAX);
+  //elm_object_style_set (en, "vertical");
+  elm_spinner_editable_set(sp, EINA_TRUE);
+
+  char ff[50];
+    //sprintf(ff, "%s : %s", name, "%.3f");
+    sprintf(ff, "%s", "%.3f");
+
+  elm_spinner_label_format_set(sp, ff);
+  const float* f = val->data;
+  elm_spinner_value_set(sp, *f);
+
+  //PropertyNode* node = _property_set_node_find(ps, name);
+  //eina_hash_add(node->leafs, eina_stringshare_add(name), sp);
+
+  evas_object_smart_callback_add(sp, "changed", _spinner_changed_cb_list, val);
+
   return bx;
 }
 
@@ -692,15 +761,43 @@ property_list_new(Evas_Object* win)
 
   p->list = gl;
 
-  p->node = property_node_new();
+  p->node = property_list_node_new();
 
   return p;
+}
+
+static void
+_property_value_free_cb(void *data)
+{
+  PropertyValue* val = data;
+  free(val->data);
+  free(val);
+}
+
+static void
+_property_node_clear(void* data)
+{
+  PropertyNode* node = data;
+  eina_hash_free(node->nodes);
+  eina_hash_free(node->leafs);
+  node->leafs = eina_hash_string_superfast_new(_property_value_free_cb);
+  node->nodes = eina_hash_string_superfast_new(_property_node_clear);
+}
+
+PropertyNode* property_list_node_new()
+{
+  PropertyNode* node = calloc(1, sizeof *node);
+  node->leafs = eina_hash_string_superfast_new(_property_value_free_cb);
+  node->nodes = eina_hash_string_superfast_new(_property_node_clear);
+
+  return node;
 }
 
 void
 property_list_clear(JkPropertyList* pl)
 {
   elm_genlist_clear(pl->list);
+  _property_node_clear(pl->node);
 }
 
 PropertyNode* _property_list_node_find(
@@ -723,7 +820,7 @@ void property_list_node_add(
 
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
-  PropertyNode* child = property_node_new();
+  PropertyNode* child = property_list_node_new();
   eina_hash_add(node->nodes, s[num-1], child);
   
   child->item = elm_genlist_item_append(pl->list, class_node,
@@ -748,17 +845,38 @@ property_list_float_add(
     printf("$s, could not find a root\n", __FUNCTION__);
     return;
   }
+  
+  PropertyValue *val = calloc(1, sizeof *val);
+  val->path = path;
+  val->list = pl;
+  val->data = calloc(1, sizeof value);
+  memcpy(val->data, &value, sizeof value);
+
+  printf("size of value %d \n", sizeof value);
 
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
   
-  Elm_Object_Item* item = elm_genlist_item_append(pl->list, class_float,
-                           strdup(s[num-1]), 
+  val->item = elm_genlist_item_append(pl->list, class_float,
+                           val,//strdup(s[num-1]), 
                            node->item, 
                            ELM_GENLIST_ITEM_NONE,
                            gl4_sel,
                            NULL);
 
-  eina_hash_add(node->leafs, eina_stringshare_add(path), item);
+  eina_hash_add(node->leafs, eina_stringshare_add(path), val);
 }
+
+void jk_property_list_register_cb(
+      JkPropertyList* pl,
+      void * data,
+      property_set_changed changed_float,
+      property_set_changed changed_string
+      )
+{
+  pl->data = data;
+  pl->changed_float = changed_float;
+  pl->changed_string = changed_string;
+}
+
 

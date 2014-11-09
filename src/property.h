@@ -70,7 +70,7 @@ struct _PropertySet
   property_set_changed changed_string;
 };
 
-PropertyNode* property_node_new();
+PropertyNode* property_set_node_new();
 
 JkPropertySet* property_set_new(Evas_Object* win);
 void jk_property_set_register_cb(
@@ -122,9 +122,26 @@ struct _PropertyList
   property_set_changed changed_string;
 };
 
+typedef struct _PropertyValue PropertyValue;
+
+struct _PropertyValue
+{
+  const char* path;
+  void* data;
+  Elm_Object_Item* item;
+  JkPropertyList* list;
+};
+
 
 JkPropertyList* property_list_new(Evas_Object* win);
 void property_list_clear(JkPropertyList* pl);
+
+void jk_property_list_register_cb(
+      JkPropertyList* ps,
+      void * data,
+      property_set_changed changed_float,
+      property_set_changed changed_string
+      );
 
 void property_list_node_add(
       JkPropertyList* pl, 
@@ -134,5 +151,7 @@ void property_list_float_add(
       JkPropertyList* ps, 
       const char* path,
       float value);
+
+PropertyNode* property_list_node_new();
 
 #endif
