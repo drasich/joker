@@ -106,6 +106,7 @@ void property_set_string_update(
 void property_set_float_update(JkPropertySet* set, const char* path, float value);
 
 /////////////////
+typedef void (*property_tree_object_expand)(void* data, void* object, Elm_Object_Item* parent);
 
 typedef struct _PropertyList JkPropertyList;
 
@@ -114,12 +115,13 @@ struct _PropertyList
   Evas_Object* root;
   Evas_Object* list;
 
-  const void* data;
+  void* data;
 
   PropertyNode* node;
 
   property_set_changed changed_float;
   property_set_changed changed_string;
+  property_tree_object_expand expand;
 };
 
 typedef struct _PropertyValue PropertyValue;
@@ -140,7 +142,8 @@ void jk_property_list_register_cb(
       JkPropertyList* ps,
       void * data,
       property_set_changed changed_float,
-      property_set_changed changed_string
+      property_set_changed changed_string,
+      property_tree_object_expand expand
       );
 
 void property_list_node_add(

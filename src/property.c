@@ -583,27 +583,39 @@ gl9_con_req(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_in
 static void
 gl9_exp(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
 {
-  return;
+   Elm_Object_Item *glit = event_info;
+   Evas_Object *gl = elm_object_item_widget_get(glit);
+
+   //could be propertyvalue is not node
+   char* name = elm_object_item_data_get(glit);
+   JkPropertyList* pl = data;
+
+   if (pl->expand) {
+     pl->expand(pl->data, name, glit);
+   }
+
+   /*
 
    Elm_Object_Item *glit = event_info;
    Evas_Object *gl = elm_object_item_widget_get(glit);
    int val = (int)(uintptr_t) elm_object_item_data_get(glit);
    val *= 10;
    elm_genlist_item_append(gl, class_entry,
-                           (void *)(uintptr_t) (val + 1)/* item data */,
-                           glit/* parent */,
-                           ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
-                           NULL/* func data */);
+                           (void *)(uintptr_t) (val + 1),
+                           glit,
+                           ELM_GENLIST_ITEM_NONE, gl4_sel,
+                           NULL);
    elm_genlist_item_append(gl, class_entry,
-                           (void *)(uintptr_t) (val + 2)/* item data */,
-                           glit/* parent */,
-                           ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
-                           NULL/* func data */);
+                           (void *)(uintptr_t) (val + 2),
+                           glit,
+                           ELM_GENLIST_ITEM_NONE, gl4_sel,
+                           NULL);
    elm_genlist_item_append(gl, class_node,
-                           (void *)(uintptr_t) (val + 3)/* item data */,
-                           glit/* parent */,
-                           ELM_GENLIST_ITEM_TREE, gl4_sel/* func */,
-                           NULL/* func data */);
+                           (void *)(uintptr_t) (val + 3),
+                           glit,
+                           ELM_GENLIST_ITEM_TREE, gl4_sel,
+                           NULL);
+                           */
 }
 
 static void
@@ -727,8 +739,8 @@ property_list_new(Evas_Object* win)
 
   evas_object_smart_callback_add(gl, "expand,request", gl9_exp_req, NULL);
   evas_object_smart_callback_add(gl, "contract,request", gl9_con_req, NULL);
-  evas_object_smart_callback_add(gl, "expanded", gl9_exp, NULL);
-  evas_object_smart_callback_add(gl, "contracted", gl9_con, NULL);
+  evas_object_smart_callback_add(gl, "expanded", gl9_exp, p);
+  evas_object_smart_callback_add(gl, "contracted", gl9_con, p);
 
   p->list = gl;
 
@@ -842,12 +854,14 @@ void jk_property_list_register_cb(
       JkPropertyList* pl,
       void * data,
       property_set_changed changed_float,
-      property_set_changed changed_string
+      property_set_changed changed_string,
+      property_tree_object_expand expand
       )
 {
   pl->data = data;
   pl->changed_float = changed_float;
   pl->changed_string = changed_string;
+  pl->expand = expand;
 }
 
 
