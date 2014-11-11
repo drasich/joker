@@ -417,12 +417,7 @@ static char *
 gl_text_get_node(void *data, Evas_Object *obj EINA_UNUSED, const char *part EINA_UNUSED)
 {
   char* t = data;
-  printf("+++++++++++++++++++the data text is %s \n", t);
-   char buf[256];
-   snprintf(buf, sizeof(buf), "node '%s'", (const char*)data);
-   return strdup(buf);
-   //return strdup("node");
-   //return strdup(*data);
+  return strdup(t);
 }
 
 
@@ -530,7 +525,6 @@ Evas_Object *gl_content_float_get(
   elm_object_text_set(label, s);
   evas_object_show(label);
   elm_box_pack_end(bx, label);
-  evas_object_show(label);
    }
 
   Evas_Object* sp = elm_spinner_add(obj);
