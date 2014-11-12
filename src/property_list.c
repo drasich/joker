@@ -1,22 +1,15 @@
 #include "property.h"
 
 static char *
-gl_text_get(void *data, Evas_Object *obj EINA_UNUSED, const char *part EINA_UNUSED)
-{
-   char buf[256];
-   snprintf(buf, sizeof(buf), "Item # %i", (int)(uintptr_t)data);
-   return strdup(buf);
-}
-
-static char *
-gl_text_get_node(void *data, Evas_Object *obj EINA_UNUSED, const char *part EINA_UNUSED)
+gl_text_get_node(
+      void *data,
+      Evas_Object *obj EINA_UNUSED,
+      const char *part EINA_UNUSED)
 {
   char* path = data;
-  //TODO chris
   unsigned int num;
   char** ss = eina_str_split_full(path, "/", 0, &num);
   return strdup(ss[num-1]);
-  //return strdup(t);
 }
 
 Evas_Object *gl_content_full_get(
@@ -383,22 +376,21 @@ property_list_new(Evas_Object* win)
   //Elm_Genlist_Item_Class *class_entry, *class_group, *class_node;
   class_entry = elm_genlist_item_class_new();
   class_entry->item_style = "full";//"default";
-  class_entry->func.text_get = gl_text_get;
-  //class_entry->func.content_get = gl_content_get;
+  class_entry->func.text_get = NULL;
   class_entry->func.content_get = gl_content_full_get;
   class_entry->func.state_get = gl_state_get;
   class_entry->func.del = NULL;
 
   class_float = elm_genlist_item_class_new();
   class_float->item_style = "full";//"default";
-  class_float->func.text_get = NULL;//gl_text_get;
+  class_float->func.text_get = NULL;
   class_float->func.content_get = gl_content_float_get;
   class_float->func.state_get = gl_state_get;
   class_float->func.del = NULL;
 
   class_group = elm_genlist_item_class_new();
   class_group->item_style = "group_index";
-  class_group->func.text_get = gl_text_get_node;// gl8_text_get;
+  class_group->func.text_get = gl_text_get_node;
   class_group->func.content_get = NULL;
   class_group->func.state_get = NULL;
   class_group->func.del = NULL;
