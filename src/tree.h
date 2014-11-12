@@ -67,6 +67,7 @@ void tree_item_select(Elm_Object_Item* item);
 
 void tree_deselect_all(JkTree *t);
 void tree_item_expand(Elm_Object_Item* item);
+void tree_update(JkTree* t);
 
 #endif
 
