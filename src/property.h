@@ -155,6 +155,10 @@ void property_list_float_add(
       const char* path,
       float value);
 
+void property_list_group_add(
+      JkPropertyList* ps, 
+      const char* path);
+
 PropertyNode* property_list_node_new();
 
 #endif
