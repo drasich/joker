@@ -35,25 +35,25 @@ gl_content_string_get(
       Evas_Object *obj,
       const char *part)
 {
-   Evas_Object *bx, *bt, *ck;
+  Evas_Object *bx, *bt, *ck;
 
-   if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
 
-   bx = elm_box_add(obj);
-   elm_box_horizontal_set(bx, EINA_TRUE);
+  bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
 
-   Evas_Object* label = elm_label_add(bx);
+  Evas_Object* label = elm_label_add(bx);
 
-   PropertyValue* val = data;
+  PropertyValue* val = data;
 
-    char s[256];
-    //sprintf(s, "<b> %s </b> : ", val->path);
-    sprintf(s, "%s : ", val->path);
+  char s[256];
+  //sprintf(s, "<b> %s </b> : ", val->path);
+  sprintf(s, "%s : ", val->path);
 
-   elm_object_text_set(label, s);
-   evas_object_show(label);
-   elm_box_pack_end(bx, label);
-   evas_object_show(label);
+  elm_object_text_set(label, s);
+  evas_object_show(label);
+  elm_box_pack_end(bx, label);
+  evas_object_show(label);
 
   Evas_Object* en = elm_entry_add(obj);
   elm_entry_scrollable_set(en, EINA_TRUE);
@@ -70,7 +70,6 @@ gl_content_string_get(
 
   evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb_list, val);
 
-   //return fr;
    return bx;
 }
 
@@ -80,7 +79,7 @@ gl_state_get(
       Evas_Object *obj EINA_UNUSED,
       const char *part EINA_UNUSED)
 {
-   return EINA_FALSE;
+  return EINA_FALSE;
 }
 
 static PropertyNode* 
@@ -462,63 +461,6 @@ property_list_new(Evas_Object* win)
   class_node->func.content_get = NULL;
   class_node->func.state_get = NULL;
   class_node->func.del = NULL;
-
-  /*
-  Elm_Object_Item* git;
-
-   git = elm_genlist_item_append(gl, class_group,
-                                 (void *)0,
-                                 NULL,
-                                 ELM_GENLIST_ITEM_GROUP,
-                                 gl4_sel,
-                                 NULL);
-   elm_genlist_item_select_mode_set(git, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY);
-
-   elm_genlist_item_append(gl, class_node,
-                           (void *)1,
-                           git, 
-                           ELM_GENLIST_ITEM_TREE,
-                           gl4_sel,
-                           NULL);
-   elm_genlist_item_append(gl, class_entry,
-                           (void *)2,
-                           git,
-                           ELM_GENLIST_ITEM_NONE,
-                           gl4_sel,
-                           NULL);
-   elm_genlist_item_append(gl, class_node,
-                           (void *)3,
-                           git,
-                           ELM_GENLIST_ITEM_TREE,
-                           gl4_sel,
-                           NULL);
-   git = elm_genlist_item_append(gl, class_group,
-                                 (void *)4,
-                                 NULL,
-                                 ELM_GENLIST_ITEM_GROUP, gl4_sel,
-                                 NULL);
-   elm_genlist_item_select_mode_set(git, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY);
-
-   elm_genlist_item_append(gl, class_node,
-                           (void *)5,
-                           git,
-                           ELM_GENLIST_ITEM_TREE,
-                           gl4_sel,
-                           NULL);
-   elm_genlist_item_append(gl, class_entry,
-                           (void *)6,
-                           git,
-                           ELM_GENLIST_ITEM_NONE,
-                           gl4_sel,
-                           NULL);
-   elm_genlist_item_append(gl, class_node,
-                           (void *)7,
-                           git,
-                           ELM_GENLIST_ITEM_TREE,
-                           gl4_sel,
-                           NULL);
-   */
-
 
   //elm_genlist_item_class_free(class_entry);
   //elm_genlist_item_class_free(class_group);
