@@ -24,9 +24,47 @@ _entry_changed_cb_list(
   const char* value = elm_object_text_get(obj);
 
   if (pl->changed_string) {
-    pl->changed_string(pl->data, val->path, value);
+    //pl->changed_string(pl->data, val->path, value);
+    pl->register_change_string(pl->data, val->path, NULL, value, 0);
   }
 }
+
+static void
+_entry_focused_cb(
+      void* data,
+      Evas_Object *obj,
+      void* event)
+{
+  const char* value = elm_object_text_get(obj);
+  evas_object_data_set(obj, "saved_text", eina_stringshare_add(value));
+  printf("setting saved text to %s \n", value);
+}
+
+static void
+_entry_activated_cb(
+      void* data,
+      Evas_Object *obj,
+      void* event)
+{
+  PropertyValue* val = data;
+  JkPropertyList* pl = val->list;
+  //const char* name = evas_object_name_get(obj);
+  const char* value = elm_object_text_get(obj);
+  const char* old = evas_object_data_get(obj, "saved_text");
+
+  if (old == NULL) {
+    printf("problem with the old value.........\n");
+    return;
+  }
+
+  evas_object_data_set(obj, "saved_text", eina_stringshare_add(value));
+
+  if (pl->changed_string) {
+    pl->register_change_string(pl->data, val->path, old, value, 1);
+  }
+}
+
+
 
 
 Evas_Object*
@@ -69,6 +107,14 @@ gl_content_string_get(
   elm_box_pack_end(bx, en);
 
   evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb_list, val);
+  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, val);
+  evas_object_smart_callback_add(en, "activated", _entry_activated_cb, val);
+  //TODO
+  /*
+  evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
+  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
+  evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, cp);
+  */
 
    return bx;
 }
@@ -401,12 +447,14 @@ void jk_property_list_register_cb(
       void * data,
       property_set_changed changed_float,
       property_set_changed changed_string,
+      property_register_change register_change_string,
       property_tree_object_expand expand
       )
 {
   pl->data = data;
   pl->changed_float = changed_float;
   pl->changed_string = changed_string;
+  pl->register_change_string = register_change_string;
   pl->expand = expand;
 }
 

@@ -9,6 +9,7 @@ typedef void (*property_changed)(const void* object, const void* data);
 typedef const char* (*property_get)(const void* object);
 
 typedef void (*property_set_changed)(const void* object, const char* path, const void* data);
+typedef void (*property_register_change)(const void* object, const char* path, const void* old, const void* new, int action_type);
 
 struct _Property
 {
@@ -121,6 +122,7 @@ struct _PropertyList
 
   property_set_changed changed_float;
   property_set_changed changed_string;
+  property_register_change register_change_string;
   property_tree_object_expand expand;
 };
 
@@ -143,6 +145,7 @@ void jk_property_list_register_cb(
       void * data,
       property_set_changed changed_float,
       property_set_changed changed_string,
+      property_register_change register_change_string,
       property_tree_object_expand expand
       );
 
