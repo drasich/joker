@@ -450,7 +450,11 @@ void jk_property_list_register_cb(
       property_set_changed changed_float,
       property_set_changed changed_string,
       property_register_change register_change_string,
-      property_tree_object_expand expand
+      property_tree_object_expand expand,
+
+      pp_register_change reg_change,
+      pp_data_cast string_cast,
+      pp_data_cast float_cast
       )
 {
   pl->data = data;
