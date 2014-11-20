@@ -65,8 +65,130 @@ _entry_activated_cb(
   }
 }
 
+static void
+_spinner_drag_start_cb(void *data, Evas_Object *obj, void *event)
+{
+  printf("spinner drag start\n");
+  double *v = calloc(1, sizeof *v);
+  *v = elm_spinner_value_get(obj);
+  //TODO alloc the double
+  evas_object_data_set(obj, "saved", v);
+
+  /*
+  ComponentProperties* cp = data;
+  double v =  elm_spinner_value_get(obj);
+  eina_value_setup(&cp->saved, EINA_VALUE_TYPE_DOUBLE);
+  eina_value_set(&cp->saved, v);
+
+  //TODO I have to know the original quaternion
+  Property* p = evas_object_data_get(obj, "property");
+  void* thedata = evas_object_data_get(obj, "data");
+
+  Quat q;
+  int offset = property_offset_get(p);
+  memcpy(&q, thedata + offset, sizeof q);
+  cp->quat_saved = q;
+  */
+}
 
 
+static void
+_spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
+{
+  double *v = evas_object_data_get(obj,"saved");
+  printf("spinner drag stop %f \n", *v);
+  free(v);
+  /*
+  ComponentProperties* cp = data;
+  double v =  elm_spinner_value_get(obj);
+  Property* p = evas_object_data_get(obj, "property");
+  void* thedata = evas_object_data_get(obj, "data");
+  if (p->type == EET_T_DOUBLE){
+    double *old = malloc(sizeof *old);
+    eina_value_get(&cp->saved, old);
+    double *new = malloc(sizeof *new);
+    *new = v;
+    control_property_change(cp->control, cp->component, thedata, p, old, new);
+  }
+  else if (p->type == EET_T_FLOAT){
+    float *old = malloc(sizeof *old);
+    eina_value_get(&cp->saved, old);
+    float *new = malloc(sizeof *new);
+    *new = v;
+    control_property_change(cp->control, cp->component, thedata, p, old, new);
+  }
+  else if (p->type == PROPERTY_QUAT) {
+    Quat *old = malloc(sizeof *old);
+    //TODO use eina_value
+    //eina_value_get(&cp->saved, old);
+    *old = cp->quat_saved;
+    Quat *new = malloc(sizeof *new);
+    memcpy(new, thedata+p->offset, sizeof*new);
+    control_property_change(cp->control, cp->component, thedata, p, old, new);
+  }
+  else if (p->type == PROPERTY_UNIFORM) {
+    //TODO uniform undo/redo
+    int offset = property_offset_get(p);
+    UniformValue* uv = thedata + offset;
+    if (uv->type == UNIFORM_FLOAT) {
+      double d;
+      eina_value_get(&cp->saved, &d);
+      float *old = malloc(sizeof *old);
+      *old = d;
+      float *new = malloc(sizeof *new);
+      *new = v;
+      control_property_change(cp->control, cp->component, &uv->value.f, p, old, new);
+    }
+    else if (uv->type == UNIFORM_VEC3) {
+      Vec3 *new = malloc(sizeof *new);
+      *new = uv->value.vec3;
+      Vec3 *old = malloc(sizeof *old);
+      *old = uv->value.vec3;
+      double d;
+      eina_value_get(&cp->saved, &d);
+      const char* pname = evas_object_data_get(obj, "property_name");
+      if (!strcmp(pname, "x"))
+      old->x = d;
+      else if (!strcmp(pname, "y"))
+      old->y = d;
+      else if (!strcmp(pname, "z"))
+      old->z = d;
+
+      if (vec3_equal(*old, *new)) {
+        free(old);
+        free(new);
+      }
+      else
+      control_property_change(cp->control, cp->component, &uv->value.vec3, p, old, new);
+    }
+    else if (uv->type == UNIFORM_VEC4) {
+      Vec4 *new = malloc(sizeof *new);
+      *new = uv->value.vec4;
+      Vec4 *old = malloc(sizeof *old);
+      *old = uv->value.vec4;
+      double d;
+      eina_value_get(&cp->saved, &d);
+      const char* pname = evas_object_data_get(obj, "property_name");
+      if (!strcmp(pname, "x"))
+      old->x = d;
+      else if (!strcmp(pname, "y"))
+      old->y = d;
+      else if (!strcmp(pname, "z"))
+      old->z = d;
+      else if (!strcmp(pname, "w"))
+      old->w = d;
+
+      if (vec4_equal(*old, *new)) {
+        free(old);
+        free(new);
+      }
+      else
+      control_property_change(cp->control, cp->component, &uv->value.vec4, p, old, new);
+    }
+  }
+*/
+
+}
 
 Evas_Object*
 gl_content_string_get(
@@ -242,6 +364,10 @@ gl_content_float_get(
   //eina_hash_add(node->leafs, eina_stringshare_add(name), sp);
 
   evas_object_smart_callback_add(sp, "changed", _spinner_changed_cb_list, val);
+
+  evas_object_smart_callback_add(sp, "spinner,drag,start", _spinner_drag_start_cb, val);
+  evas_object_smart_callback_add(sp, "spinner,drag,stop", _spinner_drag_stop_cb, val);
+
 
   return bx;
 }
@@ -450,11 +576,7 @@ void jk_property_list_register_cb(
       property_set_changed changed_float,
       property_set_changed changed_string,
       property_register_change register_change_string,
-      property_tree_object_expand expand,
-
-      pp_register_change reg_change,
-      pp_data_cast string_cast,
-      pp_data_cast float_cast
+      property_tree_object_expand expand
       )
 {
   pl->data = data;
