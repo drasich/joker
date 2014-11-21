@@ -123,6 +123,7 @@ struct _PropertyList
   property_set_changed changed_float;
   property_set_changed changed_string;
   property_register_change register_change_string;
+  property_register_change register_change_float;
   property_tree_object_expand expand;
 };
 
@@ -146,6 +147,7 @@ void jk_property_list_register_cb(
       property_set_changed changed_float,
       property_set_changed changed_string,
       property_register_change register_change_string,
+      property_register_change register_change_float,
       property_tree_object_expand expand
       );
 

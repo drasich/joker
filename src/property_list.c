@@ -95,9 +95,19 @@ _spinner_drag_start_cb(void *data, Evas_Object *obj, void *event)
 static void
 _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
 {
-  double *v = evas_object_data_get(obj,"saved");
-  printf("spinner drag stop %f \n", *v);
-  free(v);
+  double *saved = evas_object_data_get(obj,"saved");
+  printf("spinner drag stop %f \n", *saved);
+
+  PropertyValue* val = data;
+  JkPropertyList* pl = val->list;
+
+  double d = elm_spinner_value_get(obj);
+
+  if (pl->register_change_float) {
+    pl->register_change_float(pl->data, val->path, saved, &d, 1);
+  }
+
+  free(saved);
   /*
   ComponentProperties* cp = data;
   double v =  elm_spinner_value_get(obj);
@@ -576,6 +586,7 @@ void jk_property_list_register_cb(
       property_set_changed changed_float,
       property_set_changed changed_string,
       property_register_change register_change_string,
+      property_register_change register_change_float,
       property_tree_object_expand expand
       )
 {
@@ -583,6 +594,7 @@ void jk_property_list_register_cb(
   pl->changed_float = changed_float;
   pl->changed_string = changed_string;
   pl->register_change_string = register_change_string;
+  pl->register_change_float = register_change_float;
   pl->expand = expand;
 }
 
