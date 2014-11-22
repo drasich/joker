@@ -69,7 +69,7 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 static void
 _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
-  //elm_object_focus_set(o, EINA_TRUE);
+  elm_object_focus_set(o, EINA_TRUE);
   Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
 
   Evas_Coord x, y, w, h;
@@ -103,7 +103,7 @@ static void
 _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
   Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*) event_info;
-  //elm_object_focus_set(o, EINA_TRUE);
+  elm_object_focus_set(o, EINA_TRUE);
 
   Window* w = data;
   if (w->mouse_down) {
@@ -232,8 +232,8 @@ void jk_init()
   srand (time(NULL));
 
   elm_config_preferred_engine_set("opengl_x11");
-  //elm_config_focus_highlight_animate_set(EINA_TRUE);
-  //elm_config_focus_highlight_enabled_set(EINA_TRUE);
+  elm_config_focus_highlight_animate_set(EINA_TRUE);
+  elm_config_focus_highlight_enabled_set(EINA_TRUE);
   //create_simple_window();
 }
 
@@ -352,7 +352,7 @@ window_new()
   */
 
   //evas_object_resize(win, 456, 456);
-  evas_object_resize(win, 464, 64);
+  evas_object_resize(win, 464, 164);
   evas_object_show(win);
 
   return w;

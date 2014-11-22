@@ -378,7 +378,6 @@ gl_content_float_get(
   evas_object_smart_callback_add(sp, "spinner,drag,start", _spinner_drag_start_cb, val);
   evas_object_smart_callback_add(sp, "spinner,drag,stop", _spinner_drag_stop_cb, val);
 
-
   return bx;
 }
 
