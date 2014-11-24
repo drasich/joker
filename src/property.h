@@ -155,15 +155,28 @@ void property_list_node_add(
       JkPropertyList* pl, 
       const char* path);
 
-void property_list_float_add(
+PropertyValue* property_list_float_add(
       JkPropertyList* ps, 
       const char* path,
       float value);
+
+PropertyValue* property_list_string_add(
+      JkPropertyList* ps, 
+      const char* path,
+      const char* value);
 
 void property_list_group_add(
       JkPropertyList* ps, 
       const char* path);
 
 PropertyNode* property_list_node_new();
+
+void property_list_string_update(
+      PropertyValue* val,
+      const char* value);
+
+void property_list_float_update(
+      PropertyValue* val,
+      float value);
 
 #endif

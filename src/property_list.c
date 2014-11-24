@@ -514,8 +514,7 @@ void property_list_group_add(
         node, s[num-1],child, child->item);
 }
 
-
-void
+PropertyValue*
 property_list_float_add(
       JkPropertyList* pl, 
       const char* path,
@@ -524,7 +523,7 @@ property_list_float_add(
   PropertyNode* node = _property_list_node_find(pl, path);
   if (!node) {
     printf("$s, could not find a root\n", __FUNCTION__);
-    return;
+    return NULL;
   }
   
   PropertyValue *val = calloc(1, sizeof *val);
@@ -546,9 +545,20 @@ property_list_float_add(
                            NULL);
 
   eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+
+  return val;
 }
 
-void
+void property_list_float_update(
+      PropertyValue* val,
+      float value)
+{
+  printf("property list float update %f \n", value);
+  memcpy(val->data, &value, sizeof value);
+  elm_genlist_item_update(val->item);
+}
+
+PropertyValue*
 property_list_string_add(
       JkPropertyList* pl, 
       const char* path,
@@ -557,7 +567,7 @@ property_list_string_add(
   PropertyNode* node = _property_list_node_find(pl, path);
   if (!node) {
     printf("$s, could not find a root\n", __FUNCTION__);
-    return;
+    return NULL;
   }
   
   unsigned int num;
@@ -576,8 +586,19 @@ property_list_string_add(
                            NULL);
 
   eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+
+  return val;
 }
 
+void property_list_string_update(
+      PropertyValue* val,
+      const char* value)
+{
+  if (val->data) free(val->data);
+
+  val->data = strdup(value);
+  elm_genlist_item_update(val->item);
+}
 
 void jk_property_list_register_cb(
       JkPropertyList* pl,
