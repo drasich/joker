@@ -306,3 +306,9 @@ void tree_update(JkTree* t)
   elm_genlist_realized_items_update(t->gl);
 }
 
+void tree_item_update(Elm_Object_Item* item)
+{
+  elm_genlist_item_update(item);
+}
+
+
