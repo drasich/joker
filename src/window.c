@@ -81,9 +81,13 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   int prevy = ev->prev.canvas.y - y;
   //View* v = evas_object_data_get(o, "view");
   //
+  int mod_flag = 0;
+  if (evas_key_modifier_is_set(ev->modifiers, "Shift")) {
+    mod_flag |= 1 << 0;
+  }
   Window* win = data;
   if (win->mouse_move) {
-    win->mouse_move(win->data, "", ev->buttons, curx, cury, prevx, prevy, ev->timestamp);
+    win->mouse_move(win->data, mod_flag, ev->buttons, curx, cury, prevx, prevy, ev->timestamp);
   }
 
   /*
@@ -352,7 +356,7 @@ window_new()
   */
 
   //evas_object_resize(win, 456, 456);
-  evas_object_resize(win, 464, 34);
+  evas_object_resize(win, 464, 334);
   evas_object_show(win);
 
   return w;

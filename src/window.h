@@ -24,7 +24,7 @@ typedef void (*window_mouse_up)(
       );
 typedef void (*window_mouse_move)(
       const void* data,
-      const char* mod,
+      int mod_flag, //const char* mod,
       int button,
       int cur_x,
       int cur_y,
