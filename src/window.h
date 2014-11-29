@@ -8,7 +8,7 @@ typedef struct _Window Window;
 
 typedef void (*window_mouse_down)(
       const void* data,
-      const char* mod,
+      int mod_flag,
       int buttons,
       int x,
       int y,
@@ -16,7 +16,7 @@ typedef void (*window_mouse_down)(
       );
 typedef void (*window_mouse_up)(
       const void* data,
-      const char* mod,
+      int mod_flag,
       int buttons,
       int x,
       int y,
@@ -24,7 +24,7 @@ typedef void (*window_mouse_up)(
       );
 typedef void (*window_mouse_move)(
       const void* data,
-      int mod_flag, //const char* mod,
+      int mod_flag,
       int button,
       int cur_x,
       int cur_y,
@@ -34,7 +34,7 @@ typedef void (*window_mouse_move)(
       );
 typedef void (*window_mouse_wheel)(
       const void* data,
-      const char* mod,
+      int mod_flag,
       int direction,
       int z,
       int x,
@@ -43,7 +43,7 @@ typedef void (*window_mouse_wheel)(
       );
 typedef void (*window_key_down)(
       const void* data,
-      const char* mod,
+      int mod_flag,
       char* keyname,
       const char* key,
       int timestamp

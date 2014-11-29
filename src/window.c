@@ -49,6 +49,16 @@ simple_window_del(void *data, Evas_Object *obj, void *event_info)
   elm_exit();
 }
 
+static int _modifier_get(const Evas_Modifier* m)
+{
+  int mod_flag = 0;
+  if (evas_key_modifier_is_set(m, "Shift")) {
+    mod_flag |= 1 << 0;
+  }
+  return mod_flag;
+}
+
+
 static void
 _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
 {
@@ -58,14 +68,18 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 
   Window* w = data;
   if (w->key_down) {
-    w->key_down(w->data, "", ev->keyname, ev->key, ev->timestamp);
+    w->key_down(
+          w->data, 
+          _modifier_get(ev->modifiers),
+          ev->keyname,
+          ev->key,
+          ev->timestamp);
   }
 
   //View* v = evas_object_data_get(o, "view");
   //Control* cl = v->control;
   //control_key_down(cl, ev);
 }
-
 static void
 _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
@@ -81,13 +95,19 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   int prevy = ev->prev.canvas.y - y;
   //View* v = evas_object_data_get(o, "view");
   //
-  int mod_flag = 0;
-  if (evas_key_modifier_is_set(ev->modifiers, "Shift")) {
-    mod_flag |= 1 << 0;
-  }
+  int mod_flag = _modifier_get(ev->modifiers);
+
   Window* win = data;
   if (win->mouse_move) {
-    win->mouse_move(win->data, mod_flag, ev->buttons, curx, cury, prevx, prevy, ev->timestamp);
+    win->mouse_move(
+          win->data,
+          mod_flag,
+          ev->buttons,
+          curx,
+          cury,
+          prevx,
+          prevy,
+          ev->timestamp);
   }
 
   /*
@@ -111,7 +131,13 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   Window* w = data;
   if (w->mouse_down) {
-    w->mouse_down(w->data, "", ev->button, ev->canvas.x, ev->canvas.y, ev->timestamp);
+    w->mouse_down(
+          w->data, 
+          _modifier_get(ev->modifiers),
+          ev->button,
+          ev->canvas.x,
+          ev->canvas.y,
+          ev->timestamp);
   }
 
   /*
@@ -147,7 +173,13 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
 
   Window* w = data;
   if (w->mouse_up) {
-    w->mouse_up(w->data, "", ev->button, ev->canvas.x, ev->canvas.y, ev->timestamp);
+    w->mouse_up(
+          w->data,
+          _modifier_get(ev->modifiers),
+          ev->button,
+          ev->canvas.x,
+          ev->canvas.y,
+          ev->timestamp);
   }
 
   //evas_object_hide(indicator[0]);
@@ -176,7 +208,7 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   if (w->mouse_wheel) {
     w->mouse_wheel(
           w->data,
-          "",
+          _modifier_get(ev->modifiers),
           ev->direction,
           ev->z,
           ev->canvas.x,
