@@ -55,6 +55,9 @@ static int _modifier_get(const Evas_Modifier* m)
   if (evas_key_modifier_is_set(m, "Shift")) {
     mod_flag |= 1 << 0;
   }
+  if (evas_key_modifier_is_set(m, "Control")) {
+    mod_flag |= 1 << 1;
+  }
   return mod_flag;
 }
 
