@@ -1,4 +1,20 @@
 #include "property.h"
+#include <string.h>
+
+static const char*
+get_parent_node_string(const char* path)
+{
+  char *c = strrchr(path,'/');
+  size_t size = c - path + 1;
+  if (size < 1) {
+    return "error_string";
+  }
+
+  char* ret = calloc(1, size);
+  strncpy(ret, path, size -1);
+  ret[size -1] = '\0'; 
+  return ret;
+}
 
 static char *
 gl_text_get_node(
@@ -289,25 +305,17 @@ _property_node_find(
     */
     PropertyNode* next = eina_hash_find(root->nodes, s[i]);
     if (next) {
+      printf("find+++ : %s\n", s[i]);
       root = next;
       result = next;
       i++;
     }
     else {
-      if (!s[i +1]) {
-        // i is the last string
-        //might be a leaf or unfound node
-        //leaf => why trying to find a leaf?
-        //unfound node => print error
-        printf("leaf or unfound node : %s\n", s[i]);
-        break;
-      }
-      else {
-        //there still is something
-        printf("node find,,, could not find : %s\n", s[i]);
-        result = NULL;
-        break;
-      }
+      //there still is something
+      printf("node find,,, could not find : %s\n", s[i]);
+      eina_hash_foreach(root->nodes,_nodes_print, NULL);
+      result = NULL;
+      break;
     }
     /*
     result = eina_hash_find(root->nodes, s[i]);
@@ -507,6 +515,7 @@ PropertyNode* _property_list_node_find(
   unsigned int count;
   char** s = eina_str_split_full(path, "/", 0, &count);
 
+  /*
   if (strcmp(s[0], "object")) {
     printf("%s, it's not an object? this property is %s\n", __FUNCTION__, path);
   }
@@ -519,18 +528,29 @@ PropertyNode* _property_list_node_find(
       node = _property_node_find(pl->node, s);
     }
   }
+  */
+  node = _property_node_find(pl->node, s);
 
   free(s[0]);
   free(s);
   return node;
 }
 
+PropertyNode* _property_list_node_find_parent(
+      JkPropertyList* pl,
+      const char* path)
+{
+  const char* parent = get_parent_node_string(path);
+  printf("parent is : %s \n", parent);
+  return _property_list_node_find(pl, parent);
+}
 
 void property_list_node_add(
       JkPropertyList* pl, 
       const char* path)
 {
-  PropertyNode* node = _property_list_node_find(pl, path);
+  printf("want to add node : %s \n", path);
+  PropertyNode* node = _property_list_node_find_parent(pl, path);
   if (!node) {
     printf("%s, could not find a root for %s\n", __FUNCTION__, path);
     return;
@@ -571,10 +591,11 @@ void property_list_group_add(
       JkPropertyList* pl, 
       const char* path)
 {
+  printf("add group with path '%s' \n", path);
   PropertyNode* node = _property_list_node_find(pl, path);
   if (!node) {
     printf("%s, could not find a root\n", __FUNCTION__);
-    return;
+    node = pl->node;
   }
 
   unsigned int num;
@@ -601,7 +622,7 @@ property_list_float_add(
       const char* path,
       float value)
 {
-  PropertyNode* node = _property_list_node_find(pl, path);
+  PropertyNode* node = _property_list_node_find_parent(pl, path);
   if (!node) {
     printf("%s, could not find a root\n", __FUNCTION__);
     return NULL;
@@ -649,7 +670,7 @@ property_list_string_add(
       const char* path,
       const char* value)
 {
-  PropertyNode* node = _property_list_node_find(pl, path);
+  PropertyNode* node = _property_list_node_find_parent(pl, path);
   if (!node) {
     printf("%s, could not find a root\n", __FUNCTION__);
     return NULL;
