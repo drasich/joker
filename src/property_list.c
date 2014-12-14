@@ -262,36 +262,71 @@ gl_state_get(
   return EINA_FALSE;
 }
 
+static Eina_Bool _nodes_print(
+      const Eina_Hash *hash,
+      const void *key,
+      void *data,
+      void *fdata)
+{
+  printf("key : '%s'\n", key);
+}
+
+
 static PropertyNode* 
 _property_node_find(
       PropertyNode* node,
-      const char* path)
+      char** s)
 {
-  char** s = eina_str_split(path, "/", 0);
-
+  PropertyNode* result = NULL;
+  PropertyNode* root = node;
   int i = 0;
   while (s[i]) {
-
-    if (s[i+1]) {
-      PropertyNode* next = eina_hash_find(node->nodes, s[i]);
-      if (next) {
-        node = next;
-        i++;
+    /* PropertyNode* next = eina_hash_find(node->nodes, s[i]);
+    if (next) {
+      node = next;
+      i++;
+    }
+    */
+    PropertyNode* next = eina_hash_find(root->nodes, s[i]);
+    if (next) {
+      root = next;
+      result = next;
+      i++;
+    }
+    else {
+      if (!s[i +1]) {
+        // i is the last string
+        //might be a leaf or unfound node
+        //leaf => why trying to find a leaf?
+        //unfound node => print error
+        printf("leaf or unfound node : %s\n", s[i]);
+        break;
       }
       else {
-        //eina_hash_foreach(node->nodes,_nodes_print, NULL);
+        //there still is something
+        printf("node find,,, could not find : %s\n", s[i]);
+        result = NULL;
         break;
       }
     }
+    /*
+    result = eina_hash_find(root->nodes, s[i]);
+    if (result) {
+      printf("I found %s\n", s[i]);
+      root = result;
+      i++;
+    }
     else {
+      printf("yooooo could not find %s\n\n", s[i]);
+      eina_hash_foreach(root->nodes,_nodes_print, NULL);
+      printf("end of listing nodes \n");
       break;
     }
+    */
   }
 
-  free(s[0]);
-  free(s);
-
-  return node;
+  //return node;
+  return result;
 }
 
 static Elm_Genlist_Item_Class *class_entry, *class_group, *class_node,*class_float;
@@ -399,7 +434,7 @@ static void
 gl9_exp(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
 {
    Elm_Object_Item *glit = event_info;
-   Evas_Object *gl = elm_object_item_widget_get(glit);
+   //Evas_Object *gl = elm_object_item_widget_get(glit);
 
    //could be propertyvalue is not node
    char* name = elm_object_item_data_get(glit);
@@ -411,10 +446,18 @@ gl9_exp(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
 }
 
 static void
-gl9_con(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
+gl9_con(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
 {
    Elm_Object_Item *glit = event_info;
    elm_genlist_item_subitems_clear(glit);
+
+   char* name = elm_object_item_data_get(glit);
+   JkPropertyList* pl = data;
+   //TODO clear the nodes
+
+   if (pl->contract) {
+     pl->contract(pl->data, name, glit);
+   }
 }
 
 
@@ -430,6 +473,10 @@ static void
 _property_node_clear(void* data)
 {
   PropertyNode* node = data;
+  printf("node clear, %d, %d \n", 
+        eina_hash_population(node->nodes),
+        eina_hash_population(node->leafs)
+          );
   eina_hash_free(node->nodes);
   eina_hash_free(node->leafs);
   node->leafs = eina_hash_string_superfast_new(_property_value_free_cb);
@@ -456,7 +503,26 @@ PropertyNode* _property_list_node_find(
       JkPropertyList* pl,
       const char* path)
 {
-  return _property_node_find(pl->node, path);
+  PropertyNode* node = NULL;
+  unsigned int count;
+  char** s = eina_str_split_full(path, "/", 0, &count);
+
+  if (strcmp(s[0], "object")) {
+    printf("%s, it's not an object? this property is %s\n", __FUNCTION__, path);
+  }
+  else {
+    if (count == 1) {
+      node = pl->node;
+    }
+    else if (count > 1) {
+      //node = _property_node_find(pl->node, &s[1]);
+      node = _property_node_find(pl->node, s);
+    }
+  }
+
+  free(s[0]);
+  free(s);
+  return node;
 }
 
 
@@ -466,7 +532,7 @@ void property_list_node_add(
 {
   PropertyNode* node = _property_list_node_find(pl, path);
   if (!node) {
-    printf("$s, could not find a root\n", __FUNCTION__);
+    printf("%s, could not find a root for %s\n", __FUNCTION__, path);
     return;
   }
 
@@ -474,6 +540,8 @@ void property_list_node_add(
   char** s = eina_str_split_full(path, "/", 0, &num);
   PropertyNode* child = property_list_node_new();
   eina_hash_add(node->nodes, s[num-1], child);
+
+  printf("adding node : %s \n", s[num-1]);
   
   child->item = elm_genlist_item_append(pl->list, class_node,
                            path,//strdup(s[num-1]), 
@@ -486,13 +554,26 @@ void property_list_node_add(
         node, s[num-1],child, child->item);
 }
 
+void property_list_nodes_remove(
+      JkPropertyList* pl, 
+      const char* path)
+{
+  PropertyNode* node = _property_list_node_find(pl, path);
+  if (!node) {
+    printf("%s, could not find node with name '%s' \n", __FUNCTION__, path);
+    return;
+  }
+
+  _property_node_clear(node);
+}
+
 void property_list_group_add(
       JkPropertyList* pl, 
       const char* path)
 {
   PropertyNode* node = _property_list_node_find(pl, path);
   if (!node) {
-    printf("$s, could not find a root\n", __FUNCTION__);
+    printf("%s, could not find a root\n", __FUNCTION__);
     return;
   }
 
@@ -522,7 +603,7 @@ property_list_float_add(
 {
   PropertyNode* node = _property_list_node_find(pl, path);
   if (!node) {
-    printf("$s, could not find a root\n", __FUNCTION__);
+    printf("%s, could not find a root\n", __FUNCTION__);
     return NULL;
   }
   
@@ -536,6 +617,10 @@ property_list_float_add(
 
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
+
+  printf("pl list %p \n", pl->list);
+  printf("class float %p \n", class_float);
+  printf("node item %p \n", node->item);
   
   val->item = elm_genlist_item_append(pl->list, class_float,
                            val,//strdup(s[num-1]), 
@@ -553,7 +638,7 @@ void property_list_float_update(
       PropertyValue* val,
       float value)
 {
-  printf("property list float update %f \n", value);
+  printf("property list float update %f, item : %p \n", value, val->item);
   memcpy(val->data, &value, sizeof value);
   elm_genlist_item_update(val->item);
 }
@@ -566,7 +651,7 @@ property_list_string_add(
 {
   PropertyNode* node = _property_list_node_find(pl, path);
   if (!node) {
-    printf("$s, could not find a root\n", __FUNCTION__);
+    printf("%s, could not find a root\n", __FUNCTION__);
     return NULL;
   }
   
@@ -607,7 +692,8 @@ void jk_property_list_register_cb(
       property_set_changed changed_string,
       property_register_change register_change_string,
       property_register_change register_change_float,
-      property_tree_object_expand expand
+      property_tree_object_cb expand,
+      property_tree_object_cb contract
       )
 {
   pl->data = data;
@@ -616,9 +702,8 @@ void jk_property_list_register_cb(
   pl->register_change_string = register_change_string;
   pl->register_change_float = register_change_float;
   pl->expand = expand;
+  pl->contract = contract;
 }
-
-
 
 JkPropertyList*
 property_list_new(Evas_Object* win)
