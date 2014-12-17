@@ -738,3 +738,37 @@ property_list_new(Evas_Object* win)
   return p;
 }
 
+PropertyValue*
+property_list_enum_add(
+      JkPropertyList* pl, 
+      const char* path,
+      const char** possible_values,
+      const char* value)
+{
+  PropertyNode* node = _property_list_node_find_parent(pl, path);
+  if (!node) {
+    printf("%s, could not find a root\n", __FUNCTION__);
+    return NULL;
+  }
+  
+  unsigned int num;
+  char** s = eina_str_split_full(path, "/", 0, &num);
+
+  PropertyValue *val = calloc(1, sizeof *val);
+  val->path = path;//s[num-1];
+  val->list = pl;
+  val->data = strdup(value);
+
+  val->item = elm_genlist_item_append(pl->list, class_entry,
+                           val,
+                           node->item, 
+                           ELM_GENLIST_ITEM_NONE,
+                           NULL,
+                           NULL);
+
+  eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+
+  return val;
+}
+
+
