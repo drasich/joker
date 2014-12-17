@@ -233,14 +233,83 @@ gl_content_string_get(
 
   PropertyValue* val = data;
 
-  char s[256];
-  //sprintf(s, "<b> %s </b> : ", val->path);
-  sprintf(s, "%s : ", val->path);
+   {
+    unsigned int num;
+    char** ss = eina_str_split_full(val->path, "/", 0, &num);
+    const char* name = ss[num-1];
 
-  elm_object_text_set(label, s);
-  evas_object_show(label);
-  elm_box_pack_end(bx, label);
-  evas_object_show(label);
+    char s[256];
+    //sprintf(s, "<b> %s </b> : ", name);
+    sprintf(s, "%s : ", name);
+
+    elm_object_text_set(label, s);
+    evas_object_show(label);
+    elm_box_pack_end(bx, label);
+
+    free(ss[0]);
+    free(ss);
+   }
+
+  Evas_Object* en = elm_entry_add(obj);
+  elm_entry_scrollable_set(en, EINA_TRUE);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  const char* value = val->data;
+  elm_object_text_set(en, value);
+  //elm_entry_scrollbar_policy_set(en, 
+  //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
+  elm_entry_single_line_set(en, EINA_TRUE);
+  //elm_entry_select_all(en);
+  evas_object_show(en);
+  elm_box_pack_end(bx, en);
+
+  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb_list, val);
+  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, val);
+  evas_object_smart_callback_add(en, "activated", _entry_activated_cb, val);
+  evas_object_smart_callback_add(en, "unfocused", _entry_activated_cb, val);
+  //evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
+  //TODO
+  /*
+  evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
+  evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, cp);
+  */
+
+   return bx;
+}
+
+Evas_Object*
+gl_content_enum_get(
+      void *data,
+      Evas_Object *obj,
+      const char *part)
+{
+  Evas_Object *bx, *bt, *ck;
+
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+
+  bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+
+  Evas_Object* label = elm_label_add(bx);
+
+  PropertyValue* val = data;
+
+   {
+    unsigned int num;
+    char** ss = eina_str_split_full(val->path, "/", 0, &num);
+    const char* name = ss[num-1];
+
+    char s[256];
+    //sprintf(s, "<b> %s </b> : ", name);
+    sprintf(s, "%s : ", name);
+
+    elm_object_text_set(label, s);
+    evas_object_show(label);
+    elm_box_pack_end(bx, label);
+
+    free(ss[0]);
+    free(ss);
+   }
 
   Evas_Object* en = elm_entry_add(obj);
   elm_entry_scrollable_set(en, EINA_TRUE);
@@ -312,7 +381,11 @@ _property_node_find(
   return result;
 }
 
-static Elm_Genlist_Item_Class *class_entry, *class_group, *class_node,*class_float;
+static Elm_Genlist_Item_Class *class_entry,
+                              *class_group,
+                              *class_node,
+                              *class_enum,
+                              *class_float;
 
 static void
 _spinner_changed_cb_list(
@@ -362,6 +435,9 @@ gl_content_float_get(
     elm_object_text_set(label, s);
     evas_object_show(label);
     elm_box_pack_end(bx, label);
+
+    free(ss[0]);
+    free(ss);
    }
 
   Evas_Object* sp = elm_spinner_add(obj);
@@ -722,6 +798,13 @@ property_list_new(Evas_Object* win)
   class_node->func.state_get = NULL;
   class_node->func.del = NULL;
 
+  class_enum = elm_genlist_item_class_new();
+  class_enum->item_style = "full";//"default";
+  class_enum->func.text_get = NULL;
+  class_enum->func.content_get = gl_content_enum_get;
+  class_enum->func.state_get = gl_state_get;
+  class_enum->func.del = NULL;
+
   //elm_genlist_item_class_free(class_entry);
   //elm_genlist_item_class_free(class_group);
   //elm_genlist_item_class_free(class_node);
@@ -758,6 +841,8 @@ property_list_enum_add(
   val->path = path;//s[num-1];
   val->list = pl;
   val->data = strdup(value);
+
+  printf("value : %s \n", value);
 
   val->item = elm_genlist_item_append(pl->list, class_entry,
                            val,
