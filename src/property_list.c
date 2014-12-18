@@ -277,6 +277,18 @@ gl_content_string_get(
    return bx;
 }
 
+static void
+_hoversel_selected_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
+                      void *event_info)
+{
+   const char *txt = elm_object_item_text_get(event_info);
+
+   printf("'selected' callback is called. (selected item : %s)\n", txt);
+   elm_object_text_set(obj, txt);
+}
+
+
+
 Evas_Object*
 gl_content_enum_get(
       void *data,
@@ -326,14 +338,12 @@ gl_content_enum_get(
   free(s[0]);
   free(s);
 
-  /*
-  evas_object_smart_callback_add(hoversel, "clicked",
-                                  _hoversel_clicked_cb, NULL);
+  //evas_object_smart_callback_add(hoversel, "clicked",
+   //                               _hoversel_clicked_cb, NULL);
    evas_object_smart_callback_add(hoversel, "selected",
                                   _hoversel_selected_cb, NULL);
-   evas_object_smart_callback_add(hoversel, "dismissed",
-                                  _hoversel_dismissed_cb, NULL);
-                                  */
+   //evas_object_smart_callback_add(hoversel, "dismissed",
+    //                              _hoversel_dismissed_cb, NULL);
   elm_box_pack_end(bx, hoversel);
   evas_object_show(hoversel);
 
