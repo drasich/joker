@@ -39,7 +39,7 @@ _entry_changed_cb_list(
   //const char* name = evas_object_name_get(obj);
   const char* value = elm_object_text_get(obj);
 
-  if (pl->changed_string) {
+  if (pl->register_change_string) {
     //pl->changed_string(pl->data, val->path, value);
     pl->register_change_string(pl->data, val->path, NULL, value, 0);
   }
@@ -278,13 +278,27 @@ gl_content_string_get(
 }
 
 static void
-_hoversel_selected_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
-                      void *event_info)
+_hoversel_selected_cb(
+      void *data,
+      Evas_Object *obj,
+      void *event_info)
 {
-   const char *txt = elm_object_item_text_get(event_info);
+  const char* old = elm_object_text_get(obj);
+  const char *txt = elm_object_item_text_get(event_info);
 
-   printf("'selected' callback is called. (selected item : %s)\n", txt);
-   elm_object_text_set(obj, txt);
+  printf("'selected' callback is called. (selected item : %s)\n", txt);
+  elm_object_text_set(obj, txt);
+
+  PropertyValue* val = data;
+  JkPropertyList* pl = val->list;
+  ////const char* name = evas_object_name_get(obj);
+  //const char* value = elm_object_text_get(obj);
+
+  //TODO
+  if (pl->register_change_enum) {
+    //pl->changed_string(pl->data, val->path, value);
+    pl->register_change_enum(pl->data, val->path, old, txt, 1);
+  }
 }
 
 
@@ -341,7 +355,7 @@ gl_content_enum_get(
   //evas_object_smart_callback_add(hoversel, "clicked",
    //                               _hoversel_clicked_cb, NULL);
    evas_object_smart_callback_add(hoversel, "selected",
-                                  _hoversel_selected_cb, NULL);
+                                  _hoversel_selected_cb, val);
    //evas_object_smart_callback_add(hoversel, "dismissed",
     //                              _hoversel_dismissed_cb, NULL);
   elm_box_pack_end(bx, hoversel);
@@ -745,8 +759,10 @@ void jk_property_list_register_cb(
       void * data,
       property_set_changed changed_float,
       property_set_changed changed_string,
+      property_set_changed changed_enum,
       property_register_change register_change_string,
       property_register_change register_change_float,
+      property_register_change register_change_enum,
       property_tree_object_cb expand,
       property_tree_object_cb contract
       )
@@ -754,8 +770,10 @@ void jk_property_list_register_cb(
   pl->data = data;
   pl->changed_float = changed_float;
   pl->changed_string = changed_string;
+  pl->changed_enum = changed_enum;
   pl->register_change_string = register_change_string;
   pl->register_change_float = register_change_float;
+  pl->register_change_enum = register_change_enum;
   pl->expand = expand;
   pl->contract = contract;
 }
