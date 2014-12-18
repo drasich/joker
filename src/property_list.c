@@ -311,29 +311,31 @@ gl_content_enum_get(
     free(ss);
    }
 
-  Evas_Object* en = elm_entry_add(obj);
-  elm_entry_scrollable_set(en, EINA_TRUE);
-  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
   const char* value = val->data;
-  elm_object_text_set(en, value);
-  //elm_entry_scrollbar_policy_set(en, 
-  //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
-  elm_entry_single_line_set(en, EINA_TRUE);
-  //elm_entry_select_all(en);
-  evas_object_show(en);
-  elm_box_pack_end(bx, en);
+  Evas_Object* hoversel = elm_hoversel_add(obj);
+  elm_hoversel_hover_parent_set(hoversel, obj);
+  elm_object_text_set(hoversel, value);
 
-  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb_list, val);
-  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, val);
-  evas_object_smart_callback_add(en, "activated", _entry_activated_cb, val);
-  evas_object_smart_callback_add(en, "unfocused", _entry_activated_cb, val);
-  //evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
-  //TODO
+  unsigned int num;
+  char** s = eina_str_split_full(val->user_data, "/", 0, &num);
+  int i;
+  for (i = 0; i < num; ++i) {
+    elm_hoversel_item_add(hoversel, s[i], NULL, ELM_ICON_NONE, NULL, NULL);
+  }
+
+  free(s[0]);
+  free(s);
+
   /*
-  evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
-  evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, cp);
-  */
+  evas_object_smart_callback_add(hoversel, "clicked",
+                                  _hoversel_clicked_cb, NULL);
+   evas_object_smart_callback_add(hoversel, "selected",
+                                  _hoversel_selected_cb, NULL);
+   evas_object_smart_callback_add(hoversel, "dismissed",
+                                  _hoversel_dismissed_cb, NULL);
+                                  */
+  elm_box_pack_end(bx, hoversel);
+  evas_object_show(hoversel);
 
    return bx;
 }
@@ -825,7 +827,7 @@ PropertyValue*
 property_list_enum_add(
       JkPropertyList* pl, 
       const char* path,
-      const char** possible_values,
+      char* possible_values,
       const char* value)
 {
   PropertyNode* node = _property_list_node_find_parent(pl, path);
@@ -841,10 +843,11 @@ property_list_enum_add(
   val->path = path;//s[num-1];
   val->list = pl;
   val->data = strdup(value);
+  val->user_data = possible_values;
 
   printf("value : %s \n", value);
 
-  val->item = elm_genlist_item_append(pl->list, class_entry,
+  val->item = elm_genlist_item_append(pl->list, class_enum,
                            val,
                            node->item, 
                            ELM_GENLIST_ITEM_NONE,

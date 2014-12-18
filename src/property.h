@@ -139,6 +139,7 @@ struct _PropertyValue
   void* data;
   Elm_Object_Item* item;
   JkPropertyList* list;
+  void* user_data;
 };
 
 
@@ -182,7 +183,7 @@ PropertyValue*
 property_list_enum_add(
       JkPropertyList* pl, 
       const char* path,
-      const char** possible_values,
+      char* possible_values,
       const char* value);
 
 PropertyNode* property_list_node_new();
