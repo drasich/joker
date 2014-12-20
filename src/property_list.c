@@ -22,11 +22,26 @@ gl_text_get_node(
       Evas_Object *obj EINA_UNUSED,
       const char *part EINA_UNUSED)
 {
+  //char* path = data;
+  PropertyValue* val = data;
+  const char* path = val->path;
+  unsigned int num;
+  char** ss = eina_str_split_full(path, "/", 0, &num);
+  return strdup(ss[num-1]);
+}
+
+static char *
+gl_text_get_group(
+      void *data,
+      Evas_Object *obj EINA_UNUSED,
+      const char *part EINA_UNUSED)
+{
   char* path = data;
   unsigned int num;
   char** ss = eina_str_split_full(path, "/", 0, &num);
   return strdup(ss[num-1]);
 }
+
 
 static void
 _entry_changed_cb_list(
@@ -521,12 +536,11 @@ gl9_exp(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
    Elm_Object_Item *glit = event_info;
    //Evas_Object *gl = elm_object_item_widget_get(glit);
 
-   //could be propertyvalue is not node
-   char* name = elm_object_item_data_get(glit);
+   PropertyValue* val = elm_object_item_data_get(glit);
    JkPropertyList* pl = data;
 
    if (pl->expand) {
-     pl->expand(pl->data, name, glit);
+     pl->expand(pl->data, (void*) val->path, glit);
    }
 }
 
@@ -536,6 +550,8 @@ gl9_con(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
    Elm_Object_Item *glit = event_info;
    elm_genlist_item_subitems_clear(glit);
 
+   //TODO node/enum
+   printf("TODO enum...\n");
    char* name = elm_object_item_data_get(glit);
    JkPropertyList* pl = data;
    //TODO clear the nodes
@@ -618,8 +634,17 @@ void property_list_node_add(
   PropertyNode* child = property_list_node_new();
   eina_hash_add(node->nodes, s[num-1], child);
 
+
+
+  PropertyValue *val = calloc(1, sizeof *val);
+  val->path = path;//s[num-1];
+  val->list = pl;
+  //val->data = strdup(value);
+  //val->user_data = possible_values;
+
+
   child->item = elm_genlist_item_append(pl->list, class_node,
-                           path,//strdup(s[num-1]), 
+                           val, //path,//strdup(s[num-1]), 
                            node->item, //git/* parent */, 
                            ELM_GENLIST_ITEM_TREE,
                            NULL,//gl4_sel/* func */,
@@ -816,7 +841,7 @@ property_list_new(Evas_Object* win)
 
   class_group = elm_genlist_item_class_new();
   class_group->item_style = "group_index";
-  class_group->func.text_get = gl_text_get_node;
+  class_group->func.text_get = gl_text_get_group;
   class_group->func.content_get = NULL;
   class_group->func.state_get = NULL;
   class_group->func.del = NULL;
@@ -867,6 +892,9 @@ property_list_enum_add(
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
 
+  PropertyNode* child = property_list_node_new();
+  eina_hash_add(node->nodes, s[num-1], child);
+
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = path;//s[num-1];
   val->list = pl;
@@ -878,9 +906,11 @@ property_list_enum_add(
   val->item = elm_genlist_item_append(pl->list, class_enum,
                            val,
                            node->item, 
-                           ELM_GENLIST_ITEM_NONE,
+                           ELM_GENLIST_ITEM_TREE,
                            NULL,
                            NULL);
+
+  child ->item = val->item;
 
   eina_hash_add(node->leafs, eina_stringshare_add(path), val);
 
