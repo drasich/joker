@@ -314,6 +314,14 @@ _hoversel_selected_cb(
     //pl->changed_string(pl->data, val->path, value);
     pl->register_change_enum(pl->data, val->path, old, txt, 1);
   }
+
+  if ( elm_genlist_item_type_get(val->item) == ELM_GENLIST_ITEM_TREE &&
+        elm_genlist_item_expanded_get(val->item)) {
+    //because tree anim takes time we have to do this
+    elm_genlist_item_subitems_clear(val->item);
+    elm_genlist_item_expanded_set(val->item, EINA_FALSE);
+    elm_genlist_item_expanded_set(val->item, EINA_TRUE);
+  }
 }
 
 
@@ -533,15 +541,15 @@ gl9_con_req(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_in
 static void
 gl9_exp(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
 {
-   Elm_Object_Item *glit = event_info;
-   //Evas_Object *gl = elm_object_item_widget_get(glit);
+  Elm_Object_Item *glit = event_info;
+  //Evas_Object *gl = elm_object_item_widget_get(glit);
 
-   PropertyValue* val = elm_object_item_data_get(glit);
-   JkPropertyList* pl = data;
+  PropertyValue* val = elm_object_item_data_get(glit);
+  JkPropertyList* pl = data;
 
-   if (pl->expand) {
-     pl->expand(pl->data, (void*) val->path, glit);
-   }
+  if (pl->expand) {
+    pl->expand(pl->data, (void*) val->path, glit);
+  }
 }
 
 static void
@@ -550,9 +558,8 @@ gl9_con(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
    Elm_Object_Item *glit = event_info;
    elm_genlist_item_subitems_clear(glit);
 
-   //TODO node/enum
-   printf("TODO enum...\n");
-   char* name = elm_object_item_data_get(glit);
+   PropertyValue* val = elm_object_item_data_get(glit);
+   char* name = (char*) val->path;
    JkPropertyList* pl = data;
    //TODO clear the nodes
 
