@@ -353,7 +353,10 @@ gl_content_enum_get(
 
     char s[256];
     //sprintf(s, "<b> %s </b> : ", name);
+    if (elm_genlist_item_expanded_get(val->item)) 
     sprintf(s, "%s : ", name);
+    else
+    sprintf(s, "%s", name);
 
     elm_object_text_set(label, s);
     evas_object_show(label);
