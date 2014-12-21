@@ -309,6 +309,8 @@ _hoversel_selected_cb(
   ////const char* name = evas_object_name_get(obj);
   //const char* value = elm_object_text_get(obj);
 
+  val->data = (char*) eina_stringshare_add(txt);
+
   //TODO
   if (pl->register_change_enum) {
     //pl->changed_string(pl->data, val->path, value);
@@ -338,6 +340,7 @@ gl_content_enum_get(
 
   bx = elm_box_add(obj);
   elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_align_set(bx, 0, 1);
 
   Evas_Object* label = elm_label_add(bx);
 
@@ -359,6 +362,9 @@ gl_content_enum_get(
     free(ss[0]);
     free(ss);
    }
+
+  if (elm_genlist_item_expanded_get(val->item)) 
+   {
 
   const char* value = val->data;
   Evas_Object* hoversel = elm_hoversel_add(obj);
@@ -382,7 +388,12 @@ gl_content_enum_get(
    //evas_object_smart_callback_add(hoversel, "dismissed",
     //                              _hoversel_dismissed_cb, NULL);
   elm_box_pack_end(bx, hoversel);
+
   evas_object_show(hoversel);
+
+  //evas_object_size_hint_min_set(bx, 1 * elm_config_scale_get(),
+  //      50 * elm_config_scale_get());
+   }
 
    return bx;
 }
@@ -550,6 +561,8 @@ gl9_exp(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
   if (pl->expand) {
     pl->expand(pl->data, (void*) val->path, glit);
   }
+
+  elm_genlist_item_update(val->item);
 }
 
 static void
@@ -566,6 +579,8 @@ gl9_con(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
    if (pl->contract) {
      pl->contract(pl->data, name, glit);
    }
+
+   elm_genlist_item_update(val->item);
 }
 
 
@@ -862,7 +877,7 @@ property_list_new(Evas_Object* win)
 
   class_enum = elm_genlist_item_class_new();
   class_enum->item_style = "full";//"default";
-  class_enum->func.text_get = NULL;
+  class_enum->func.text_get = NULL;//gl_text_get_node;
   class_enum->func.content_get = gl_content_enum_get;
   class_enum->func.state_get = gl_state_get;
   class_enum->func.del = NULL;
