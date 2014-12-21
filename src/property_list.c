@@ -659,8 +659,6 @@ void property_list_node_add(
   PropertyNode* child = property_list_node_new();
   eina_hash_add(node->nodes, s[num-1], child);
 
-
-
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = path;//s[num-1];
   val->list = pl;
@@ -674,6 +672,8 @@ void property_list_node_add(
                            ELM_GENLIST_ITEM_TREE,
                            NULL,//gl4_sel/* func */,
                            NULL/* func data */);
+
+  val->item = child->item;
 
   printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
         node, s[num-1],child, child->item);
