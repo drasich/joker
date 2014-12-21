@@ -826,7 +826,7 @@ property_list_new(Evas_Object* win)
   evas_object_size_hint_weight_set(gl, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_align_set(gl, EVAS_HINT_FILL, EVAS_HINT_FILL);
   elm_genlist_select_mode_set(gl, ELM_OBJECT_SELECT_MODE_NONE);
-  elm_genlist_tree_effect_enabled_set(gl, EINA_TRUE);
+  //elm_genlist_tree_effect_enabled_set(gl, EINA_TRUE);
   evas_object_show(gl);
   //elm_box_pack_end(bx, gl);
   p->root = gl;
