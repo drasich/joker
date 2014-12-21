@@ -282,6 +282,7 @@ simple_window_main(int argc, char **argv)
   jk_init();
   init_callback_call();
   elm_run();
+  exit_callback_call();
   elm_shutdown();
   return 0;
 }
@@ -398,10 +399,10 @@ window_new()
 }
 
 
-static rust_init_callback _init_callback_cb = 0;
+static rust_elm_callback _init_callback_cb = 0;
 static void* _init_callback_data = 0;
 
-void init_callback_set(rust_init_callback cb, void * data)
+void init_callback_set(rust_elm_callback cb, void * data)
 {
   _init_callback_cb = cb;
   _init_callback_data = data;
@@ -416,6 +417,26 @@ bool init_callback_call()
 
   return false;
 }
+
+static rust_elm_callback _exit_callback_cb = 0;
+static void* _exit_callback_data = 0;
+
+void exit_callback_set(rust_elm_callback cb, void * data)
+{
+  _exit_callback_cb = cb;
+  _exit_callback_data = data;
+}
+
+bool exit_callback_call()
+{
+  if (_exit_callback_cb && _exit_callback_data) {
+    _exit_callback_cb(_exit_callback_data);
+    return true;
+  }
+
+  return false;
+}
+
 
 JkTree* window_tree_new(Window* w)
 {

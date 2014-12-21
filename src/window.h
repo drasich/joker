@@ -77,10 +77,12 @@ void window_callback_set(
 JkTree* window_tree_new(Window* w);
 void window_button_new(Window* w);
 
-typedef void (*rust_init_callback)(void* data);
+typedef void (*rust_elm_callback)(void* data);
 
-void init_callback_set(rust_init_callback cb, void* data);
+void init_callback_set(rust_elm_callback cb, void* data);
 bool init_callback_call();
+void exit_callback_set(rust_elm_callback cb, void* data);
+bool exit_callback_call();
 
 JkProperty* window_property_new(Window* w);
 JkPropertySet* jk_window_property_set_new(Window* w);

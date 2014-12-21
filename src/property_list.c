@@ -309,7 +309,7 @@ _hoversel_selected_cb(
   ////const char* name = evas_object_name_get(obj);
   //const char* value = elm_object_text_get(obj);
 
-  val->data = (char*) eina_stringshare_add(txt);
+  val->data = (char*) strdup(txt);
 
   //TODO
   if (pl->register_change_enum) {
@@ -778,7 +778,7 @@ property_list_string_add(
   char** s = eina_str_split_full(path, "/", 0, &num);
 
   PropertyValue *val = calloc(1, sizeof *val);
-  val->path = path;//s[num-1];
+  val->path = strdup(path);//s[num-1];
   val->list = pl;
   val->data = strdup(value);
   
