@@ -353,7 +353,7 @@ gl_content_enum_get(
 
     char s[256];
     //sprintf(s, "<b> %s </b> : ", name);
-    if (elm_genlist_item_expanded_get(val->item)) 
+    if (val->item && elm_genlist_item_expanded_get(val->item)) 
     sprintf(s, "%s : ", name);
     else
     sprintf(s, "%s", name);
@@ -366,7 +366,7 @@ gl_content_enum_get(
     free(ss);
    }
 
-  if (elm_genlist_item_expanded_get(val->item)) 
+  if (val->item && elm_genlist_item_expanded_get(val->item)) 
    {
 
   const char* value = val->data;
