@@ -243,6 +243,7 @@ gl_content_string_get(
 
   bx = elm_box_add(obj);
   elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
 
   Evas_Object* label = elm_label_add(bx);
 
@@ -480,6 +481,7 @@ gl_content_float_get(
 
   bx = elm_box_add(obj);
   elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
 
   PropertyValue* val = data;
 
