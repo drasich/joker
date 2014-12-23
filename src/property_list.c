@@ -342,6 +342,7 @@ gl_content_enum_get(
   bx = elm_box_add(obj);
   elm_box_horizontal_set(bx, EINA_TRUE);
   elm_box_align_set(bx, 0, 1);
+  elm_box_padding_set(bx, 4, 0);
 
   Evas_Object* label = elm_label_add(bx);
 
