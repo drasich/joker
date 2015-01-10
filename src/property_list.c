@@ -657,13 +657,15 @@ void property_list_node_add(
     return;
   }
 
+  printf("yo man!!!!!!!! %s \n", path);
+
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
   PropertyNode* child = property_list_node_new();
-  eina_hash_add(node->nodes, s[num-1], child);
+  eina_hash_add(node->nodes, strdup(s[num-1]), child);
 
   PropertyValue *val = calloc(1, sizeof *val);
-  val->path = path;//s[num-1];
+  val->path = strdup(path);//s[num-1];
   val->list = pl;
   //val->data = strdup(value);
   //val->user_data = possible_values;
@@ -680,6 +682,9 @@ void property_list_node_add(
 
   printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
         node, s[num-1],child, child->item);
+
+  free(s[0]);
+  free(s);
 }
 
 void property_list_nodes_remove(
@@ -708,7 +713,7 @@ void property_list_group_add(
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
   PropertyNode* child = property_list_node_new();
-  eina_hash_add(node->nodes, s[num-1], child);
+  eina_hash_add(node->nodes, strdup(s[num-1]), child);
   
   child->item = elm_genlist_item_append(pl->list, class_group,
                            strdup(s[num-1]), 
@@ -721,6 +726,9 @@ void property_list_group_add(
 
   printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
         node, s[num-1],child, child->item);
+
+  free(s[0]);
+  free(s);
 }
 
 PropertyValue*
@@ -736,13 +744,13 @@ property_list_float_add(
   }
   
   PropertyValue *val = calloc(1, sizeof *val);
-  val->path = path;
+  val->path = strdup(path);
   val->list = pl;
   val->data = calloc(1, sizeof value);
   memcpy(val->data, &value, sizeof value);
 
   unsigned int num;
-  char** s = eina_str_split_full(path, "/", 0, &num);
+  //char** s = eina_str_split_full(path, "/", 0, &num);
 
   val->item = elm_genlist_item_append(pl->list, class_float,
                            val,//strdup(s[num-1]), 
@@ -793,6 +801,9 @@ property_list_string_add(
                            NULL);
 
   eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+
+  free(s[0]);
+  free(s);
 
   return val;
 }
@@ -921,10 +932,10 @@ property_list_enum_add(
   char** s = eina_str_split_full(path, "/", 0, &num);
 
   PropertyNode* child = property_list_node_new();
-  eina_hash_add(node->nodes, s[num-1], child);
+  eina_hash_add(node->nodes, strdup(s[num-1]), child);
 
   PropertyValue *val = calloc(1, sizeof *val);
-  val->path = path;//s[num-1];
+  val->path = strdup(path);//s[num-1];
   val->list = pl;
   val->data = strdup(value);
   val->user_data = possible_values;
@@ -941,6 +952,9 @@ property_list_enum_add(
   child ->item = val->item;
 
   eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+
+  free(s[0]);
+  free(s);
 
   return val;
 }
