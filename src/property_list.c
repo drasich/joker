@@ -1,5 +1,6 @@
 #include "property.h"
 #include <string.h>
+#include <stdbool.h>
 
 static const char*
 get_parent_node_string(const char* path)
@@ -84,12 +85,16 @@ _entry_activated_cb(
   const char* value = elm_object_text_get(obj);
   const char* old = evas_object_data_get(obj, "saved_text");
 
+  printf("before old value......... ::: %s\n", old);
+
   if (old == NULL) {
     printf("problem with the old value.........\n");
     return;
   }
 
   evas_object_data_set(obj, "saved_text", eina_stringshare_add(value));
+
+  printf("after old value......... ::: %s\n", old);
 
   if (pl->register_change_string) {
     pl->register_change_string(pl->data, val->path, old, value, 1);
@@ -938,7 +943,7 @@ property_list_enum_add(
   val->path = strdup(path);//s[num-1];
   val->list = pl;
   val->data = strdup(value);
-  val->user_data = possible_values;
+  val->user_data = strdup(possible_values);
 
   printf("value : %s \n", value);
 
@@ -959,4 +964,27 @@ property_list_enum_add(
   return val;
 }
 
+void property_list_enum_update(
+      PropertyValue* val,
+      const char* value)
+{
+  printf("enum update'''''''''''''''\n");
+  if (val->data) free(val->data);
+
+  bool was_expanded =
+   elm_genlist_item_type_get(val->item) == ELM_GENLIST_ITEM_TREE &&
+   elm_genlist_item_expanded_get(val->item);
+
+  if (was_expanded) {
+    elm_genlist_item_expanded_set(val->item, EINA_FALSE);
+    elm_genlist_item_subitems_clear(val->item);
+  }
+
+  val->data = strdup(value);
+  elm_genlist_item_update(val->item);
+
+  if (was_expanded) {
+    elm_genlist_item_expanded_set(val->item, EINA_TRUE);
+  }
+}
 

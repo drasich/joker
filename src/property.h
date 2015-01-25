@@ -198,6 +198,10 @@ property_list_enum_add(
       char* possible_values,
       const char* value);
 
+void property_list_enum_update(
+      PropertyValue* val,
+      const char* value);
+
 PropertyNode* property_list_node_new();
 
 void property_list_string_update(
