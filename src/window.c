@@ -327,6 +327,17 @@ static Evas_Object *create_edje(Evas_Object* win)
   return edje;
 }
 
+static Evas_Object* _create_select_rect(Evas_Object* parent)
+{
+  Evas* e = evas_object_evas_get(parent);
+  Evas_Object* r = evas_object_rectangle_add(e);
+  int a = 15;
+  evas_object_color_set(r, a, a, a, a);
+  evas_object_resize(r, 0,0);
+  evas_object_hide(r);
+  return r;
+}
+
 Window*
 window_new()
 {
@@ -392,7 +403,7 @@ window_new()
   */
 
   //evas_object_resize(win, 456, 456);
-  evas_object_resize(win, 464, 334);
+  evas_object_resize(win, 464, 34);
   evas_object_show(win);
 
   return w;
