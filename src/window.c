@@ -402,6 +402,8 @@ window_new()
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_IN, _mouse_in, NULL);
   */
 
+  w->rect = _create_select_rect(win);
+
   //evas_object_resize(win, 456, 456);
   evas_object_resize(win, 464, 34);
   evas_object_show(win);
@@ -515,4 +517,21 @@ window_callback_set(
   w->mouse_move = mouse_move;
   w->mouse_wheel = mouse_wheel;
   w->key_down = key_down;
+}
+
+void
+window_rect_visible_set(Window* w, bool b)
+{
+  if (b) {
+    evas_object_show(w->rect);
+  }
+  else {
+    evas_object_hide(w->rect);
+  }
+}
+
+void 
+window_rect_set(Window* win, float x, float y, float w, float h)
+{
+  evas_object_geometry_set(win->rect, x, y, w, h);
 }
