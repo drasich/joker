@@ -97,6 +97,7 @@ static void
 gl4_unselect(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_info)
 {
    Elm_Object_Item *glit = event_info;
+   printf("unselect item\n");
    //TODO
    /*
    View* v = data;
@@ -105,6 +106,13 @@ gl4_unselect(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_inf
      context_object_remove(context, (Object*) elm_object_item_data_get(glit));
    }
    */
+
+   void* o = elm_object_item_data_get(glit);
+   JkTree* t = data;
+
+    if (t->unselected) {
+      t->unselected(t->data, o, glit);
+    }
 }
 
 static void
@@ -116,7 +124,7 @@ gl4_select(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_info)
    JkTree* t = data;
 
     if (t->selected) {
-      t->selected(t->data,o, glit);
+      t->selected(t->data, o, glit);
     }
 }
 
@@ -218,13 +226,15 @@ void tree_register_cb(
       tree_item_selected item_selected,
       tree_object_can_expand can_expand,
       tree_object_expand expand,
-      tree_selected selected)
+      tree_selected selected,
+      tree_selected unselected)
 {
   t->name_get = name;
   t->item_selected = item_selected;
   t->can_expand = can_expand;
   t->expand = expand;
   t->selected = selected;
+  t->unselected = unselected;
 
   t->data = data;
 }

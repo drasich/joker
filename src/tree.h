@@ -34,6 +34,7 @@ struct _Tree
   tree_object_can_expand can_expand;
   tree_object_expand expand;
   tree_selected selected;
+  tree_selected unselected;
 
   void* data;
 };
@@ -45,7 +46,8 @@ void tree_register_cb(
       tree_item_selected item_selected,
       tree_object_can_expand can_expand,
       tree_object_expand expand,
-      tree_selected selected
+      tree_selected selected,
+      tree_selected unselected
       );
 
 
