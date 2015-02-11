@@ -240,7 +240,7 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
 void
 create_simple_window()
 {
-  Evas_Object* win = elm_win_util_standard_add("simple_window", "simple_window");
+  Evas_Object* win = elm_win_util_standard_add("3d view", "3d view");
   elm_win_autodel_set(win, EINA_TRUE);
   evas_object_smart_callback_add(win, "delete,request", simple_window_del, NULL);
 
@@ -343,7 +343,7 @@ window_new()
 {
   Window* w = calloc(1, sizeof *w);
 
-  Evas_Object* win = elm_win_util_standard_add("simple_window", "simple_window");
+  Evas_Object* win = elm_win_util_standard_add("3d view", "3d view");
   w->win = win;
   printf("pointer win %p \n", win);
   elm_win_autodel_set(win, EINA_TRUE);
@@ -405,7 +405,7 @@ window_new()
   w->rect = _create_select_rect(win);
 
   //evas_object_resize(win, 456, 456);
-  evas_object_resize(win, 464, 34);
+  evas_object_resize(win, 864, 434);
   evas_object_show(win);
 
   return w;
@@ -453,8 +453,27 @@ bool exit_callback_call()
 
 JkTree* window_tree_new(Window* w)
 {
+  /*
   JkTree* t = tree_widget_new(w->win);
   edje_object_part_swallow(w->edje, "part_tree", t->root);
+  return t;
+  */
+
+  Evas_Object* win = elm_win_add(w->win, "tree", ELM_WIN_BASIC);
+  elm_win_title_set(win, "scene tree");
+  //Evas_Object* win = elm_win_util_standard_add("genlist3", "Genlist 3");
+
+  Evas_Object* bg = elm_bg_add(win);
+  evas_object_show(bg);
+  evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, bg);
+
+  JkTree* t = tree_widget_new(win);
+  evas_object_size_hint_weight_set(t->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, t->root);
+  evas_object_resize(win, 256, 256);
+  evas_object_show(win);
+
   return t;
 }
 
@@ -474,9 +493,26 @@ JkPropertySet* jk_property_set_new(Window* w)
 
 JkPropertyList* jk_property_list_new(Window* w)
 {
+  /*
   JkPropertyList* pl = property_list_new(w->win);
   edje_object_part_swallow(w->edje, "part_property_test", pl->root);
   return pl;
+  */
+
+  Evas_Object* win = elm_win_add(w->win, "property", ELM_WIN_BASIC);
+  elm_win_title_set(win, "property");
+
+  Evas_Object* bg = elm_bg_add(win);
+  evas_object_show(bg);
+  evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, bg);
+
+  JkPropertyList* p = property_list_new(win);
+  evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, p->root);
+  evas_object_resize(win, 256, 256);
+  evas_object_show(win);
+  return p;
 }
 
 void window_button_new(Window* w)
