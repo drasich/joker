@@ -408,6 +408,49 @@ gl_content_enum_get(
    return bx;
 }
 
+Evas_Object*
+gl_content_option_get(
+      void *data,
+      Evas_Object *obj,
+      const char *part)
+{
+  Evas_Object *bx, *bt, *ck;
+
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+
+  bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_align_set(bx, 0, 1);
+  elm_box_padding_set(bx, 4, 0);
+
+  Evas_Object* label = elm_label_add(bx);
+
+  PropertyValue* val = data;
+
+   {
+    unsigned int num;
+    char** ss = eina_str_split_full(val->path, "/", 0, &num);
+    const char* name = ss[num-1];
+
+    char s[256];
+    //sprintf(s, "<b> %s </b> : ", name);
+    if (val->item && elm_genlist_item_expanded_get(val->item)) 
+    sprintf(s, "%s : ", name);
+    else
+    sprintf(s, "%s", name);
+
+    elm_object_text_set(label, s);
+    evas_object_show(label);
+    elm_box_pack_end(bx, label);
+
+    free(ss[0]);
+    free(ss);
+   }
+
+   return bx;
+}
+
+
 Eina_Bool
 gl_state_get(
       void *data EINA_UNUSED,
@@ -455,7 +498,8 @@ static Elm_Genlist_Item_Class *class_entry,
                               *class_group,
                               *class_node,
                               *class_enum,
-                              *class_float;
+                              *class_float,
+                              *class_option;
 
 static void
 _spinner_changed_cb_list(
@@ -904,6 +948,13 @@ property_list_new(Evas_Object* win)
   class_enum->func.state_get = gl_state_get;
   class_enum->func.del = NULL;
 
+  class_option = elm_genlist_item_class_new();
+  class_option->item_style = "full";//"default";
+  class_option->func.text_get = NULL;//gl_text_get_node;
+  class_option->func.content_get = gl_content_option_get;
+  class_option->func.state_get = gl_state_get;
+  class_option->func.del = NULL;
+
   //elm_genlist_item_class_free(class_entry);
   //elm_genlist_item_class_free(class_group);
   //elm_genlist_item_class_free(class_node);
@@ -988,3 +1039,36 @@ void property_list_enum_update(
   }
 }
 
+PropertyValue*
+property_list_option_add(
+      JkPropertyList* pl, 
+      const char* path)
+{
+  PropertyNode* node = _property_list_node_find_parent(pl, path);
+  if (!node) {
+    printf("%s, could not find a root\n", __FUNCTION__);
+    return NULL;
+  }
+  
+  unsigned int num;
+  char** s = eina_str_split_full(path, "/", 0, &num);
+
+  PropertyValue *val = calloc(1, sizeof *val);
+  val->path = strdup(path);//s[num-1];
+  val->list = pl;
+  val->data = strdup("None");
+  
+  val->item = elm_genlist_item_append(pl->list, class_entry,
+                           val,
+                           node->item, 
+                           ELM_GENLIST_ITEM_NONE,
+                           NULL,
+                           NULL);
+
+  eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+
+  free(s[0]);
+  free(s);
+
+  return val;
+}

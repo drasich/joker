@@ -405,7 +405,7 @@ window_new()
   w->rect = _create_select_rect(win);
 
   //evas_object_resize(win, 456, 456);
-  evas_object_resize(win, 864, 434);
+  evas_object_resize(win, 464, 34);
   evas_object_show(win);
 
   return w;
@@ -471,7 +471,7 @@ JkTree* window_tree_new(Window* w)
   JkTree* t = tree_widget_new(win);
   evas_object_size_hint_weight_set(t->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   elm_win_resize_object_add(win, t->root);
-  evas_object_resize(win, 256, 256);
+  evas_object_resize(win, 56, 56);
   evas_object_show(win);
 
   return t;
@@ -510,7 +510,7 @@ JkPropertyList* jk_property_list_new(Window* w)
   JkPropertyList* p = property_list_new(win);
   evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   elm_win_resize_object_add(win, p->root);
-  evas_object_resize(win, 256, 256);
+  evas_object_resize(win, 56, 56);
   evas_object_show(win);
   return p;
 }

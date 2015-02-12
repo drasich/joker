@@ -197,10 +197,14 @@ tree_object_add(JkTree* t, void* o, Elm_Object_Item* parent)
 
   if (t->can_expand) {
     if (t->can_expand(o)) {
+      printf("it can expand..................... !!!\n");
       class = t->class_tree;
       type = ELM_GENLIST_ITEM_TREE;
     }
+    else printf("..................cannot expand !!!\n");
   }
+  else
+      printf("no expand fn????????????..................... !!!\n");
 
   Elm_Object_Item* eoi = elm_genlist_item_append(
         t->gl,
