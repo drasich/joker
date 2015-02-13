@@ -414,6 +414,7 @@ _on_button_option_clicked(
     pl->register_change_option(pl->data, val->path, old, new, 1);
 
     Elm_Object_Item* old_item = val->item;
+
     PropertyNode* parent = _property_list_node_find_parent(pl, val->path);
     if (!parent) {
       printf("nodeeeeeeeeeee cannot find parent \n");
@@ -422,8 +423,15 @@ _on_button_option_clicked(
 
     PropertyNode* option_node = _property_list_node_find(pl, val->path);
     if (!option_node) {
-      printf("nodeeeeeeeeeee cannot find parent \n");
+      printf("nodeeeeeeeeeee cannot find option node \n");
       return;
+    }
+
+    if (t == ELM_GENLIST_ITEM_NONE) {
+      char* name = (char*) val->path;
+      if (pl->contract) {
+        pl->contract(pl->data, name, old_item);
+      }
     }
 
     val->data = new;
@@ -1145,7 +1153,6 @@ property_list_option_add(
   else {
     t = ELM_GENLIST_ITEM_NONE;
   }
-
 
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);//s[num-1];
