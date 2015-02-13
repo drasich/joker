@@ -2,6 +2,54 @@
 #include <string.h>
 #include <stdbool.h>
 
+static Elm_Genlist_Item_Class *class_entry,
+                              *class_group,
+                              *class_node,
+                              *class_enum,
+                              *class_float,
+                              *class_option;
+
+static PropertyNode* 
+_property_node_find(
+      PropertyNode* node,
+      char** s)
+{
+  PropertyNode* result = NULL;
+  PropertyNode* root = node;
+  int i = 0;
+  while (s[i]) {
+    PropertyNode* next = eina_hash_find(root->nodes, s[i]);
+    if (next) {
+      root = next;
+      result = next;
+      i++;
+    }
+    else {
+      //eina_hash_foreach(root->nodes,_nodes_print, NULL);
+      result = NULL;
+      break;
+    }
+  }
+
+  return result;
+}
+
+
+PropertyNode* _property_list_node_find(
+      JkPropertyList* pl,
+      const char* path)
+{
+  PropertyNode* node = NULL;
+  unsigned int count;
+  char** s = eina_str_split_full(path, "/", 0, &count);
+
+  node = _property_node_find(pl->node, s);
+
+  free(s[0]);
+  free(s);
+  return node;
+}
+
 static const char*
 get_parent_node_string(const char* path)
 {
@@ -16,6 +64,15 @@ get_parent_node_string(const char* path)
   ret[size -1] = '\0'; 
   return ret;
 }
+
+PropertyNode* _property_list_node_find_parent(
+      JkPropertyList* pl,
+      const char* path)
+{
+  const char* parent = get_parent_node_string(path);
+  return _property_list_node_find(pl, parent);
+}
+
 
 static char *
 gl_text_get_node(
@@ -332,6 +389,68 @@ _hoversel_selected_cb(
   }
 }
 
+static void
+_on_button_option_clicked(
+      void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  PropertyValue* val = data;
+  JkPropertyList* pl = val->list;
+
+  Elm_Genlist_Item_Type t;
+  const char* old = val->data;
+  char* new;
+  if (!strcmp(old, "None")) {
+    new = strdup("Some");
+    t = ELM_GENLIST_ITEM_TREE;
+  }
+  else {
+    new = strdup("None");
+    t = ELM_GENLIST_ITEM_NONE;
+  }
+
+  if (pl->register_change_option) {
+    pl->register_change_option(pl->data, val->path, old, new, 1);
+
+    Elm_Object_Item* old_item = val->item;
+    PropertyNode* parent = _property_list_node_find_parent(pl, val->path);
+    if (!parent) {
+      printf("nodeeeeeeeeeee cannot find parent \n");
+      return;
+    }
+
+    PropertyNode* option_node = _property_list_node_find(pl, val->path);
+    if (!option_node) {
+      printf("nodeeeeeeeeeee cannot find parent \n");
+      return;
+    }
+
+    val->data = new;
+
+    val->item = elm_genlist_item_insert_after(pl->list, class_option,
+                           val,
+                           parent->item, 
+                           old_item,
+                           t,
+                           NULL,
+                           NULL);
+
+
+    option_node->item = val->item;
+
+    elm_object_item_del(old_item);
+  }
+
+  if ( elm_genlist_item_type_get(val->item) == ELM_GENLIST_ITEM_TREE) {
+    //because tree anim takes time we have to do this
+    //elm_genlist_item_subitems_clear(val->item);
+    //elm_genlist_item_expanded_set(val->item, EINA_FALSE);
+    elm_genlist_item_expanded_set(val->item, EINA_TRUE);
+  }
+}
+
+
 
 
 Evas_Object*
@@ -447,6 +566,24 @@ gl_content_option_get(
     free(ss);
    }
 
+   {
+    Evas_Object* btn = elm_button_add(obj);
+    const char* value = val->data;
+
+    if (!strcmp(value, "None")) {
+      elm_object_text_set(btn, "Add");
+    }
+    else {
+      elm_object_text_set(btn, "Remove");
+    }
+
+    evas_object_smart_callback_add(btn, "clicked",
+          _on_button_option_clicked, val);
+    elm_box_pack_end(bx, btn);
+
+    evas_object_show(btn);
+   }
+
    return bx;
 }
 
@@ -468,38 +605,6 @@ static Eina_Bool _nodes_print(
 {
   printf("key : '%s'\n", key);
 }
-
-static PropertyNode* 
-_property_node_find(
-      PropertyNode* node,
-      char** s)
-{
-  PropertyNode* result = NULL;
-  PropertyNode* root = node;
-  int i = 0;
-  while (s[i]) {
-    PropertyNode* next = eina_hash_find(root->nodes, s[i]);
-    if (next) {
-      root = next;
-      result = next;
-      i++;
-    }
-    else {
-      //eina_hash_foreach(root->nodes,_nodes_print, NULL);
-      result = NULL;
-      break;
-    }
-  }
-
-  return result;
-}
-
-static Elm_Genlist_Item_Class *class_entry,
-                              *class_group,
-                              *class_node,
-                              *class_enum,
-                              *class_float,
-                              *class_option;
 
 static void
 _spinner_changed_cb_list(
@@ -673,29 +778,6 @@ property_list_clear(JkPropertyList* pl)
   _property_node_clear(pl->node);
 }
 
-PropertyNode* _property_list_node_find(
-      JkPropertyList* pl,
-      const char* path)
-{
-  PropertyNode* node = NULL;
-  unsigned int count;
-  char** s = eina_str_split_full(path, "/", 0, &count);
-
-  node = _property_node_find(pl->node, s);
-
-  free(s[0]);
-  free(s);
-  return node;
-}
-
-PropertyNode* _property_list_node_find_parent(
-      JkPropertyList* pl,
-      const char* path)
-{
-  const char* parent = get_parent_node_string(path);
-  return _property_list_node_find(pl, parent);
-}
-
 void property_list_node_add(
       JkPropertyList* pl, 
       const char* path)
@@ -705,8 +787,6 @@ void property_list_node_add(
     printf("%s, could not find a root for %s\n", __FUNCTION__, path);
     return;
   }
-
-  printf("yo man!!!!!!!! %s \n", path);
 
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
@@ -718,7 +798,6 @@ void property_list_node_add(
   val->list = pl;
   //val->data = strdup(value);
   //val->user_data = possible_values;
-
 
   child->item = elm_genlist_item_append(pl->list, class_node,
                            val, //path,//strdup(s[num-1]), 
@@ -876,6 +955,7 @@ void jk_property_list_register_cb(
       property_register_change register_change_string,
       property_register_change register_change_float,
       property_register_change register_change_enum,
+      property_register_change register_change_option,
       property_tree_object_cb expand,
       property_tree_object_cb contract
       )
@@ -887,6 +967,7 @@ void jk_property_list_register_cb(
   pl->register_change_string = register_change_string;
   pl->register_change_float = register_change_float;
   pl->register_change_enum = register_change_enum;
+  pl->register_change_option = register_change_option;
   pl->expand = expand;
   pl->contract = contract;
 }
@@ -1042,7 +1123,8 @@ void property_list_enum_update(
 PropertyValue*
 property_list_option_add(
       JkPropertyList* pl, 
-      const char* path)
+      const char* path,
+      const char* value)
 {
   PropertyNode* node = _property_list_node_find_parent(pl, path);
   if (!node) {
@@ -1053,17 +1135,31 @@ property_list_option_add(
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
 
+  PropertyNode* child = property_list_node_new();
+  eina_hash_add(node->nodes, strdup(s[num-1]), child);
+
+  Elm_Genlist_Item_Type t;
+  if (!strcmp(value, "Some")) {
+    t = ELM_GENLIST_ITEM_TREE;
+  }
+  else {
+    t = ELM_GENLIST_ITEM_NONE;
+  }
+
+
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);//s[num-1];
   val->list = pl;
-  val->data = strdup("None");
-  
-  val->item = elm_genlist_item_append(pl->list, class_entry,
+  val->data = strdup(value);
+
+  val->item = elm_genlist_item_append(pl->list, class_option,
                            val,
                            node->item, 
-                           ELM_GENLIST_ITEM_NONE,
+                           t,
                            NULL,
                            NULL);
+
+  child ->item = val->item;
 
   eina_hash_add(node->leafs, eina_stringshare_add(path), val);
 

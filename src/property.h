@@ -137,6 +137,7 @@ struct _PropertyList
   property_register_change register_change_string;
   property_register_change register_change_float;
   property_register_change register_change_enum;
+  property_register_change register_change_option;
   property_tree_object_cb expand;
   property_tree_object_cb contract;
 };
@@ -165,6 +166,7 @@ void jk_property_list_register_cb(
       property_register_change register_change_string,
       property_register_change register_change_float,
       property_register_change register_change_enum,
+      property_register_change register_change_option,
       property_tree_object_cb expand,
       property_tree_object_cb contract
       );
@@ -196,6 +198,12 @@ property_list_enum_add(
       JkPropertyList* pl, 
       const char* path,
       char* possible_values,
+      const char* value);
+
+PropertyValue*
+property_list_option_add(
+      JkPropertyList* pl, 
+      const char* path,
       const char* value);
 
 void property_list_enum_update(
