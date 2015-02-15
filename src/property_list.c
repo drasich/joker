@@ -390,6 +390,73 @@ _hoversel_selected_cb(
 }
 
 static void
+_update_option_item(
+      PropertyValue* val,
+      Elm_Genlist_Item_Type t
+      )
+{
+  JkPropertyList* pl = val->list;
+
+  char* old;
+  char* new;
+  if (t == ELM_GENLIST_ITEM_TREE)
+   {
+    old = strdup("None");
+    new = strdup("Some");
+  }
+  else {
+    old = strdup("Some");
+    new = strdup("None");
+  }
+
+  Elm_Object_Item* old_item = val->item;
+
+  PropertyNode* parent = _property_list_node_find_parent(pl, val->path);
+  if (!parent) {
+    printf("nodeeeeeeeeeee cannot find parent \n");
+    return;
+  }
+
+  PropertyNode* option_node = _property_list_node_find(pl, val->path);
+  if (!option_node) {
+    printf("nodeeeeeeeeeee cannot find option node \n");
+    return;
+  }
+
+  if (t == ELM_GENLIST_ITEM_NONE) {
+    char* name = (char*) val->path;
+    if (pl->contract) {
+      pl->contract(pl->data, name, old_item);
+    }
+  }
+
+  if (val->data) free(val->data);
+
+  val->data = new;
+
+  val->item = elm_genlist_item_insert_after(pl->list, class_option,
+        val,
+        parent->item, 
+        old_item,
+        t,
+        NULL,
+        NULL);
+
+
+  option_node->item = val->item;
+
+  elm_object_item_del(old_item);
+
+  if ( elm_genlist_item_type_get(val->item) == ELM_GENLIST_ITEM_TREE) {
+    //because tree anim takes time we have to do this
+    //elm_genlist_item_subitems_clear(val->item);
+    //elm_genlist_item_expanded_set(val->item, EINA_FALSE);
+    elm_genlist_item_expanded_set(val->item, EINA_TRUE);
+  }
+
+}
+
+static void
 _on_button_option_clicked(
       void *data,
       Evas_Object *obj,
@@ -412,54 +479,9 @@ _on_button_option_clicked(
 
   if (pl->register_change_option) {
     pl->register_change_option(pl->data, val->path, old, new, 1);
-
-    Elm_Object_Item* old_item = val->item;
-
-    PropertyNode* parent = _property_list_node_find_parent(pl, val->path);
-    if (!parent) {
-      printf("nodeeeeeeeeeee cannot find parent \n");
-      return;
-    }
-
-    PropertyNode* option_node = _property_list_node_find(pl, val->path);
-    if (!option_node) {
-      printf("nodeeeeeeeeeee cannot find option node \n");
-      return;
-    }
-
-    if (t == ELM_GENLIST_ITEM_NONE) {
-      char* name = (char*) val->path;
-      if (pl->contract) {
-        pl->contract(pl->data, name, old_item);
-      }
-    }
-
-    val->data = new;
-
-    val->item = elm_genlist_item_insert_after(pl->list, class_option,
-                           val,
-                           parent->item, 
-                           old_item,
-                           t,
-                           NULL,
-                           NULL);
-
-
-    option_node->item = val->item;
-
-    elm_object_item_del(old_item);
-  }
-
-  if ( elm_genlist_item_type_get(val->item) == ELM_GENLIST_ITEM_TREE) {
-    //because tree anim takes time we have to do this
-    //elm_genlist_item_subitems_clear(val->item);
-    //elm_genlist_item_expanded_set(val->item, EINA_FALSE);
-    elm_genlist_item_expanded_set(val->item, EINA_TRUE);
+    _update_option_item(val,t);
   }
 }
-
-
-
 
 Evas_Object*
 gl_content_enum_get(
@@ -1175,3 +1197,20 @@ property_list_option_add(
 
   return val;
 }
+
+void property_list_option_update(
+      PropertyValue* val,
+      const char* value)
+{
+  Elm_Genlist_Item_Type t;
+  if (!strcmp(value, "Some")) {
+    t = ELM_GENLIST_ITEM_TREE;
+  }
+  else {
+    t = ELM_GENLIST_ITEM_NONE;
+  }
+
+  printf("update option %s \n", value);
+  _update_option_item(val, t);
+}
+

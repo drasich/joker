@@ -216,6 +216,10 @@ void property_list_string_update(
       PropertyValue* val,
       const char* value);
 
+void property_list_option_update(
+      PropertyValue* val,
+      const char* value);
+
 void property_list_float_update(
       PropertyValue* val,
       float value);
