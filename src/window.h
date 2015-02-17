@@ -3,6 +3,7 @@
 #include "stdbool.h"
 #include "tree.h"
 #include "property.h"
+#include "action.h"
 
 typedef struct _Window Window;
 
@@ -74,7 +75,9 @@ void window_callback_set(
       window_mouse_wheel mouse_wheel,
       window_key_down key_down
       );
+
 JkTree* window_tree_new(Window* w);
+JkAction* window_action_new(Window* w);
 void window_button_new(Window* w);
 
 typedef void (*rust_elm_callback)(void* data);

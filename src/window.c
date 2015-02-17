@@ -405,7 +405,7 @@ window_new()
   w->rect = _create_select_rect(win);
 
   //evas_object_resize(win, 456, 456);
-  evas_object_resize(win, 864, 434);
+  evas_object_resize(win, 464, 34);
   evas_object_show(win);
 
   return w;
@@ -476,6 +476,26 @@ JkTree* window_tree_new(Window* w)
 
   return t;
 }
+
+JkAction* window_action_new(Window* w)
+{
+  Evas_Object* win = elm_win_add(w->win, "action", ELM_WIN_BASIC);
+  elm_win_title_set(win, "action");
+
+  Evas_Object* bg = elm_bg_add(win);
+  evas_object_show(bg);
+  evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, bg);
+
+  JkAction* a = widget_action_new(win);
+  evas_object_size_hint_weight_set(a->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, a->root);
+  //evas_object_resize(win, 256, 256);
+  evas_object_show(win);
+
+  return a;
+}
+
 
 JkProperty* window_property_new(Window* w)
 {
