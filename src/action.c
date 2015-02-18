@@ -37,7 +37,12 @@ _button_callback(
   bcd->fn(bcd->data);
 }
 
-void action_button_new(JkAction* action, const char* name, void* data, button_callback fn)
+void
+action_button_new(
+      JkAction* action,
+      const char* name,
+      void* data,
+      button_callback fn)
 {
   Evas_Object* win = action->root;
   Evas_Object* box = action->box;

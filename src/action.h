@@ -24,8 +24,11 @@ struct _ButtonCallbackData
   button_callback fn;
 };
 
-
-void action_button_new(JkAction* action, const char* name, void* data, button_callback fn);
+void action_button_new(
+      JkAction* action,
+      const char* name,
+      void* data,
+      button_callback fn);
 
 #endif
 
