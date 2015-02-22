@@ -222,6 +222,12 @@ tree_object_add(JkTree* t, void* o, Elm_Object_Item* parent)
   return eoi;
 }
 
+void
+tree_object_remove(Elm_Object_Item* item)
+{
+  elm_object_item_del(item);
+}
+
 
 void tree_register_cb(
       JkTree* t,

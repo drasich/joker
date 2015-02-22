@@ -405,7 +405,7 @@ window_new()
   w->rect = _create_select_rect(win);
 
   //evas_object_resize(win, 456, 456);
-  evas_object_resize(win, 464, 34);
+  evas_object_resize(win, 864, 434);
   evas_object_show(win);
 
   return w;

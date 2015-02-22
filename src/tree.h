@@ -52,9 +52,6 @@ void tree_register_cb(
 
 
 JkTree* tree_widget_new(Evas_Object* win);
-//void tree_object_add(JkTree* t,  struct _Object* o);
-//void tree_object_remove(JkTree* t,  struct _Object* o);
-
 //void tree_object_select(JkTree* t, struct _Object* o);
 //void tree_objects_select(JkTree* t, Eina_List* objects);
 //void tree_object_update(JkTree* t, struct _Object* o);
@@ -64,6 +61,7 @@ JkTree* tree_widget_new(Evas_Object* win);
 //void tree_unselect_all(JkTree* t);
 
 Elm_Object_Item* tree_object_add(JkTree* t, void* o, Elm_Object_Item* parent);
+void tree_object_remove(Elm_Object_Item* parent);
 void tree_object_select(JkTree* t, void* o);
 void tree_item_select(Elm_Object_Item* item);
 
