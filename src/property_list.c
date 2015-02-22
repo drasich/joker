@@ -808,7 +808,7 @@ property_list_clear(JkPropertyList* pl)
   _property_node_clear(pl->node);
 }
 
-Elm_Object_Item* property_list_node_add(
+PropertyValue* property_list_node_add(
       JkPropertyList* pl, 
       const char* path)
 {
@@ -844,7 +844,7 @@ Elm_Object_Item* property_list_node_add(
   free(s[0]);
   free(s);
 
-  return child->item;
+  return val;
 }
 
 void property_list_nodes_remove(
@@ -1217,8 +1217,8 @@ void property_list_option_update(
 }
 
 void 
-property_expand(Elm_Object_Item* item)
+property_expand(PropertyValue* val)
 {
-    elm_genlist_item_expanded_set(item, EINA_TRUE);
+    elm_genlist_item_expanded_set(val->item, EINA_TRUE);
 }
 

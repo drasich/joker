@@ -171,7 +171,7 @@ void jk_property_list_register_cb(
       property_tree_object_cb contract
       );
 
-Elm_Object_Item* property_list_node_add(
+PropertyValue* property_list_node_add(
       JkPropertyList* pl, 
       const char* path);
 
@@ -224,6 +224,6 @@ void property_list_float_update(
       PropertyValue* val,
       float value);
 
-void property_expand(Elm_Object_Item* item);
+void property_expand(PropertyValue* value);
 
 #endif
