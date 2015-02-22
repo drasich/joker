@@ -808,7 +808,7 @@ property_list_clear(JkPropertyList* pl)
   _property_node_clear(pl->node);
 }
 
-void property_list_node_add(
+Elm_Object_Item* property_list_node_add(
       JkPropertyList* pl, 
       const char* path)
 {
@@ -843,6 +843,8 @@ void property_list_node_add(
 
   free(s[0]);
   free(s);
+
+  return child->item;
 }
 
 void property_list_nodes_remove(
@@ -1212,5 +1214,11 @@ void property_list_option_update(
 
   printf("update option %s \n", value);
   _update_option_item(val, t);
+}
+
+void 
+property_expand(Elm_Object_Item* item)
+{
+    elm_genlist_item_expanded_set(item, EINA_TRUE);
 }
 
