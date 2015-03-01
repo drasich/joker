@@ -42,4 +42,24 @@ _create_glview(Evas_Object* win)
   return glview;
 }
 
+JkGlview* jk_glview_new(
+      Evas_Object* win,
+      void* data,
+      rust_callback init,
+      rust_callback draw,
+      resize_callback resize)
+{
+  JkGlview* jgl = calloc(1, sizeof *jgl);
+
+  Evas_Object* gl =  _create_glview(win);
+  evas_object_data_set(gl, "cb_data", data);
+  evas_object_data_set(gl, "cb_init", init);
+  evas_object_data_set(gl, "cb_draw", draw);
+  evas_object_data_set(gl, "cb_resize", resize);
+  elm_win_resize_object_add(win, gl);
+
+  jgl->glview = gl;
+
+  return jgl;
+}
 

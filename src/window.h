@@ -66,6 +66,13 @@ struct _Window
 };
 
 Window* window_new();
+void tmp_func(
+      Window* window,
+      void* data,
+      rust_callback init,
+      rust_callback draw,
+      resize_callback resize);
+
 void window_callback_set(
       Window* w,
       const void* data,
@@ -93,5 +100,9 @@ JkPropertyList* jk_property_list_new(Window* w);
 
 void window_rect_visible_set(Window* w, bool b);
 void window_rect_set(Window* win, float x, float y, float w, float h);
+
+Evas_Object* jk_window_new();
+
+
 
 #endif

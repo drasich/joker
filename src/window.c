@@ -8,7 +8,6 @@
 #include "shader.h"
 #include "buffer.h"
 #include "cypher.h"
-//#include "drawable.h"
 #include "window.h"
 
 #define __UNUSED__
@@ -16,7 +15,10 @@
 static void
 _init_gl(Evas_Object *obj)
 {
-  cypher_init();
+  void* data = evas_object_data_get(obj, "cb_data");
+  rust_callback init = evas_object_data_get(obj, "cb_init");
+
+  cypher_init(init, data);
 }
 
 static void
@@ -31,7 +33,10 @@ _resize_gl(Evas_Object *obj)
   int w, h;
   elm_glview_size_get(obj, &w, &h);
 
-  cypher_resize(w,h);
+  void* data = evas_object_data_get(obj, "cb_data");
+  resize_callback resize = evas_object_data_get(obj, "cb_resize");
+
+  cypher_resize(resize, data, w, h);
 }
 
 static void
@@ -40,7 +45,10 @@ _draw_gl(Evas_Object *obj)
   int w, h;
   elm_glview_size_get(obj, &w, &h);
 
-  cypher_draw(w, h);
+  void* data = evas_object_data_get(obj, "cb_data");
+  rust_callback draw = evas_object_data_get(obj, "cb_draw");
+
+  cypher_draw(draw, data, w, h);
 }
 
 static void
@@ -411,6 +419,20 @@ window_new()
   return w;
 }
 
+Evas_Object*
+jk_window_new()
+{
+  Evas_Object* win = elm_win_util_standard_add("3d view", "3d view");
+  elm_win_autodel_set(win, EINA_TRUE);
+  evas_object_smart_callback_add(win, "delete,request", simple_window_del, NULL);
+
+  evas_object_resize(win, 864, 434);
+  evas_object_show(win);
+
+  return win;
+}
+
+
 
 static rust_elm_callback _init_callback_cb = 0;
 static void* _init_callback_data = 0;
@@ -591,3 +613,20 @@ window_rect_set(Window* win, float x, float y, float w, float h)
 {
   evas_object_geometry_set(win->rect, x, y, w, h);
 }
+
+void tmp_func(
+      Window* window,
+      void* data,
+      rust_callback init,
+      rust_callback draw,
+      resize_callback resize)
+{
+  Evas_Object* gl = window->glview;
+
+  evas_object_data_set(gl, "cb_data", data);
+  evas_object_data_set(gl, "cb_init", init);
+
+  evas_object_data_set(gl, "cb_draw", draw);
+  evas_object_data_set(gl, "cb_resize", resize);
+}
+
