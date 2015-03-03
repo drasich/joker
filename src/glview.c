@@ -16,12 +16,57 @@ _del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, void *event
   ecore_animator_del(ani);
 }
 
+static void
+_init_gl(Evas_Object *obj)
+{
+  void* data = evas_object_data_get(obj, "cb_data");
+  rust_callback init = evas_object_data_get(obj, "cb_init");
+
+  cypher_init(init, data);
+}
+
+static void
+_del_gl(Evas_Object *obj)
+{
+  cypher_del();
+}
+
+static void
+_resize_gl(Evas_Object *obj)
+{
+  int w, h;
+  elm_glview_size_get(obj, &w, &h);
+
+  void* data = evas_object_data_get(obj, "cb_data");
+  resize_callback resize = evas_object_data_get(obj, "cb_resize");
+
+  cypher_resize(resize, data, w, h);
+}
+
+static void
+_draw_gl(Evas_Object *obj)
+{
+  int w, h;
+  elm_glview_size_get(obj, &w, &h);
+
+  void* data = evas_object_data_get(obj, "cb_data");
+  rust_callback draw = evas_object_data_get(obj, "cb_draw");
+
+  cypher_draw(draw, data, w, h);
+}
+
+
 Evas_Object*
 _create_glview(Evas_Object* win)
 {
   Evas_Object *glview;
 
   glview = elm_glview_add(win);
+
+  elm_glview_init_func_set(glview, _init_gl);
+  elm_glview_del_func_set(glview, _del_gl);
+  elm_glview_resize_func_set(glview, _resize_gl);
+  elm_glview_render_func_set(glview, _draw_gl);
 
   Ecore_Animator *ani = ecore_animator_add(_anim, glview);
   evas_object_data_set(glview, "ani", ani);
@@ -52,6 +97,7 @@ JkGlview* jk_glview_new(
   JkGlview* jgl = calloc(1, sizeof *jgl);
 
   Evas_Object* gl =  _create_glview(win);
+
   evas_object_data_set(gl, "cb_data", data);
   evas_object_data_set(gl, "cb_init", init);
   evas_object_data_set(gl, "cb_draw", draw);
