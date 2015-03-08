@@ -11,6 +11,9 @@ struct _Command
   Evas_Object* root;
   Evas_Object* box;
   Evas_Object* gl;
+
+  Eina_List* visible;
+  Eina_List* hidden;
 };
 
 JkCommand* widget_command_new(Evas_Object* win);
@@ -23,6 +26,7 @@ struct _CommandCallbackData
   const char* name;
   void* data;
   command_callback fn;
+  Elm_Object_Item* item;
 };
 
 void command_new(

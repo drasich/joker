@@ -50,6 +50,75 @@ _entry_cmd_activated(void *data, Evas_Object *obj, void *event)
   }
 }
 
+static void
+_item_add(JkCommand* command, CommandCallbackData* ccd)
+{
+  const Elm_Genlist_Item_Class* class = itc1;
+  Elm_Genlist_Item_Type type = ELM_GENLIST_ITEM_NONE;
+
+  Elm_Object_Item* eoi = elm_genlist_item_append(
+        command->gl,
+        class,
+        ccd,
+        NULL,
+        type,
+        _gl_cmd_sel,
+        command);
+
+  ccd->item = eoi;
+
+  command->visible = eina_list_append(command->visible, ccd);
+}
+
+static void
+_item_del(JkCommand* command, CommandCallbackData* ccd)
+{
+  elm_object_item_del(ccd->item);
+}
+
+bool starts_with(const char *str, const char *other)
+{
+  size_t len_str = strlen(str);
+  size_t len_other = strlen(other);
+  return len_str < len_other ? false : strncmp(other, str, len_other) == 0;
+}
+
+static void
+_entry_cmd_changed(void *data, Evas_Object *obj, void *event)
+{
+  const char* value = elm_object_text_get(obj);
+  JkCommand* com = data;
+  printf("TODO\n");
+
+  Eina_List *l;
+  Eina_List *l_next;
+  CommandCallbackData *ccd;
+
+  EINA_LIST_FOREACH_SAFE(com->visible, l, l_next, ccd) {
+    if (!starts_with(ccd->name, value)) {
+      com->visible = eina_list_remove_list(com->visible, l);
+      _item_del(com, ccd);
+      com->hidden = eina_list_append(com->hidden, ccd);
+    }
+  }
+
+  EINA_LIST_FOREACH_SAFE(com->hidden, l, l_next, ccd) {
+    if (starts_with(ccd->name, value)) {
+      com->hidden = eina_list_remove_list(com->hidden, l);
+      //com->visible = eina_list_append(com->visible, ccd);
+      _item_add(com, ccd);
+    }
+  }
+
+  if (strcmp(value, "")) {
+    Elm_Object_Item* item = elm_genlist_first_item_get(com->gl);
+    if (item) {
+      elm_genlist_item_selected_set(item, EINA_TRUE);
+      elm_object_focus_set(obj, EINA_TRUE);
+    }
+  }
+
+}
 
 static void 
 _cmd_list(JkCommand* cmd, Evas_Object* win, Evas_Object* bx)
@@ -64,6 +133,7 @@ _cmd_list(JkCommand* cmd, Evas_Object* win, Evas_Object* bx)
   evas_object_size_hint_weight_set(gli, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_show(gli);
   elm_genlist_reorder_mode_set(gli, EINA_TRUE);  
+  elm_genlist_focus_on_selection_set(gli, EINA_FALSE);
 
   itc1 = elm_genlist_item_class_new();
   itc1->item_style     = "default";
@@ -105,6 +175,7 @@ JkCommand* widget_command_new(Evas_Object* win)
   evas_object_show(entry);
 
   evas_object_smart_callback_add(entry, "activated", _entry_cmd_activated, c);
+  evas_object_smart_callback_add(entry, "changed", _entry_cmd_changed, c);
 
   //elm_entry_scrollable_set(entry, EINA_TRUE);
   evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, 0.5);
@@ -113,6 +184,9 @@ JkCommand* widget_command_new(Evas_Object* win)
   elm_entry_select_all(entry);
 
   _cmd_list(c, win, bx);
+
+  c->visible = NULL;
+  c->hidden = NULL;
 
   return c;
 }
@@ -142,17 +216,7 @@ command_new(
   ccd->data = data;
   ccd->fn = fn;
 
-  const Elm_Genlist_Item_Class* class = itc1;
-  Elm_Genlist_Item_Type type = ELM_GENLIST_ITEM_NONE;
-
-  Elm_Object_Item* eoi = elm_genlist_item_append(
-        command->gl,
-        class,
-        ccd,
-        NULL,
-        type,
-        _gl_cmd_sel,
-        command);
+  _item_add(command, ccd);
 }
 
 void
