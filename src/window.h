@@ -4,6 +4,7 @@
 #include "tree.h"
 #include "property.h"
 #include "action.h"
+#include "command.h"
 
 typedef struct _Window Window;
 
@@ -85,6 +86,7 @@ void window_callback_set(
 
 JkTree* window_tree_new(Window* w);
 JkAction* window_action_new(Window* w);
+JkCommand* window_command_new(Window* w);
 void window_button_new(Window* w);
 
 typedef void (*rust_elm_callback)(void* data);

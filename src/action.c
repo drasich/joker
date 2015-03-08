@@ -10,7 +10,7 @@ JkAction* widget_action_new(Evas_Object* win)
   printf("tree widget new !!win: %p \n",win);
   JkAction *a = calloc(1, sizeof *a);
 
-  Evas_Object *gli, *bx, *rd1, *rd2, *frame;
+  Evas_Object *bx, *frame;
 
   bx = elm_box_add(win);
   a->box = bx;
