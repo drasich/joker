@@ -148,6 +148,7 @@ _cmd_list(JkCommand* cmd, Evas_Object* win, Evas_Object* bx)
   //TODO
   //evas_object_smart_callback_add(gli, "selected", gl4_select, t);
   evas_object_smart_callback_add(gli, "pressed", _gl_cmd_pressed, cmd);
+  elm_scroller_content_min_limit(gli, false, false);
 
   elm_box_pack_end(bx, gli);
 
@@ -159,18 +160,26 @@ JkCommand* widget_command_new(Evas_Object* win)
 {
   JkCommand *c = calloc(1, sizeof *c);
 
-  Evas_Object *bx, *entry;
+  Evas_Object* popup = elm_popup_add(win);
+  elm_object_style_set(popup, "transparent");
+  elm_object_text_set(popup, "This Popup has transparent background");
+  c->root = popup;
 
+  // popup show should be called after adding all the contents and the buttons
+  // of popup to set the focus into popup's contents correctly.
+  //evas_object_show(popup);
+
+  Evas_Object *bx, *entry;
   bx = elm_box_add(win);
   c->box = bx;
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_show(bx);
-  c->root = bx;
   elm_box_horizontal_set(bx, EINA_FALSE);
   //elm_box_homogeneous_set(bx, EINA_FALSE);
 
   entry = elm_entry_add(win);
   evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, 0);
+  //evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   elm_box_pack_end(bx, entry);
   evas_object_show(entry);
 
@@ -184,6 +193,8 @@ JkCommand* widget_command_new(Evas_Object* win)
   elm_entry_select_all(entry);
 
   _cmd_list(c, win, bx);
+
+  elm_object_part_content_set(popup, "default", bx);
 
   c->visible = NULL;
   c->hidden = NULL;
@@ -226,6 +237,12 @@ command_show(JkCommand* command)
     evas_object_hide(command->root);
   }
   else {
+    /*
+    evas_object_resize(command->box, 256, 256);
+    evas_object_resize(command->root, 256, 256);
+    elm_layout_sizing_eval(command->root);
+    elm_box_recalculate(command->box);
+    */
     evas_object_show(command->root);
   }
 }

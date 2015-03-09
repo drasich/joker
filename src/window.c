@@ -232,7 +232,8 @@ void jk_init()
   eet_init();
   srand (time(NULL));
 
-  elm_config_preferred_engine_set("opengl_x11");
+  //elm_config_preferred_engine_set("opengl_x11");
+  elm_config_accel_preference_set("opengl");
   elm_config_focus_highlight_animate_set(EINA_TRUE);
   elm_config_focus_highlight_enabled_set(EINA_TRUE);
   //create_simple_window();
@@ -468,6 +469,7 @@ JkAction* window_action_new(Window* w)
 
 JkCommand* window_command_new(Window* w)
 {
+  /*
   Evas_Object* win = elm_win_add(w->win, "command", ELM_WIN_BASIC);
   elm_win_title_set(win, "command");
 
@@ -475,12 +477,17 @@ JkCommand* window_command_new(Window* w)
   evas_object_show(bg);
   evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   elm_win_resize_object_add(win, bg);
+  */
+
+  Evas_Object* win = w->win;
 
   JkCommand* c = widget_command_new(win);
   evas_object_size_hint_weight_set(c->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, c->root);
-  evas_object_resize(win, 256, 256);
-  evas_object_show(win);
+  //elm_win_resize_object_add(win, c->root);
+  //evas_object_resize(win, 256, 256);
+  //evas_object_show(win);
+  //
+
 
   return c;
 }
