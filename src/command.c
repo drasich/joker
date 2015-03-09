@@ -66,7 +66,6 @@ _item_add(JkCommand* command, CommandCallbackData* ccd)
         command);
 
   ccd->item = eoi;
-
   command->visible = eina_list_append(command->visible, ccd);
 }
 
@@ -88,16 +87,18 @@ _entry_cmd_changed(void *data, Evas_Object *obj, void *event)
 {
   const char* value = elm_object_text_get(obj);
   JkCommand* com = data;
-  printf("TODO\n");
 
   Eina_List *l;
   Eina_List *l_next;
   CommandCallbackData *ccd;
 
+  printf("......................000000000000 entry changed %s \n", value);
+
   EINA_LIST_FOREACH_SAFE(com->visible, l, l_next, ccd) {
     if (!starts_with(ccd->name, value)) {
       com->visible = eina_list_remove_list(com->visible, l);
       _item_del(com, ccd);
+      printf("......................del %s \n", ccd->name);
       com->hidden = eina_list_append(com->hidden, ccd);
     }
   }
@@ -107,6 +108,7 @@ _entry_cmd_changed(void *data, Evas_Object *obj, void *event)
       com->hidden = eina_list_remove_list(com->hidden, l);
       //com->visible = eina_list_append(com->visible, ccd);
       _item_add(com, ccd);
+      printf(".........................add %s \n", ccd->name);
     }
   }
 
@@ -118,6 +120,7 @@ _entry_cmd_changed(void *data, Evas_Object *obj, void *event)
     }
   }
 
+  //elm_genlist_realized_items_update(com->gl);
 }
 
 static void 
@@ -127,13 +130,12 @@ _cmd_list(JkCommand* cmd, Evas_Object* win, Evas_Object* bx)
   Evas_Object *gli;
 
   gli = elm_genlist_add(win);
-  //evas_object_data_set(gli, "tree", t);
-  //t->gl = gli;
+  cmd->gl = gli;
   evas_object_size_hint_align_set(gli, EVAS_HINT_FILL, EVAS_HINT_FILL);
   evas_object_size_hint_weight_set(gli, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  evas_object_show(gli);
-  elm_genlist_reorder_mode_set(gli, EINA_TRUE);  
+  //elm_genlist_homogeneous_set(gli, EINA_TRUE);
   elm_genlist_focus_on_selection_set(gli, EINA_FALSE);
+  evas_object_show(gli);
 
   itc1 = elm_genlist_item_class_new();
   itc1->item_style     = "default";
@@ -148,11 +150,11 @@ _cmd_list(JkCommand* cmd, Evas_Object* win, Evas_Object* bx)
   //TODO
   //evas_object_smart_callback_add(gli, "selected", gl4_select, t);
   evas_object_smart_callback_add(gli, "pressed", _gl_cmd_pressed, cmd);
-  elm_scroller_content_min_limit(gli, false, false);
+  //elm_scroller_content_min_limit(gli, true, true);
+  //evas_object_size_hint_min_set(gli, 256, 256);
+  //evas_object_resize(gli, 256, 256);
 
-  elm_box_pack_end(bx, gli);
-
-  cmd->gl = gli;
+  //elm_box_pack_end(bx, gli);
 }
 
 
@@ -162,12 +164,7 @@ JkCommand* widget_command_new(Evas_Object* win)
 
   Evas_Object* popup = elm_popup_add(win);
   elm_object_style_set(popup, "transparent");
-  elm_object_text_set(popup, "This Popup has transparent background");
   c->root = popup;
-
-  // popup show should be called after adding all the contents and the buttons
-  // of popup to set the focus into popup's contents correctly.
-  //evas_object_show(popup);
 
   Evas_Object *bx, *entry;
   bx = elm_box_add(win);
@@ -175,7 +172,6 @@ JkCommand* widget_command_new(Evas_Object* win)
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_show(bx);
   elm_box_horizontal_set(bx, EINA_FALSE);
-  //elm_box_homogeneous_set(bx, EINA_FALSE);
 
   entry = elm_entry_add(win);
   evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, 0);
@@ -192,7 +188,16 @@ JkCommand* widget_command_new(Evas_Object* win)
   elm_entry_single_line_set(entry, EINA_TRUE);
   elm_entry_select_all(entry);
 
+  Evas_Object *layout;
+  layout = elm_layout_add(win);
+  elm_layout_file_set(layout, "edc/popup.edj", "example_group");
+  evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+
   _cmd_list(c, win, bx);
+
+  evas_object_show(layout);
+  elm_object_part_content_set(layout, "part_list", c->gl);
+  elm_box_pack_end(bx, layout);
 
   elm_object_part_content_set(popup, "default", bx);
 
@@ -227,7 +232,8 @@ command_new(
   ccd->data = data;
   ccd->fn = fn;
 
-  _item_add(command, ccd);
+  //_item_add(command, ccd);
+  command->hidden = eina_list_append(command->hidden, ccd);
 }
 
 void
@@ -237,12 +243,6 @@ command_show(JkCommand* command)
     evas_object_hide(command->root);
   }
   else {
-    /*
-    evas_object_resize(command->box, 256, 256);
-    evas_object_resize(command->root, 256, 256);
-    elm_layout_sizing_eval(command->root);
-    elm_box_recalculate(command->box);
-    */
     evas_object_show(command->root);
   }
 }
