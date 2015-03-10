@@ -29,10 +29,12 @@ _gl_cmd_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 static void
 _gl_cmd_pressed(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_info)
 {
-   Elm_Object_Item *eoi = event_info;
+  JkCommand* com = data;
+  Elm_Object_Item *eoi = event_info;
 
-   CommandCallbackData* ccd = elm_object_item_data_get(eoi);
-   ccd->fn(ccd->data);
+  CommandCallbackData* ccd = elm_object_item_data_get(eoi);
+  ccd->fn(ccd->data);
+  command_show(com);
 }
 
 static void
