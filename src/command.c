@@ -44,11 +44,20 @@ _entry_cmd_activated(void *data, Evas_Object *obj, void *event)
   if (eoi) {
     CommandCallbackData* ccd = elm_object_item_data_get(eoi);
     ccd->fn(ccd->data);
+    command_show(com);
   }
   else {
     printf("no item selected\n");
   }
 }
+
+static void
+_entry_cmd_aborted(void *data, Evas_Object *obj, void *event)
+{
+  JkCommand* com = data;
+  command_show(com);
+}
+
 
 static void
 _item_add(JkCommand* command, CommandCallbackData* ccd)
@@ -130,6 +139,7 @@ _cmd_list(JkCommand* cmd, Evas_Object* win, Evas_Object* bx)
   Evas_Object *gli;
 
   gli = elm_genlist_add(win);
+
   cmd->gl = gli;
   evas_object_size_hint_align_set(gli, EVAS_HINT_FILL, EVAS_HINT_FILL);
   evas_object_size_hint_weight_set(gli, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -149,7 +159,8 @@ _cmd_list(JkCommand* cmd, Evas_Object* win, Evas_Object* bx)
 
   //TODO
   //evas_object_smart_callback_add(gli, "selected", gl4_select, t);
-  evas_object_smart_callback_add(gli, "pressed", _gl_cmd_pressed, cmd);
+  //evas_object_smart_callback_add(gli, "pressed", _gl_cmd_pressed, cmd);
+  evas_object_smart_callback_add(gli, "activated", _gl_cmd_pressed, cmd);
   //elm_scroller_content_min_limit(gli, true, true);
   //evas_object_size_hint_min_set(gli, 256, 256);
   //evas_object_resize(gli, 256, 256);
@@ -180,6 +191,7 @@ JkCommand* widget_command_new(Evas_Object* win)
   evas_object_show(entry);
 
   evas_object_smart_callback_add(entry, "activated", _entry_cmd_activated, c);
+  evas_object_smart_callback_add(entry, "aborted", _entry_cmd_aborted, c);
   evas_object_smart_callback_add(entry, "changed", _entry_cmd_changed, c);
 
   //elm_entry_scrollable_set(entry, EINA_TRUE);
@@ -239,10 +251,25 @@ command_new(
 void
 command_show(JkCommand* command)
 {
+  Eina_List *l;
+  Eina_List *l_next;
+  CommandCallbackData *ccd;
+
   if (evas_object_visible_get(command->root)) {
     evas_object_hide(command->root);
+
+    EINA_LIST_FOREACH_SAFE(command->visible, l, l_next, ccd) {
+      command->visible = eina_list_remove_list(command->visible, l);
+      _item_del(command, ccd);
+      command->hidden = eina_list_append(command->hidden, ccd);
+    }
   }
   else {
+    EINA_LIST_FOREACH_SAFE(command->hidden, l, l_next, ccd) {
+      command->hidden = eina_list_remove_list(command->hidden, l);
+      _item_add(command, ccd);
+    }
+
     evas_object_show(command->root);
   }
 }
