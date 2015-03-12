@@ -29,12 +29,15 @@ _gl_cmd_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 static void
 _gl_cmd_pressed(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_info)
 {
-  JkCommand* com = data;
   Elm_Object_Item *eoi = event_info;
 
-  CommandCallbackData* ccd = elm_object_item_data_get(eoi);
-  ccd->fn(ccd->data);
-  command_show(com);
+  if (elm_genlist_item_selected_get(eoi)) {
+    JkCommand* com = data;
+
+    CommandCallbackData* ccd = elm_object_item_data_get(eoi);
+    ccd->fn(ccd->data);
+    command_show(com);
+  }
 }
 
 static void
@@ -161,7 +164,7 @@ _cmd_list(JkCommand* cmd, Evas_Object* win, Evas_Object* bx)
 
   //TODO
   //evas_object_smart_callback_add(gli, "selected", gl4_select, t);
-  //evas_object_smart_callback_add(gli, "pressed", _gl_cmd_pressed, cmd);
+  evas_object_smart_callback_add(gli, "pressed", _gl_cmd_pressed, cmd);
   evas_object_smart_callback_add(gli, "activated", _gl_cmd_pressed, cmd);
   //elm_scroller_content_min_limit(gli, true, true);
   //evas_object_size_hint_min_set(gli, 256, 256);
