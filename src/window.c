@@ -368,12 +368,26 @@ window_new()
   return w;
 }
 
-Evas_Object*
-jk_window_new()
+static void
+_close_window(void *data, Evas_Object *obj, void *event_info)
 {
-  Evas_Object* win = elm_win_util_standard_add("3d view", "3d view");
+  rust_elm_callback cb = evas_object_data_get(obj, "cb");
+  void *cb_data = evas_object_data_get(obj, "cb_data");
+
+  if (cb != NULL) {
+    cb(cb_data);
+  }
+}
+
+
+Evas_Object*
+jk_window_new(rust_elm_callback cb, const void* cb_data)
+{
+  Evas_Object* win = elm_win_util_standard_add("3d jk view", "3d jk view");
   elm_win_autodel_set(win, EINA_TRUE);
-  evas_object_smart_callback_add(win, "delete,request", simple_window_del, NULL);
+  evas_object_smart_callback_add(win, "delete,request", _close_window, NULL);
+  evas_object_data_set(win, "cb", cb);
+  evas_object_data_set(win, "cb_data", cb_data);
 
   evas_object_resize(win, 864, 434);
   evas_object_show(win);
@@ -605,3 +619,7 @@ void tmp_func(
   evas_object_data_set(gl, "cb_resize", resize);
 }
 
+void jk_exit()
+{
+  elm_exit();
+}

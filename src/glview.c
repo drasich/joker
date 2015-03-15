@@ -29,6 +29,9 @@ static void
 _del_gl(Evas_Object *obj)
 {
   cypher_del();
+  Ecore_Animator *ani = evas_object_data_get(obj, "ani");
+  ecore_animator_del(ani);
+
 }
 
 static void

@@ -103,7 +103,9 @@ JkPropertyList* jk_property_list_new(Window* w);
 void window_rect_visible_set(Window* w, bool b);
 void window_rect_set(Window* win, float x, float y, float w, float h);
 
-Evas_Object* jk_window_new();
+//Evas_Object* jk_window_new();
+Evas_Object* jk_window_new(rust_elm_callback cb, const void* cb_data);
+void jk_exit();
 
 
 
