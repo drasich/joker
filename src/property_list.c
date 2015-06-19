@@ -815,7 +815,7 @@ PropertyValue* property_list_node_add(
   PropertyNode* node = _property_list_node_find_parent(pl, path);
   if (!node) {
     printf("%s, could not find a root for %s\n", __FUNCTION__, path);
-    return;
+    return NULL;
   }
 
   unsigned int num;
