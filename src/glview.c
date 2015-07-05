@@ -13,7 +13,9 @@ _del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, void *event
 {
   EINA_LOG_DBG("del ani");
   Ecore_Animator *ani = evas_object_data_get(obj, "ani");
-  ecore_animator_del(ani);
+  if (ani) {
+    ecore_animator_del(ani);
+  }
 }
 
 static void
@@ -30,7 +32,9 @@ _del_gl(Evas_Object *obj)
 {
   cypher_del();
   Ecore_Animator *ani = evas_object_data_get(obj, "ani");
-  ecore_animator_del(ani);
+  if (ani) {
+    ecore_animator_del(ani);
+  }
 
 }
 

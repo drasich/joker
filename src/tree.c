@@ -3,6 +3,7 @@
 #include "tree.h"
 //#include "object.h"
 //#include "view.h"
+#include "common.h"
 #define __UNUSED__
 
 static Elm_Genlist_Item_Class *itc1;
@@ -133,6 +134,7 @@ tree_widget_new(Evas_Object* win)
 {
   printf("tree widget new !!win: %p \n",win);
   JkTree *t = calloc(1, sizeof *t);
+  t->win = win;
 
   Evas_Object *gli, *bx, *rd1, *rd2, *frame;
 
@@ -329,6 +331,11 @@ void tree_update(JkTree* t)
 void tree_item_update(Elm_Object_Item* item)
 {
   elm_genlist_item_update(item);
+}
+
+void tree_show(JkTree* t, bool b)
+{
+  object_show(t->win, b);
 }
 
 

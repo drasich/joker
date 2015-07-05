@@ -8,6 +8,7 @@ typedef struct _Action JkAction;
 
 struct _Action
 {
+  Evas_Object* win;
   Evas_Object* root;
   Evas_Object* box;
   Evas_Object* gl;
@@ -29,6 +30,10 @@ void action_button_new(
       const char* name,
       void* data,
       button_callback fn);
+
+void action_show(
+      JkAction* action,
+      bool b);
 
 #endif
 

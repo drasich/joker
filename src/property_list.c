@@ -1,6 +1,7 @@
 #include "property.h"
 #include <string.h>
 #include <stdbool.h>
+#include "common.h"
 
 static Elm_Genlist_Item_Class *class_entry,
                               *class_group,
@@ -1008,6 +1009,7 @@ JkPropertyList*
 property_list_new(Evas_Object* win)
 {
   JkPropertyList* p = calloc(1, sizeof *p);
+  p->win = win;
 
   Evas_Object *bx = elm_box_add(win);
   p->root = bx;
@@ -1220,5 +1222,12 @@ void
 property_expand(PropertyValue* val)
 {
     elm_genlist_item_expanded_set(val->item, EINA_TRUE);
+}
+
+void property_show(
+      JkPropertyList* p, 
+      bool b)
+{
+  object_show(p->win, b);
 }
 

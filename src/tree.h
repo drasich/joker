@@ -16,6 +16,7 @@ typedef void (*tree_selected)(void* data, void* object, Elm_Object_Item* parent)
 
 struct _Tree
 {
+  Evas_Object* win;
   Evas_Object* root;
   Evas_Object* box;
   Evas_Object* gl;
@@ -69,6 +70,8 @@ void tree_deselect_all(JkTree *t);
 void tree_item_expand(Elm_Object_Item* item);
 void tree_update(JkTree* t);
 void tree_item_update(Elm_Object_Item* item);
+
+void tree_show(JkTree* t, bool b);
 
 #endif
 

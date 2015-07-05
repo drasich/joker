@@ -1,6 +1,7 @@
 #ifndef __property__
 #define __property__
 #include "Elementary.h"
+#include "stdbool.h"
 
 typedef struct _Property JkProperty;
 
@@ -124,6 +125,7 @@ typedef struct _PropertyList JkPropertyList;
 
 struct _PropertyList
 {
+  Evas_Object* win;
   Evas_Object* root;
   Evas_Object* list;
 
@@ -225,5 +227,9 @@ void property_list_float_update(
       float value);
 
 void property_expand(PropertyValue* value);
+
+void property_show(
+      JkPropertyList* p, 
+      bool b);
 
 #endif

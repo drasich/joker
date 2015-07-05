@@ -1,5 +1,6 @@
 #include "action.h"
 #include "tree.h"
+#include "common.h"
 #define __UNUSED__
 
 void _add_buttons(Evas_Object* win, Evas_Object* box);
@@ -9,6 +10,7 @@ JkAction* widget_action_new(Evas_Object* win)
 {
   printf("tree widget new !!win: %p \n",win);
   JkAction *a = calloc(1, sizeof *a);
+  a->win = win;
 
   Evas_Object *bx, *frame;
 
@@ -204,8 +206,11 @@ void _add_buttons(Evas_Object* win, Evas_Object* box)
   elm_box_pack_end(box, tg);
   evas_object_show(tg);
   //evas_object_smart_callback_add(tg, "changed", _dragger_global_local_changed_cb, v);
-
-
-
 }
 
+void action_show(
+      JkAction* action,
+      bool b)
+{
+  object_show(action->win, b);
+}
