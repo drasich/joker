@@ -11,6 +11,7 @@ struct _Command
   Evas_Object* root;
   Evas_Object* box;
   Evas_Object* gl;
+  Evas_Object* entry;
 
   Eina_List* visible;
   Eina_List* hidden;
@@ -34,6 +35,8 @@ void command_new(
       const char* name,
       void* data,
       command_callback fn);
+
+void command_clean(JkCommand* command);
 
 void command_show(JkCommand* command);
 

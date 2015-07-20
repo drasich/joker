@@ -190,6 +190,7 @@ JkCommand* widget_command_new(Evas_Object* win)
   elm_box_horizontal_set(bx, EINA_FALSE);
 
   entry = elm_entry_add(win);
+  c->entry = entry;
   evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, 0);
   //evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   elm_box_pack_end(bx, entry);
@@ -254,6 +255,16 @@ command_new(
 }
 
 void
+command_clean(JkCommand* command)
+{
+  CommandCallbackData* ccd;
+
+  EINA_LIST_FREE(command->hidden, ccd)
+   free(ccd);
+}
+
+
+void
 command_show(JkCommand* command)
 {
   Eina_List *l;
@@ -275,6 +286,9 @@ command_show(JkCommand* command)
       _item_add(command, ccd);
     }
 
+    //seems to act like a switch
+    elm_entry_select_none(command->entry);
+    elm_entry_select_all(command->entry);
     evas_object_show(command->root);
   }
 }
