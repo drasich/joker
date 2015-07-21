@@ -35,7 +35,8 @@ _gl_cmd_pressed(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_
     JkCommand* com = data;
 
     CommandCallbackData* ccd = elm_object_item_data_get(eoi);
-    ccd->fn(ccd->data);
+    //ccd->fn(ccd->data, elm_object_item_part_text_get(eoi, NULL));
+    ccd->fn(ccd->data, ccd->name);
     command_show(com);
   }
 }
@@ -48,7 +49,8 @@ _entry_cmd_activated(void *data, Evas_Object *obj, void *event)
 
   if (eoi) {
     CommandCallbackData* ccd = elm_object_item_data_get(eoi);
-    ccd->fn(ccd->data);
+    //ccd->fn(ccd->data, elm_object_item_part_text_get(eoi,NULL));
+    ccd->fn(ccd->data, ccd->name);
     command_show(com);
   }
   else {
@@ -232,7 +234,7 @@ _command_callback(
       void *event_info)
 {
   CommandCallbackData* ccd = data;
-  ccd->fn(ccd->data);
+  ccd->fn(ccd->data, ccd->name);
 }
 
 void

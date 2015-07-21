@@ -19,7 +19,7 @@ struct _Command
 
 JkCommand* widget_command_new(Evas_Object* win);
 
-typedef void (*command_callback)(void *data);
+typedef void (*command_callback)(void* data, const char* name);
 
 typedef struct _CommandCallbackData CommandCallbackData;
 struct _CommandCallbackData
