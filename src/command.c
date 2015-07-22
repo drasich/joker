@@ -259,10 +259,16 @@ command_new(
 void
 command_clean(JkCommand* command)
 {
+  elm_genlist_clear(command->gl);
   CommandCallbackData* ccd;
 
   EINA_LIST_FREE(command->hidden, ccd)
    free(ccd);
+
+  EINA_LIST_FREE(command->visible, ccd)
+   free(ccd);
+
+
 }
 
 
