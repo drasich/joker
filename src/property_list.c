@@ -131,12 +131,12 @@ _entry_focused_cb(
 }
 
 static void
-_entry_activated_cb(
+_entry_register_change_cb(
       void* data,
       Evas_Object *obj,
       void* event)
 {
-  printf("entry activated!!!!!!!!!!!!!!.\n");
+  printf("entry activated or unfocused!!!!!!!!!!!!!!.\n");
   PropertyValue* val = data;
   JkPropertyList* pl = val->list;
   //const char* name = evas_object_name_get(obj);
@@ -344,8 +344,8 @@ gl_content_string_get(
 
   evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb_list, val);
   evas_object_smart_callback_add(en, "focused", _entry_focused_cb, val);
-  evas_object_smart_callback_add(en, "activated", _entry_activated_cb, val);
-  evas_object_smart_callback_add(en, "unfocused", _entry_activated_cb, val);
+  evas_object_smart_callback_add(en, "activated", _entry_register_change_cb, val);
+  evas_object_smart_callback_add(en, "unfocused", _entry_register_change_cb, val);
   //evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
   //TODO
   /*
