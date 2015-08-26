@@ -368,7 +368,8 @@ window_new()
 
   Evas* e = evas_object_evas_get(win);
   Evas_Object* panel = smart_panel_add(e);
-  evas_object_move(panel, 0, 0);
+  evas_object_move(panel, 100, 100);
+  evas_object_show(panel);
 
   return w;
 }

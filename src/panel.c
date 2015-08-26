@@ -19,11 +19,60 @@ struct _Smart_Panel
    Evas_Object_Smart_Clipped_Data base;
    Evas_Object *rect;
    bool edge;
+   bool moving;
+   int x, y;
 };
 
 EVAS_SMART_SUBCLASS_NEW("Smart_Panel", _smart_panel,
                         Evas_Smart_Class, Evas_Smart_Class,
                         evas_object_smart_clipped_class_get, _smart_callbacks);
+
+static void
+_ondown(void *data, Evas *e, Evas_Object *o, void *event_info)
+{
+    printf("yosh \n  ");
+    Smart_Panel * priv = data;
+    priv->moving = true;
+
+   Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*) event_info;
+
+    priv->x = ev->canvas.x;
+    priv->y = ev->canvas.y;
+}
+
+static void
+_onup(void *data, Evas *e, Evas_Object *o, void *event_info)
+{
+    printf("up \n  ");
+    Smart_Panel * priv = data;
+    priv->moving = false;
+}
+
+static void
+_onmove(void *data, Evas *e, Evas_Object *o, void *event_info)
+{
+  Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
+
+  /*
+  Evas_Coord x, y, w, h;
+  evas_object_geometry_get (o, &x, &y, &w, &h);
+  int curx = ev->cur.canvas.x - x;
+  int cury = ev->cur.canvas.y - y;
+
+  int prevx = ev->prev.canvas.x - x;
+  int prevy = ev->prev.canvas.y - y;
+  */
+
+    Smart_Panel * priv = data;
+    if (priv->moving) {
+        printf("move \n  ");
+        evas_object_move(o, ev->cur.canvas.x, ev->cur.canvas.y);
+    }
+
+}
+
+
+
 
 static void
 _smart_panel_add(Evas_Object *o)
@@ -50,12 +99,18 @@ _smart_panel_add(Evas_Object *o)
 
    Evas_Object *rect = evas_object_rectangle_add(e);
    evas_object_color_set(rect, rand() % 255, rand() % 255, rand() % 255, 255);
+   //evas_object_color_set(rect, 255, 0, 0, 255);
    evas_object_resize(rect, 100, 400);
    evas_object_show(rect);
    priv->rect = rect;
    evas_object_smart_member_add(rect, o);
 
+   evas_object_event_callback_add(rect, EVAS_CALLBACK_MOUSE_DOWN, _ondown, priv);
+   evas_object_event_callback_add(rect, EVAS_CALLBACK_MOUSE_UP, _onup, priv);
+   evas_object_event_callback_add(rect, EVAS_CALLBACK_MOUSE_MOVE, _onmove, priv);
+
    priv->edge = false;
+   priv->moving = false;
 
 }
 
@@ -103,6 +158,7 @@ _smart_panel_calculate(Evas_Object *o)
    	evas_object_move(priv->rect, 0, 0);
    }
    else {
+   	evas_object_resize(priv->rect, 100, 400);
    }
 
 }
