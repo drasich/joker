@@ -9,6 +9,7 @@
 #include "buffer.h"
 #include "cypher.h"
 #include "window.h"
+#include "panel.h"
 
 #define __UNUSED__
 
@@ -41,7 +42,7 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
   Window* w = data;
   if (w->key_down) {
     w->key_down(
-          w->data, 
+          w->data,
           _modifier_get(ev->modifiers),
           ev->keyname,
           ev->key,
@@ -104,7 +105,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Window* w = data;
   if (w->mouse_down) {
     w->mouse_down(
-          w->data, 
+          w->data,
           _modifier_get(ev->modifiers),
           ev->button,
           ev->canvas.x,
@@ -365,6 +366,10 @@ window_new()
   //evas_object_resize(win, 864, 434);
   evas_object_show(win);
 
+  Evas* e = evas_object_evas_get(win);
+  Evas_Object* panel = smart_panel_add(e);
+  evas_object_move(panel, 0, 0);
+
   return w;
 }
 
@@ -389,7 +394,7 @@ jk_window_new(rust_elm_callback cb, const void* cb_data)
   evas_object_data_set(win, "cb", cb);
   evas_object_data_set(win, "cb_data", cb_data);
 
-  evas_object_resize(win, 864, 434);
+  evas_object_resize(win, 64, 64);
   evas_object_show(win);
 
   return win;
@@ -597,7 +602,7 @@ window_rect_visible_set(Window* w, bool b)
   }
 }
 
-void 
+void
 window_rect_set(Window* win, float x, float y, float w, float h)
 {
   evas_object_geometry_set(win->rect, x, y, w, h);

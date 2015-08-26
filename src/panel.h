@@ -11,6 +11,7 @@ struct _Panel
 };
 
 //typedef void (rust_cb)(void* data);
+Evas_Object * smart_panel_add(Evas *evas);
 
 
 #endif
