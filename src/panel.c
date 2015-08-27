@@ -21,6 +21,7 @@ struct _Smart_Panel
    bool edge;
    bool moving;
    int x, y;
+   int w, h;
 };
 
 EVAS_SMART_SUBCLASS_NEW("Smart_Panel", _smart_panel,
@@ -36,8 +37,11 @@ _ondown(void *data, Evas *e, Evas_Object *o, void *event_info)
 
    Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*) event_info;
 
-    priv->x = ev->canvas.x;
-    priv->y = ev->canvas.y;
+   Evas_Coord x, y, w, h;
+   evas_object_geometry_get (o, &x, &y, &w, &h);
+
+    priv->x = ev->canvas.x - x;
+    priv->y = ev->canvas.y - y;
 }
 
 static void
@@ -53,9 +57,10 @@ _onmove(void *data, Evas *e, Evas_Object *o, void *event_info)
 {
   Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
 
-  /*
   Evas_Coord x, y, w, h;
   evas_object_geometry_get (o, &x, &y, &w, &h);
+
+  /*
   int curx = ev->cur.canvas.x - x;
   int cury = ev->cur.canvas.y - y;
 
@@ -65,8 +70,30 @@ _onmove(void *data, Evas *e, Evas_Object *o, void *event_info)
 
     Smart_Panel * priv = data;
     if (priv->moving) {
-        printf("move \n  ");
-        evas_object_move(o, ev->cur.canvas.x, ev->cur.canvas.y);
+        int curx = ev->cur.canvas.x - priv->x;
+		if (!priv->edge) {
+			if (curx >0) {
+        		evas_object_move(o, curx, ev->cur.canvas.y - priv->y);
+			}
+			else {
+				priv->w = w;
+				priv->h = h;
+
+				priv->edge = true;
+				//Evas_Coord cx,cy,cw,ch;
+			 	//ecore_evas_geometry_get(e, &cx, &cy, &cw, &ch);
+
+        		evas_object_move(o, 0, 0);
+        		evas_object_resize(o, w, h);
+			}
+		}
+		else {
+			if (curx >5) {
+				priv->edge = false;
+        		evas_object_move(o, curx, ev->cur.canvas.y - priv->y);
+        		evas_object_resize(o, priv->w, priv->h);
+			}
+		}
     }
 
 }
