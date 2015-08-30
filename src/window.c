@@ -366,10 +366,6 @@ window_new()
   //evas_object_resize(win, 864, 434);
   evas_object_show(win);
 
-  Evas* e = evas_object_evas_get(win);
-  Evas_Object* panel = smart_panel_add(e);
-  evas_object_move(panel, 100, 100);
-  evas_object_show(panel);
 
   return w;
 }
@@ -536,6 +532,7 @@ JkPropertyList* jk_property_list_new(Window* w)
   return pl;
   */
 
+    /*
   Evas_Object* win = elm_win_add(w->win, "property", ELM_WIN_BASIC);
   elm_win_title_set(win, "property");
 
@@ -549,7 +546,22 @@ JkPropertyList* jk_property_list_new(Window* w)
   elm_win_resize_object_add(win, p->root);
   evas_object_resize(win, 256, 256);
   evas_object_show(win);
+
+  */
+
+    //chris
+  Evas* e = evas_object_evas_get(w->win);
+  Evas_Object* panel = smart_panel_add(e);
+  evas_object_move(panel, 100, 100);
+  evas_object_show(panel);
+
+  JkPropertyList* p = property_list_new(panel);
+  evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_resize(panel, 256, 256);
+  smart_panel_content_set(panel, p->root);
+
   return p;
+
 }
 
 void window_button_new(Window* w)
