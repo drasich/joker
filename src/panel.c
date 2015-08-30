@@ -200,7 +200,7 @@ static Evas_Object *create_edje(Evas* e)
     return NULL;
    }
 
-  if (!edje_object_file_set(edje, "edc/window.edj", "main")) {
+  if (!edje_object_file_set(edje, "edc/panel.edj", "main")) {
     int err = edje_object_load_error_get(edje);
     const char *errmsg = edje_load_error_str(err);
     EINA_LOG_ERR("could not load 'my_group' from .edj file : %s",
