@@ -23,6 +23,7 @@ struct _Smart_Panel
    bool moving;
    int x, y;
    int w, h;
+   int right;
 };
 
 struct _CbData{
@@ -216,11 +217,27 @@ _ondown_resize(
    Evas* e = evas_object_evas_get(o);
    evas_pointer_output_xy_get(e, &mx, &my);
 
-   priv->x = mx - x;
-   priv->y = my - y;
-   if (d->dir == 2 || d->dir == 3) {
-    priv->x = x + w;
+   if (d->dir == 0 )
+   {
+    priv->x = (x + w) - mx ;
+    priv->y = (y + h) - my ;
+   }
+   else if (d->dir == 1 )
+   {
+    priv->x = (x + w) - mx ;
+   }
+   else if (d->dir == 2) {
+    priv->x = x -mx;
+    priv->right = x + w;
 
+   }
+    else if ( d->dir == 3) {
+    priv->x = x -mx;
+    priv->y = (y + h) - my ;
+    priv->right = x + w;
+   }
+    else if ( d->dir == 4) {
+    priv->y = (y + h) - my ;
    }
 }
 
@@ -266,20 +283,39 @@ _onmove_resize(
     int cury = my;
 
     if ( d->dir == 0) {
-        evas_object_resize(o, curx - x, cury - y);
+        evas_object_resize(o, (curx + priv->x) - x, (cury + priv->y) - y);
     }
     else if ( d->dir == 1) {
-        evas_object_resize(o, curx - x, h);
+        evas_object_resize(o, (curx + priv->x) - x, h);
     }
     else if ( d->dir == 2) {
-        evas_object_move(o, curx, y);
-        evas_object_resize(o, priv->x - curx , h);
+        evas_object_move(o, curx + priv->x, y);
+        evas_object_resize(o, priv->right - (curx + priv->x) , h);
     }
     else if ( d->dir == 3) {
         evas_object_move(o, curx, y);
-        evas_object_resize(o, priv->x - curx , cury - y);
+        evas_object_resize(o, priv->right - (curx + priv->x) , (cury + priv->y) - y);
+    }
+    else if ( d->dir == 4) {
+        evas_object_resize(o, w, (cury + priv->y) - y);
     }
 }
+
+static void
+_onclose(
+        void *data EINA_UNUSED,
+        Evas_Object *o EINA_UNUSED,
+        const char  *emission,
+        const char  *source)
+
+{
+   //_sig_print(emission, source);
+   printf("todo close \n");
+   Smart_Panel * priv = data;
+   //evas_object_hide(o);
+}
+
+
 
 
 
@@ -390,6 +426,13 @@ _smart_panel_add(Evas_Object *o)
   edje_object_signal_callback_add(edje, "mouse,down,1", "resizebottomleft",_ondown_resize, data);
   edje_object_signal_callback_add(edje, "mouse,move", "resizebottomleft",_onmove_resize, data);
   edje_object_signal_callback_add(edje, "mouse,up,1", "resizebottomleft",_onup_resize, data);
+
+  data = cbdata_new(priv, 4);
+  edje_object_signal_callback_add(edje, "mouse,down,1", "resizebottom",_ondown_resize, data);
+  edje_object_signal_callback_add(edje, "mouse,move", "resizebottom",_onmove_resize, data);
+  edje_object_signal_callback_add(edje, "mouse,up,1", "resizebottom",_onup_resize, data);
+
+  edje_object_signal_callback_add(edje, "mouse,clicked,1", "close", _onclose, priv);
 
 }
 
