@@ -293,7 +293,7 @@ _onmove_resize(
         evas_object_resize(o, priv->right - (curx + priv->x) , h);
     }
     else if ( d->dir == 3) {
-        evas_object_move(o, curx, y);
+        evas_object_move(o, curx + priv->x, y);
         evas_object_resize(o, priv->right - (curx + priv->x) , (cury + priv->y) - y);
     }
     else if ( d->dir == 4) {
