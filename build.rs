@@ -16,6 +16,10 @@ fn main() {
     if let Ok(ref mut info) = pkg_config::find_library("ecore-x") {
         paths.append(&mut info.include_paths);
     }
+    if let Ok(ref mut cypher) = env::var("DEP_CYPHER_INCLUDE") {
+        paths.push(PathBuf::from(&*cypher));
+    }
+
     build_elementary_key(&paths);
 }
 
@@ -35,6 +39,7 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
         .file("src/property_list.c")
         .file("src/tree.c")
         .file("src/window.c")
+        .define("EVAS_GL", None)
         .compile("libjoker.a");
 }
 
