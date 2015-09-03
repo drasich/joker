@@ -32,6 +32,7 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
 
     config.file("src/action.c")
         .file("src/command.c")
+        .file("src/common.c")
         .file("src/glview.c")
         .file("src/list.c")
         .file("src/panel.c")
@@ -41,5 +42,12 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
         .file("src/window.c")
         .define("EVAS_GL", None)
         .compile("libjoker.a");
+
+     let out_dir = env::var("OUT_DIR").unwrap();
+
+    println!("cargo:rustc-link-search=native={}", out_dir);
+    println!("cargo:rustc-link-lib=static=joker");
+    //println!("cargo:include={}/src", env::current_dir().unwrap().display());
+
 }
 
