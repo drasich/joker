@@ -25,7 +25,6 @@ EVAS_SMART_SUBCLASS_NEW("Smart_Entry", _smart_entry,
                         Evas_Smart_Class, Evas_Smart_Class,
                         evas_object_smart_clipped_class_get, _smart_callbacks);
 
-
 static void
 _smart_entry_add(Evas_Object *o)
 {
@@ -41,7 +40,7 @@ _smart_entry_add(Evas_Object *o)
    Evas_Object *rect = evas_object_rectangle_add(e);
    evas_object_color_set(rect, rand() % 255, rand() % 255, rand() % 255, 255/2);
    evas_object_resize(rect, 100, 400);
-   //evas_object_show(rect);
+   evas_object_show(rect);
    priv->rect = rect;
    evas_object_smart_member_add(rect, o);
 
@@ -50,8 +49,6 @@ _smart_entry_add(Evas_Object *o)
    evas_object_event_callback_add(rect, EVAS_CALLBACK_MOUSE_UP, _onup, priv);
    evas_object_event_callback_add(rect, EVAS_CALLBACK_MOUSE_MOVE, _onmove, priv);
    */
-
-
 }
 
 static void
@@ -94,7 +91,6 @@ _smart_entry_calculate(Evas_Object *o)
    printf("recalculate to %d, %d, %d, %d \n", x, y, w, h);
 
    evas_object_resize(priv->rect, w, h);
-
 }
 
 static void
@@ -119,6 +115,5 @@ smart_entry_add(Evas *evas)
 {
    return evas_object_smart_add(evas, _smart_entry_smart_class_new());
 }
-
 
 
