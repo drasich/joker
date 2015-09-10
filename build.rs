@@ -33,6 +33,7 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
     config.file("src/action.c")
         .file("src/command.c")
         .file("src/common.c")
+        .file("src/entry.c")
         .file("src/glview.c")
         .file("src/list.c")
         .file("src/panel.c")
