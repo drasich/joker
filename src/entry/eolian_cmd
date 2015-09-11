@@ -1,0 +1,10 @@
+#!/bin/sh
+
+prpath="/home/chris/code/eflgit/share/eolian/include/"
+include="-I $prpath/evas-1 -I $prpath/elementary-1 -I $prpath/eo-1 -I $prpath/efl-1"
+prefix=jk_entry
+
+eolian_gen ${include} --gc --eo -o ${prefix}.eo.c jk_entry.eo
+eolian_gen ${include} --gh --eo -o ${prefix}.eo.h jk_entry.eo
+eolian_gen ${include} --gi --eo -o ${prefix}.c jk_entry.eo
+
