@@ -777,6 +777,75 @@ gl_content_float_get_test(
   return bx;
 }
 
+Evas_Object*
+gl_content_float_get_test2(
+      void *data,
+      Evas_Object *obj,
+      const char *part)
+{
+  Evas_Object *bx, *bt, *ck;
+
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+
+  bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
+
+  PropertyValue* val = data;
+
+  const char* name;
+
+  Evas_Object* label = elm_label_add(obj);
+   {
+    unsigned int num;
+    char** ss = eina_str_split_full(val->path, "/", 0, &num);
+    name = ss[num-1];
+
+    char s[256];
+    //sprintf(s, "<b> %s </b> : ", name);
+    sprintf(s, "%s : ", name);
+
+    elm_object_text_set(label, s);
+    evas_object_show(label);
+    elm_box_pack_end(bx, label);
+
+    free(ss[0]);
+    free(ss);
+   }
+
+  Evas_Object* en = elm_entry_add(obj);
+  evas_object_name_set(en, name);
+
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  evas_object_size_hint_min_set(en,1,1);
+  evas_object_show(en);
+  //elm_box_pack_end(cp->box, en);
+  elm_box_pack_end(bx, en);
+
+  //elm_entry_editable_set(en, EINA_FALSE);
+  elm_entry_editable_set(en, EINA_TRUE);
+
+  const float* f = val->data;
+
+  char ff[50];
+    //sprintf(ff, "%s : %s", name, "%.3f");
+    sprintf(ff, "%.3f", *f);
+
+  elm_object_text_set(en, ff);
+  //elm_entry_scrollbar_policy_set(en,
+  //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
+  elm_entry_single_line_set(en, EINA_TRUE);
+
+  //TODO cb
+  //evas_object_smart_callback_add(sp, "changed", _spinner_changed_cb_list, val);
+  //evas_object_smart_callback_add(sp, "spinner,drag,start", _spinner_drag_start_cb, val);
+  //evas_object_smart_callback_add(sp, "spinner,drag,stop", _spinner_drag_stop_cb, val);
+
+  return bx;
+}
+
+
 
 static void
 gl9_exp_req(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
@@ -1091,7 +1160,8 @@ property_list_new(Evas_Object* win)
   class_float->item_style = "full";//"default";
   class_float->func.text_get = NULL;
   //class_float->func.content_get = gl_content_float_get;
-  class_float->func.content_get = gl_content_float_get_test;
+  //class_float->func.content_get = gl_content_float_get_test;
+  class_float->func.content_get = gl_content_float_get_test2;
   class_float->func.state_get = gl_state_get;
   class_float->func.del = NULL;
 
