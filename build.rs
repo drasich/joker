@@ -33,7 +33,7 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
     config.file("src/action.c")
         .file("src/command.c")
         .file("src/common.c")
-        .file("src/entry.c")
+        .file("src/entry/jk_entry.c")
         .file("src/glview.c")
         .file("src/list.c")
         .file("src/panel.c")
@@ -42,6 +42,9 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
         .file("src/tree.c")
         .file("src/window.c")
         .define("EVAS_GL", None)
+        .define("EFL_EO_API_SUPPORT", Some("1"))
+        .define("EFL_BETA_API_SUPPORT", Some("1"))
+        .define("ELM_INTERNAL_API_ARGESFSDFEFC", Some("1"))
         .compile("libjoker.a");
 
      let out_dir = env::var("OUT_DIR").unwrap();

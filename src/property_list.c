@@ -2,7 +2,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include "common.h"
-#include "entry.h"
+//#include "entry.h"
+#include "entry/jk_entry.eo.h"
 
 static Elm_Genlist_Item_Class *class_entry,
                               *class_group,
@@ -763,7 +764,11 @@ gl_content_float_get_test(
     free(ss);
    }
 
-   Evas_Object* en = smart_entry_add(evas_object_evas_get(obj));
+   //Evas_Object* en = smart_entry_add(evas_object_evas_get(obj));
+   //Evas_Object* en = smart_entry_add(obj);
+   //chris
+   Evas_Object *en = eo_add(JK_ENTRY_CLASS, obj);
+
   //evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   //evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
