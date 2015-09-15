@@ -9,6 +9,7 @@
 #include "buffer.h"
 #include "cypher.h"
 #include "window.h"
+#include "panel.h"
 
 #define __UNUSED__
 
@@ -41,7 +42,7 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
   Window* w = data;
   if (w->key_down) {
     w->key_down(
-          w->data, 
+          w->data,
           _modifier_get(ev->modifiers),
           ev->keyname,
           ev->key,
@@ -104,7 +105,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Window* w = data;
   if (w->mouse_down) {
     w->mouse_down(
-          w->data, 
+          w->data,
           _modifier_get(ev->modifiers),
           ev->button,
           ev->canvas.x,
@@ -365,6 +366,7 @@ window_new()
   //evas_object_resize(win, 864, 434);
   evas_object_show(win);
 
+
   return w;
 }
 
@@ -389,7 +391,7 @@ jk_window_new(rust_elm_callback cb, const void* cb_data)
   evas_object_data_set(win, "cb", cb);
   evas_object_data_set(win, "cb_data", cb_data);
 
-  evas_object_resize(win, 864, 434);
+  evas_object_resize(win, 64, 64);
   evas_object_show(win);
 
   return win;
@@ -530,6 +532,7 @@ JkPropertyList* jk_property_list_new(Window* w)
   return pl;
   */
 
+    /*
   Evas_Object* win = elm_win_add(w->win, "property", ELM_WIN_BASIC);
   elm_win_title_set(win, "property");
 
@@ -543,7 +546,25 @@ JkPropertyList* jk_property_list_new(Window* w)
   elm_win_resize_object_add(win, p->root);
   evas_object_resize(win, 256, 256);
   evas_object_show(win);
+
+  */
+
+    //chris
+  //Evas* e = evas_object_evas_get(w->win);
+  //Evas_Object* panel = smart_panel_add(e);
+  Evas_Object* panel = layout_panel_add(w->win);
+  evas_object_move(panel, 100, 100);
+  //evas_object_show(panel);
+
+  JkPropertyList* p = property_list_new(panel);
+  evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_resize(panel, 256, 256);
+  //smart_panel_content_set(panel, p->root);
+  elm_object_part_content_set(panel, "content", p->root);
+  p->win = panel;
+
   return p;
+
 }
 
 void window_button_new(Window* w)
@@ -597,7 +618,7 @@ window_rect_visible_set(Window* w, bool b)
   }
 }
 
-void 
+void
 window_rect_set(Window* win, float x, float y, float w, float h)
 {
   evas_object_geometry_set(win->rect, x, y, w, h);

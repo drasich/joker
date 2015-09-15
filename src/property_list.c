@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include "common.h"
+//#include "entry.h"
+#include "entry/jk_entry.eo.h"
 
 static Elm_Genlist_Item_Class *class_entry,
                               *class_group,
@@ -10,7 +12,7 @@ static Elm_Genlist_Item_Class *class_entry,
                               *class_float,
                               *class_option;
 
-static PropertyNode* 
+static PropertyNode*
 _property_node_find(
       PropertyNode* node,
       char** s)
@@ -62,7 +64,7 @@ get_parent_node_string(const char* path)
 
   char* ret = calloc(1, size);
   strncpy(ret, path, size -1);
-  ret[size -1] = '\0'; 
+  ret[size -1] = '\0';
   return ret;
 }
 
@@ -335,7 +337,7 @@ gl_content_string_get(
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
   const char* value = val->data;
   elm_object_text_set(en, value);
-  //elm_entry_scrollbar_policy_set(en, 
+  //elm_entry_scrollbar_policy_set(en,
   //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
   elm_entry_single_line_set(en, EINA_TRUE);
   //elm_entry_select_all(en);
@@ -437,7 +439,7 @@ _update_option_item(
 
   val->item = elm_genlist_item_insert_after(pl->list, class_option,
         val,
-        parent->item, 
+        parent->item,
         old_item,
         t,
         NULL,
@@ -510,7 +512,7 @@ gl_content_enum_get(
 
     char s[256];
     //sprintf(s, "<b> %s </b> : ", name);
-    if (val->item && elm_genlist_item_expanded_get(val->item)) 
+    if (val->item && elm_genlist_item_expanded_get(val->item))
     sprintf(s, "%s : ", name);
     else
     sprintf(s, "%s", name);
@@ -523,7 +525,7 @@ gl_content_enum_get(
     free(ss);
    }
 
-  if (val->item && elm_genlist_item_expanded_get(val->item)) 
+  if (val->item && elm_genlist_item_expanded_get(val->item))
    {
 
   const char* value = val->data;
@@ -584,7 +586,7 @@ gl_content_option_get(
 
     char s[256];
     //sprintf(s, "<b> %s </b> : ", name);
-    if (val->item && elm_genlist_item_expanded_get(val->item)) 
+    if (val->item && elm_genlist_item_expanded_get(val->item))
     sprintf(s, "%s : ", name);
     else
     sprintf(s, "%s", name);
@@ -726,6 +728,61 @@ gl_content_float_get(
   return bx;
 }
 
+Evas_Object*
+gl_content_float_get_test(
+      void *data,
+      Evas_Object *obj,
+      const char *part)
+{
+  Evas_Object *bx, *bt, *ck;
+
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+
+  bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
+
+  PropertyValue* val = data;
+
+  const char* name;
+
+  Evas_Object* label = elm_label_add(obj);
+   {
+    unsigned int num;
+    char** ss = eina_str_split_full(val->path, "/", 0, &num);
+    name = ss[num-1];
+
+    char s[256];
+    //sprintf(s, "<b> %s </b> : ", name);
+    sprintf(s, "%s : ", name);
+
+    elm_object_text_set(label, s);
+    evas_object_show(label);
+    elm_box_pack_end(bx, label);
+
+    free(ss[0]);
+    free(ss);
+   }
+
+   //Evas_Object* en = smart_entry_add(evas_object_evas_get(obj));
+   //Evas_Object* en = smart_entry_add(obj);
+   //chris
+   Evas_Object *en = eo_add(JK_ENTRY_CLASS, obj);
+
+  //evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  //evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  evas_object_size_hint_min_set(en,1,1);
+  //elm_spinner_value_set(en, atof(value));
+   evas_object_show(en);
+   elm_box_pack_end(bx, en);
+
+
+  return bx;
+}
+
+
 static void
 gl9_exp_req(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
 {
@@ -810,7 +867,7 @@ property_list_clear(JkPropertyList* pl)
 }
 
 PropertyValue* property_list_node_add(
-      JkPropertyList* pl, 
+      JkPropertyList* pl,
       const char* path)
 {
   PropertyNode* node = _property_list_node_find_parent(pl, path);
@@ -831,8 +888,8 @@ PropertyValue* property_list_node_add(
   //val->user_data = possible_values;
 
   child->item = elm_genlist_item_append(pl->list, class_node,
-                           val, //path,//strdup(s[num-1]), 
-                           node->item, //git/* parent */, 
+                           val, //path,//strdup(s[num-1]),
+                           node->item, //git/* parent */,
                            ELM_GENLIST_ITEM_TREE,
                            NULL,//gl4_sel/* func */,
                            NULL/* func data */);
@@ -849,7 +906,7 @@ PropertyValue* property_list_node_add(
 }
 
 void property_list_nodes_remove(
-      JkPropertyList* pl, 
+      JkPropertyList* pl,
       const char* path)
 {
   PropertyNode* node = _property_list_node_find(pl, path);
@@ -862,7 +919,7 @@ void property_list_nodes_remove(
 }
 
 void property_list_group_add(
-      JkPropertyList* pl, 
+      JkPropertyList* pl,
       const char* path)
 {
   PropertyNode* node = _property_list_node_find(pl, path);
@@ -875,10 +932,10 @@ void property_list_group_add(
   char** s = eina_str_split_full(path, "/", 0, &num);
   PropertyNode* child = property_list_node_new();
   eina_hash_add(node->nodes, strdup(s[num-1]), child);
-  
+
   child->item = elm_genlist_item_append(pl->list, class_group,
-                           strdup(s[num-1]), 
-                           node->item, //git/* parent */, 
+                           strdup(s[num-1]),
+                           node->item, //git/* parent */,
                            ELM_GENLIST_ITEM_GROUP,
                            NULL, //gl4_sel/* func */,
                            NULL/* func data */);
@@ -894,7 +951,7 @@ void property_list_group_add(
 
 PropertyValue*
 property_list_float_add(
-      JkPropertyList* pl, 
+      JkPropertyList* pl,
       const char* path,
       float value)
 {
@@ -903,7 +960,7 @@ property_list_float_add(
     printf("%s, could not find a root\n", __FUNCTION__);
     return NULL;
   }
-  
+
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);
   val->list = pl;
@@ -914,8 +971,8 @@ property_list_float_add(
   //char** s = eina_str_split_full(path, "/", 0, &num);
 
   val->item = elm_genlist_item_append(pl->list, class_float,
-                           val,//strdup(s[num-1]), 
-                           node->item, 
+                           val,//strdup(s[num-1]),
+                           node->item,
                            ELM_GENLIST_ITEM_NONE,
                            NULL, //gl4_sel,
                            NULL);
@@ -936,7 +993,7 @@ void property_list_float_update(
 
 PropertyValue*
 property_list_string_add(
-      JkPropertyList* pl, 
+      JkPropertyList* pl,
       const char* path,
       const char* value)
 {
@@ -945,7 +1002,7 @@ property_list_string_add(
     printf("%s, could not find a root\n", __FUNCTION__);
     return NULL;
   }
-  
+
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
 
@@ -953,10 +1010,10 @@ property_list_string_add(
   val->path = strdup(path);//s[num-1];
   val->list = pl;
   val->data = strdup(value);
-  
+
   val->item = elm_genlist_item_append(pl->list, class_entry,
                            val,
-                           node->item, 
+                           node->item,
                            ELM_GENLIST_ITEM_NONE,
                            NULL,
                            NULL);
@@ -1038,7 +1095,8 @@ property_list_new(Evas_Object* win)
   class_float = elm_genlist_item_class_new();
   class_float->item_style = "full";//"default";
   class_float->func.text_get = NULL;
-  class_float->func.content_get = gl_content_float_get;
+  //class_float->func.content_get = gl_content_float_get;
+  class_float->func.content_get = gl_content_float_get_test;
   class_float->func.state_get = gl_state_get;
   class_float->func.del = NULL;
 
@@ -1088,7 +1146,7 @@ property_list_new(Evas_Object* win)
 
 PropertyValue*
 property_list_enum_add(
-      JkPropertyList* pl, 
+      JkPropertyList* pl,
       const char* path,
       char* possible_values,
       const char* value)
@@ -1098,7 +1156,7 @@ property_list_enum_add(
     printf("%s, could not find a root\n", __FUNCTION__);
     return NULL;
   }
-  
+
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
 
@@ -1115,7 +1173,7 @@ property_list_enum_add(
 
   val->item = elm_genlist_item_append(pl->list, class_enum,
                            val,
-                           node->item, 
+                           node->item,
                            ELM_GENLIST_ITEM_TREE,
                            NULL,
                            NULL);
@@ -1156,7 +1214,7 @@ void property_list_enum_update(
 
 PropertyValue*
 property_list_option_add(
-      JkPropertyList* pl, 
+      JkPropertyList* pl,
       const char* path,
       const char* value)
 {
@@ -1165,7 +1223,7 @@ property_list_option_add(
     printf("%s, could not find a root\n", __FUNCTION__);
     return NULL;
   }
-  
+
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
 
@@ -1187,7 +1245,7 @@ property_list_option_add(
 
   val->item = elm_genlist_item_append(pl->list, class_option,
                            val,
-                           node->item, 
+                           node->item,
                            t,
                            NULL,
                            NULL);
@@ -1218,16 +1276,17 @@ void property_list_option_update(
   _update_option_item(val, t);
 }
 
-void 
+void
 property_expand(PropertyValue* val)
 {
     elm_genlist_item_expanded_set(val->item, EINA_TRUE);
 }
 
 void property_show(
-      JkPropertyList* p, 
+      JkPropertyList* p,
       bool b)
 {
+    printf("property show : %d \n", b);
   object_show(p->win, b);
 }
 
