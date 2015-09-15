@@ -521,7 +521,48 @@ smart_panel_content_set(Evas_Object *o, Evas_Object* content)
 
 }
 
+Eo* layout_panel_add(Evas_Object* parent)
+{
+	Eo* ly = elm_layout_add(parent);
+   	elm_layout_file_set(ly, "edc/panel.edj", "main");
 
+	Smart_Panel* priv = calloc(1, sizeof *priv);
+
+  elm_layout_signal_callback_add(ly, "mouse,down,1", "bar",_ondown_edge, priv);
+  elm_layout_signal_callback_add(ly, "mouse,move", "bar",_onmove_edge, priv);
+  elm_layout_signal_callback_add(ly, "mouse,up,1", "bar",_onup_edge, priv);
+
+  struct _CbData* data = cbdata_new(priv, 0);
+  elm_layout_signal_callback_add(ly, "mouse,down,1", "resizebottomright",_ondown_resize, data);
+  elm_layout_signal_callback_add(ly, "mouse,move", "resizebottomright",_onmove_resize, data);
+  elm_layout_signal_callback_add(ly, "mouse,up,1", "resizebottomright",_onup_resize, data);
+
+  data = cbdata_new(priv, 1);
+  elm_layout_signal_callback_add(ly, "mouse,down,1", "resizexright",_ondown_resize, data);
+  elm_layout_signal_callback_add(ly, "mouse,move", "resizexright",_onmove_resize, data);
+  elm_layout_signal_callback_add(ly, "mouse,up,1", "resizexright",_onup_resize, data);
+
+  data = cbdata_new(priv, 2);
+  elm_layout_signal_callback_add(ly, "mouse,down,1", "resizexleft",_ondown_resize, data);
+  elm_layout_signal_callback_add(ly, "mouse,move", "resizexleft",_onmove_resize, data);
+  elm_layout_signal_callback_add(ly, "mouse,up,1", "resizexleft",_onup_resize, data);
+
+  data = cbdata_new(priv, 3);
+  elm_layout_signal_callback_add(ly, "mouse,down,1", "resizebottomleft",_ondown_resize, data);
+  elm_layout_signal_callback_add(ly, "mouse,move", "resizebottomleft",_onmove_resize, data);
+  elm_layout_signal_callback_add(ly, "mouse,up,1", "resizebottomleft",_onup_resize, data);
+
+  data = cbdata_new(priv, 4);
+  elm_layout_signal_callback_add(ly, "mouse,down,1", "resizebottom",_ondown_resize, data);
+  elm_layout_signal_callback_add(ly, "mouse,move", "resizebottom",_onmove_resize, data);
+  elm_layout_signal_callback_add(ly, "mouse,up,1", "resizebottom",_onup_resize, data);
+
+  elm_layout_signal_callback_add(ly, "mouse,clicked,1", "close", _onclose, priv);
+
+
+
+	return ly;
+}
 
 
 

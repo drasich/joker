@@ -550,15 +550,17 @@ JkPropertyList* jk_property_list_new(Window* w)
   */
 
     //chris
-  Evas* e = evas_object_evas_get(w->win);
-  Evas_Object* panel = smart_panel_add(e);
+  //Evas* e = evas_object_evas_get(w->win);
+  //Evas_Object* panel = smart_panel_add(e);
+  Evas_Object* panel = layout_panel_add(w->win);
   evas_object_move(panel, 100, 100);
   //evas_object_show(panel);
 
   JkPropertyList* p = property_list_new(panel);
   evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_resize(panel, 256, 256);
-  smart_panel_content_set(panel, p->root);
+  //smart_panel_content_set(panel, p->root);
+  elm_object_part_content_set(panel, "content", p->root);
   p->win = panel;
 
   return p;
