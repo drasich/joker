@@ -90,8 +90,14 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 
  Evas_Object* en = elm_entry_add(obj);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  //evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
    evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
    elm_object_text_set(en, "yoshyosh");
+
+  //elm_entry_scrollable_set(en, EINA_TRUE);
+  //elm_entry_scrollbar_policy_set(en,
+  //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
+  elm_entry_single_line_set(en, EINA_TRUE);
 
    //evas_object_smart_member_add(rect, en);
   elm_layout_content_set(obj, "content", en);
