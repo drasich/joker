@@ -553,8 +553,8 @@ JkPropertyList* jk_property_list_new(Window* w)
   //Evas* e = evas_object_evas_get(w->win);
   //Evas_Object* panel = smart_panel_add(e);
   Evas_Object* panel = layout_panel_add(w->win);
-  evas_object_move(panel, 100, 100);
-  //evas_object_show(panel);
+  evas_object_move(panel, 10, 10);
+  evas_object_show(panel);
 
   JkPropertyList* p = property_list_new(panel);
   evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);

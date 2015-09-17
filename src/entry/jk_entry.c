@@ -38,13 +38,30 @@
 	*/
 
 
+enum _State
+{
+	STATE_SHOW,
+	STATE_MOUSE_DOWN,
+	STATE_MOVE,
+};
 
 
 typedef struct
 {
 	Eo* rect;
+	Eo* entry;
+	int state;
+	Evas_Coord startx, starty;
 
 } Jk_Entry_Data;
+
+static char *user_style =
+   //"DEFAULT='font_size=8 color=#F00 align=center'"
+   "DEFAULT='align=center'"
+   "em='+ backing=on backing_color=#FFF'"
+   "grn='+ color=#0F0'"
+   "ul='+ underline=on underline_color=#AAA'";
+
 
 EOLIAN static Eo_Base *
 _jk_entry_eo_base_constructor(Eo *obj, Jk_Entry_Data *pd EINA_UNUSED)
@@ -53,6 +70,99 @@ _jk_entry_eo_base_constructor(Eo *obj, Jk_Entry_Data *pd EINA_UNUSED)
 
    return obj;
 }
+
+static void
+_ondown(
+        void *data EINA_UNUSED,
+        Evas_Object *o EINA_UNUSED,
+        const char  *emission,
+        const char  *source)
+
+{
+   //_sig_print(emission, source);
+   printf(" on down : %s, %s \n", emission, source);
+   Jk_Entry_Data* pd = data;
+   pd->state = STATE_MOUSE_DOWN;
+   Evas* e = evas_object_evas_get(o);
+   evas_pointer_output_xy_get(e, &pd->startx, &pd->starty);
+}
+
+static void
+_onmove(
+        void *data EINA_UNUSED,
+        Evas_Object *o EINA_UNUSED,
+        const char  *emission,
+        const char  *source)
+
+{
+   Jk_Entry_Data* pd = data;
+   if (pd->state == STATE_MOUSE_DOWN)
+   {
+	   Evas* e = evas_object_evas_get(o);
+	   Evas_Coord mx, my;
+	   evas_pointer_output_xy_get(e, &mx, &my);
+	   if (mx != pd->startx || my != pd->starty) {
+		   pd->state = STATE_MOVE;
+	   }
+   }
+   if (pd->state == STATE_MOVE) {
+	   printf(" on move : %s, %s \n", emission, source);
+   }
+}
+
+static void
+_onup(
+        void *data EINA_UNUSED,
+        Evas_Object *o EINA_UNUSED,
+        const char  *emission,
+        const char  *source)
+
+{
+   Jk_Entry_Data* pd = data;
+   printf(" on up : %s, %s \n", emission, source);
+}
+
+static void
+_onclicked(
+        void *data EINA_UNUSED,
+        Evas_Object *o EINA_UNUSED,
+        const char  *emission,
+        const char  *source)
+
+{
+	Jk_Entry_Data* pd = data;
+	if (pd->state != STATE_MOUSE_DOWN) {
+			return;
+	}
+   //_sig_print(emission, source);
+   printf(" on clicked : %s, %s \n", emission, source);
+   elm_layout_signal_emit(o, "visible,0", "bg");
+   elm_entry_editable_set(pd->entry, EINA_TRUE);
+
+   elm_entry_text_style_user_push(pd->entry, user_style);
+   elm_entry_select_all(pd->entry);
+   //elm_object_focus_set(en, EINA_TRUE);
+}
+
+static void
+_entry_activated(
+      void* data,
+      Evas_Object *o,
+      void* event)
+{
+	Jk_Entry_Data* pd = data;
+	pd->state = STATE_SHOW;
+
+   printf("leaving entry \n");
+
+   Eo* smart = evas_object_data_get(o, "smart");
+
+   elm_layout_signal_emit(smart, "visible,1", "bg");
+   elm_entry_editable_set(o, EINA_FALSE);
+
+   elm_entry_text_style_user_push(o, user_style);
+}
+
 
 EOLIAN static void
 _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
@@ -89,15 +199,28 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 
 
  Evas_Object* en = elm_entry_add(obj);
+  elm_entry_single_line_set(en, EINA_TRUE);
+   elm_entry_editable_set(en, EINA_FALSE);
+ pd->entry = en;
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   //evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
    evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+   //elm_object_text_set(en, "<align=center>hello</align>");
+   //elm_entry_text_style_user_push(en, "DEFAULT='align=center'");
+   //elm_entry_text_style_user_push(en, "DEFAULT='color=#0f0'");
+   elm_entry_text_style_user_push(en, user_style);
+
+    const char* cur_style = elm_entry_text_style_user_peek(en);
+   if (cur_style)
+     printf("Current style user: %s\n", cur_style);
+   else
+     printf("Style user stack is empty.\n");
+
    elm_object_text_set(en, "yoshyosh");
 
   //elm_entry_scrollable_set(en, EINA_TRUE);
   //elm_entry_scrollbar_policy_set(en,
   //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
-  elm_entry_single_line_set(en, EINA_TRUE);
 
    //evas_object_smart_member_add(rect, en);
   elm_layout_content_set(obj, "content", en);
@@ -107,6 +230,17 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 
    elm_widget_can_focus_set(obj, EINA_TRUE);
    elm_layout_sizing_eval(obj);
+   evas_object_data_set(en, "smart", obj);
+
+    evas_object_smart_callback_add(en, "activated", _entry_activated, pd);
+  evas_object_smart_callback_add(en, "unfocused", _entry_activated, pd);
+
+
+  elm_layout_signal_callback_add(obj, "mouse,down,1", "bg",_ondown, pd);
+  elm_layout_signal_callback_add(obj, "mouse,move", "bg", _onmove, pd);
+  elm_layout_signal_callback_add(obj, "mouse,up,1", "bg", _onup, pd);
+  elm_layout_signal_callback_add(obj, "mouse,clicked,1", "bg", _onclicked, pd);
+
 
 }
 
