@@ -85,6 +85,7 @@ _ondown(
    pd->state = STATE_MOUSE_DOWN;
    Evas* e = evas_object_evas_get(o);
    evas_pointer_output_xy_get(e, &pd->startx, &pd->starty);
+   elm_object_scroll_hold_push(o);
 }
 
 static void
@@ -120,6 +121,7 @@ _onup(
 {
    Jk_Entry_Data* pd = data;
    printf(" on up : %s, %s \n", emission, source);
+   elm_object_scroll_hold_pop(o);
 }
 
 static void
