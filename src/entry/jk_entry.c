@@ -142,8 +142,9 @@ _onclicked(
    elm_entry_editable_set(pd->entry, EINA_TRUE);
 
    elm_entry_text_style_user_push(pd->entry, user_style);
-   elm_entry_select_all(pd->entry);
+   //elm_entry_select_all(pd->entry);
    //elm_object_focus_set(en, EINA_TRUE);
+   elm_object_focus_set(pd->entry, EINA_TRUE);
 }
 
 static void
@@ -164,6 +165,28 @@ _entry_activated(
 
    elm_entry_text_style_user_push(o, user_style);
 }
+
+static void
+_debug(
+      void* data,
+      Evas_Object *o,
+      void* event)
+{
+  const char* t = elm_object_text_get(o);
+   printf("entry signal from : %s ::::: %s \n", t, data);
+}
+
+static void
+_onfocused(
+      void* data,
+      Evas_Object *o,
+      void* event)
+{
+  const char* t = elm_object_text_get(o);
+   printf("JKJKJKJKJon focused from : %s ###### \n", t);
+   elm_entry_select_all(o);
+}
+
 
 
 EOLIAN static void
@@ -218,7 +241,15 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
    else
      printf("Style user stack is empty.\n");
 
-   elm_object_text_set(en, "yoshyosh");
+   static int yep = 0;
+   if (yep == 0)
+   elm_object_text_set(en, "xxx");
+   else if (yep == 1)
+   elm_object_text_set(en, "yyy");
+   else if (yep == 2)
+   elm_object_text_set(en, "zzz");
+
+   yep++;
 
   //elm_entry_scrollable_set(en, EINA_TRUE);
   //elm_entry_scrollbar_policy_set(en,
@@ -236,6 +267,14 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 
     evas_object_smart_callback_add(en, "activated", _entry_activated, pd);
   evas_object_smart_callback_add(en, "unfocused", _entry_activated, pd);
+  //evas_object_smart_callback_add(en, "focused", _debug, "focused");
+  evas_object_smart_callback_add(en, "focused", _onfocused, "focused");
+  evas_object_smart_callback_add(en, "selection,changed", _debug, "selection,changed");
+  evas_object_smart_callback_add(en, "selection,cleared", _debug, "selection,cleared");
+  evas_object_smart_callback_add(en, "selection,start", _debug, "selection,start");
+  evas_object_smart_callback_add(en, "clicked", _debug, "clicked");
+  evas_object_smart_callback_add(en, "cursor,changed", _debug, "cursor,changed");
+  evas_object_smart_callback_add(en, "cursor,changed,manual", _debug, "cursor,changed,manual");
 
 
   elm_layout_signal_callback_add(obj, "mouse,down,1", "bg",_ondown, pd);
@@ -255,6 +294,7 @@ _jk_entry_evas_object_smart_del(Eo *obj, Jk_Entry_Data *pd)
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_focus_next_manager_is(Eo *obj, Jk_Entry_Data *pd)
 {
+  return EINA_FALSE;
 
 }
 
@@ -265,20 +305,33 @@ _jk_entry_elm_widget_focus_direction_manager_is(Eo *obj, Jk_Entry_Data *pd)
 }
 
 EOLIAN static Eina_Bool
-_jk_entry_elm_widget_focus_next(Eo *obj, Jk_Entry_Data *pd, Elm_Focus_Direction dir, Evas_Object **next)
+_jk_entry_elm_widget_focus_next(
+      Eo *obj,
+      Jk_Entry_Data *pd,
+      Elm_Focus_Direction dir, Evas_Object **next)
 {
-
+  return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_focus_direction(Eo *obj, Jk_Entry_Data *pd, const Evas_Object *base, double degree, Evas_Object **direction, double *weight)
 {
-
 }
 
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_on_focus(Eo *obj, Jk_Entry_Data *pd)
 {
+  Eina_Bool int_ret = EINA_FALSE;
+  eo_do_super(obj, MY_CLASS, int_ret = elm_obj_widget_on_focus());
+   if (!int_ret) return EINA_FALSE;
+
+   if (!elm_widget_focus_get(obj))
+     {
+      //TODO
+      elm_object_focus_set(pd->entry, EINA_TRUE);
+     }
+
+  return EINA_TRUE;
 
 }
 
