@@ -225,7 +225,7 @@ _select_all(
 {
   const char* name = evas_object_name_get(o);
   printf("focused, select all ::: %s  \n", name);
-  //elm_entry_select_all(o);
+  elm_entry_select_all(o);
 }
 
 static void
@@ -238,10 +238,18 @@ _print_signal(
   printf("signal from  %s :::::  %s \n", name,  data);
 }
 
-
-
 static int test = 1;
 
+static void
+_onfocused(
+      void* data,
+      Evas_Object *o,
+      void* event)
+{
+  const char* t = elm_object_text_get(o);
+   printf("JKJKJKJKJon focused from : %s ###### \n", t);
+   elm_entry_select_all(o);
+}
 
 EOLIAN static void
 _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
@@ -325,11 +333,13 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 
   evas_object_smart_callback_add(en, "activated", _entry_activated, pd);
   evas_object_smart_callback_add(en, "unfocused", _entry_unfocused, pd);
-  evas_object_smart_callback_add(en, "focused", _select_all, pd);
+  //evas_object_smart_callback_add(en, "focused", _select_all, pd);
   evas_object_smart_callback_add(en, "selection,changed", _print_signal, "selection changed");
   evas_object_smart_callback_add(en, "selection,cleared", _entry_cleared, pd);
   evas_object_smart_callback_add(en, "selection,start", _print_signal, "selection start");
-
+  evas_object_smart_callback_add(en, "clicked", _print_signal, "clicked");
+  evas_object_smart_callback_add(en, "cursor,changed", _print_signal, "cursor,changed");
+  evas_object_smart_callback_add(en, "cursor,changed,manual", _print_signal, "cursor,changed,manual");
 
   elm_layout_signal_callback_add(obj, "mouse,down,1", "bg",_ondown, pd);
   elm_layout_signal_callback_add(obj, "mouse,move", "bg", _onmove, pd);
@@ -348,55 +358,46 @@ _jk_entry_evas_object_smart_del(Eo *obj, Jk_Entry_Data *pd)
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_focus_next_manager_is(Eo *obj, Jk_Entry_Data *pd)
 {
-  printf("jkjkjkjkjkjk %s \n", __FUNCTION__);
-  return EINA_TRUE;
+  return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_focus_direction_manager_is(Eo *obj, Jk_Entry_Data *pd)
 {
   printf("jkjkjkjkjkjk %s \n", __FUNCTION__);
-  return EINA_TRUE;
-
+  return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
-_jk_entry_elm_widget_focus_next(Eo *obj, Jk_Entry_Data *pd, Elm_Focus_Direction dir, Evas_Object **next)
+_jk_entry_elm_widget_focus_next(
+      Eo *obj,
+      Jk_Entry_Data *pd,
+      Elm_Focus_Direction dir, Evas_Object **next)
 {
-  printf("jkjkjkjkjkjk %s \n", __FUNCTION__);
-  return EINA_TRUE;
-
+  return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_focus_direction(Eo *obj, Jk_Entry_Data *pd, const Evas_Object *base, double degree, Evas_Object **direction, double *weight)
 {
-  printf("jkjkjkjkjkjk %s \n", __FUNCTION__);
-  return EINA_TRUE;
-
+  return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_on_focus(Eo *obj, Jk_Entry_Data *pd)
 {
-  Eo* next = elm_object_focus_next_object_get(obj, ELM_FOCUS_NEXT);
-  const char* name = elm_object_text_get(pd->entry);
-  printf("jkjkjkjkjkjk on focus, this: %s, next ::: %p, %p \n", name, obj, next);
-  //if (pd->
   Eina_Bool int_ret = EINA_FALSE;
-   eo_do_super(obj, MY_CLASS, int_ret = elm_obj_widget_on_focus());
+  return int_ret;
+  eo_do_super(obj, MY_CLASS, int_ret = elm_obj_widget_on_focus());
    if (!int_ret) return EINA_FALSE;
 
    if (!elm_widget_focus_get(obj))
      {
-        //ELM_SAFE_FREE(sd->delay_change_timer, ecore_timer_del);
-        //ELM_SAFE_FREE(sd->spin_timer, ecore_timer_del);
-
-        //_entry_value_apply(obj);
+      //TODO
+      //elm_object_focus_set(pd->entry, EINA_TRUE);
      }
 
-   return EINA_TRUE;
-
+  return EINA_TRUE;
 }
 
 EOLIAN static Eina_Bool
