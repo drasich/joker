@@ -81,8 +81,8 @@ _ondown(
 
 {
   //_sig_print(emission, source);
-  printf(" on down : %s, %s \n", emission, source);
   Jk_Entry_Data* pd = data;
+  printf(" on down : %s, %s, %s \n", emission, source, elm_object_text_get(pd->entry));
   pd->state = STATE_MOUSE_DOWN;
   Evas* e = evas_object_evas_get(o);
   evas_pointer_output_xy_get(e, &pd->startx, &pd->starty);
@@ -126,6 +126,26 @@ _onup(
 }
 
 static void
+_show_entry(Eo* o, Jk_Entry_Data* pd, Eina_Bool b)
+{
+  if (pd->state == STATE_ENTRY ||
+        pd->state == STATE_MOVE) {
+    return;
+  }
+
+  pd->state = STATE_ENTRY;
+  printf("SHOW ENTRY \n");
+  elm_layout_signal_emit(o, "visible,0", "bg");
+  elm_entry_editable_set(pd->entry, EINA_TRUE);
+
+  elm_entry_text_style_user_push(pd->entry, user_style);
+  elm_entry_select_all(pd->entry);
+  //elm_object_focus_set(pd->entry, EINA_TRUE);
+  pd->want_select = EINA_TRUE;
+
+}
+
+static void
 _onclicked(
       void *data EINA_UNUSED,
       Evas_Object *o EINA_UNUSED,
@@ -139,15 +159,8 @@ _onclicked(
   }
 
   //_sig_print(emission, source);
-  printf(" on clicked : %s, %s \n", emission, source);
-  elm_layout_signal_emit(o, "visible,0", "bg");
-  elm_entry_editable_set(pd->entry, EINA_TRUE);
-
-  elm_entry_text_style_user_push(pd->entry, user_style);
-  elm_entry_select_all(pd->entry);
-  //elm_object_focus_set(pd->entry, EINA_TRUE);
-  pd->state = STATE_ENTRY;
-  pd->want_select = EINA_TRUE;
+  printf(" on clicked : %s, %s, %s \n", emission, source, elm_object_text_get(pd->entry));
+  _show_entry(o, pd, EINA_TRUE);
 }
 
 static void
@@ -387,15 +400,12 @@ EOLIAN static Eina_Bool
 _jk_entry_elm_widget_on_focus(Eo *obj, Jk_Entry_Data *pd)
 {
   Eina_Bool int_ret = EINA_FALSE;
-  return int_ret;
   eo_do_super(obj, MY_CLASS, int_ret = elm_obj_widget_on_focus());
-   if (!int_ret) return EINA_FALSE;
+  if (!int_ret) return EINA_FALSE;
 
-   if (!elm_widget_focus_get(obj))
-     {
-      //TODO
-      //elm_object_focus_set(pd->entry, EINA_TRUE);
-     }
+  if (elm_widget_focus_get(obj)){
+    _show_entry(obj, pd, EINA_TRUE);
+  }
 
   return EINA_TRUE;
 }
