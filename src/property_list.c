@@ -121,6 +121,11 @@ _entry_changed_cb_list(
   }
 }
 
+struct _EntryState{
+  Eina_Bool was_focused;
+  Eina_Bool pressed;
+};
+
 static void
 _entry_focused_cb(
       void* data,
@@ -130,6 +135,51 @@ _entry_focused_cb(
   const char* value = elm_object_text_get(obj);
   evas_object_data_set(obj, "saved_text", eina_stringshare_add(value));
   printf("setting saved text to %s \n", value);
+
+   struct _EntryState *es = evas_object_data_get(obj, "state");
+
+  if (!es->pressed) {
+    elm_entry_select_all(obj);
+  }
+
+  es->pressed = EINA_FALSE;
+}
+
+static Eina_Bool s_mouse_move = EINA_FALSE;
+
+static void
+_mouse_move(void *data, Evas* e, Eo* o, void* event)
+{
+    s_mouse_move = EINA_TRUE;
+}
+
+static void
+_entry_clicked_cb(void *data, Evas_Object *obj, void *event_info)
+{
+   const char* name = elm_object_text_get(obj);
+
+   struct _EntryState *es = evas_object_data_get(obj, "state");
+
+   if (!es->was_focused && !s_mouse_move){
+     elm_entry_select_all(obj);
+   }
+
+   es->pressed = EINA_FALSE;
+   evas_object_event_callback_del(obj, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move);
+}
+
+static void
+_entry_press_cb(void *data, Evas_Object *obj, void *event_info)
+{
+   const char* name = elm_object_text_get(obj);
+   struct _EntryState *es = evas_object_data_get(obj, "state");
+
+   Eina_Bool isfoc = elm_object_focus_get(obj);
+   es->was_focused = isfoc;
+   es->pressed = EINA_TRUE;
+
+   s_mouse_move = EINA_FALSE;
+   evas_object_event_callback_add(obj, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move, NULL);
 }
 
 static void
@@ -346,8 +396,14 @@ gl_content_string_get(
 
   evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb_list, val);
   evas_object_smart_callback_add(en, "focused", _entry_focused_cb, val);
+  evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, NULL);
+  evas_object_smart_callback_add(en, "press", _entry_press_cb, NULL);
   evas_object_smart_callback_add(en, "activated", _entry_register_change_cb, val);
   evas_object_smart_callback_add(en, "unfocused", _entry_register_change_cb, val);
+
+  struct _EntryState *es = calloc(1, sizeof *es);
+  evas_object_data_set(en, "state", es);
+
   //evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
   //TODO
   /*
