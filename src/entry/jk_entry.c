@@ -385,22 +385,22 @@ EOLIAN static Eina_Bool
 _jk_entry_elm_widget_focus_next(
       Eo *obj,
       Jk_Entry_Data *pd,
-      Elm_Focus_Direction dir, Evas_Object **next)
+      Elm_Focus_Direction dir, Evas_Object **next, Elm_Object_Item **next_item)
 {
   return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
-_jk_entry_elm_widget_focus_direction(Eo *obj, Jk_Entry_Data *pd, const Evas_Object *base, double degree, Evas_Object **direction, double *weight)
+_jk_entry_elm_widget_focus_direction(Eo *obj, Jk_Entry_Data *pd, const Evas_Object *base, double degree, Evas_Object **direction, Elm_Object_Item **direction_item, double *weight)
 {
   return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
-_jk_entry_elm_widget_on_focus(Eo *obj, Jk_Entry_Data *pd)
+_jk_entry_elm_widget_on_focus(Eo *obj, Jk_Entry_Data *pd, Elm_Object_Item* item)
 {
   Eina_Bool int_ret = EINA_FALSE;
-  eo_do_super(obj, MY_CLASS, int_ret = elm_obj_widget_on_focus());
+  eo_do_super(obj, MY_CLASS, int_ret = elm_obj_widget_on_focus(NULL));
   if (!int_ret) return EINA_FALSE;
 
   if (elm_widget_focus_get(obj)){

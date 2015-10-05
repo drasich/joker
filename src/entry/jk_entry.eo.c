@@ -1,13 +1,13 @@
 EOAPI const Eo_Event_Description _JK_ENTRY_EVENT_CHANGED =
-   EO_EVENT_DESCRIPTION("changed", "");
+   EO_EVENT_DESCRIPTION("changed");
 EOAPI const Eo_Event_Description _JK_ENTRY_EVENT_DELAY_CHANGED =
-   EO_EVENT_DESCRIPTION("delay,changed", "");
+   EO_EVENT_DESCRIPTION("delay,changed");
 EOAPI const Eo_Event_Description _JK_ENTRY_EVENT_SPINNER_DRAG_START =
-   EO_EVENT_DESCRIPTION("spinner,drag,start", "");
+   EO_EVENT_DESCRIPTION("spinner,drag,start");
 EOAPI const Eo_Event_Description _JK_ENTRY_EVENT_SPINNER_DRAG_STOP =
-   EO_EVENT_DESCRIPTION("spinner,drag,stop", "");
+   EO_EVENT_DESCRIPTION("spinner,drag,stop");
 EOAPI const Eo_Event_Description _JK_ENTRY_EVENT_LANGUAGE_CHANGED =
-   EO_EVENT_DESCRIPTION("language,changed", "");
+   EO_EVENT_DESCRIPTION("language,changed");
 
 void _jk_entry_min_max_set(Eo *obj, Jk_Entry_Data *pd, double min, double max);
 
@@ -106,13 +106,13 @@ Eina_Bool _jk_entry_elm_widget_focus_next_manager_is(Eo *obj, Jk_Entry_Data *pd)
 Eina_Bool _jk_entry_elm_widget_focus_direction_manager_is(Eo *obj, Jk_Entry_Data *pd);
 
 
-Eina_Bool _jk_entry_elm_widget_focus_next(Eo *obj, Jk_Entry_Data *pd, Elm_Focus_Direction dir, Evas_Object **next);
+Eina_Bool _jk_entry_elm_widget_focus_next(Eo *obj, Jk_Entry_Data *pd, Elm_Focus_Direction dir, Evas_Object **next, Elm_Object_Item **next_item);
 
 
-Eina_Bool _jk_entry_elm_widget_focus_direction(Eo *obj, Jk_Entry_Data *pd, const Evas_Object *base, double degree, Evas_Object **direction, double *weight);
+Eina_Bool _jk_entry_elm_widget_focus_direction(Eo *obj, Jk_Entry_Data *pd, const Evas_Object *base, double degree, Evas_Object **direction, Elm_Object_Item **direction_item, double *weight);
 
 
-Eina_Bool _jk_entry_elm_widget_on_focus(Eo *obj, Jk_Entry_Data *pd);
+Eina_Bool _jk_entry_elm_widget_on_focus(Eo *obj, Jk_Entry_Data *pd, Elm_Object_Item *item);
 
 
 Eina_Bool _jk_entry_elm_widget_event(Eo *obj, Jk_Entry_Data *pd, Evas_Object *source, Evas_Callback_Type type, void *event_info);
@@ -121,7 +121,7 @@ Eina_Bool _jk_entry_elm_widget_event(Eo *obj, Jk_Entry_Data *pd, Evas_Object *so
 void _jk_entry_elm_layout_sizing_eval(Eo *obj, Jk_Entry_Data *pd);
 
 
-static Eo_Op_Description _jk_entry_op_desc[] = {
+static const Eo_Op_Description _jk_entry_op_desc[] = {
      EO_OP_FUNC_OVERRIDE(eo_constructor, _jk_entry_eo_base_constructor),
      EO_OP_FUNC_OVERRIDE(evas_obj_smart_add, _jk_entry_evas_object_smart_add),
      EO_OP_FUNC_OVERRIDE(evas_obj_smart_del, _jk_entry_evas_object_smart_del),
@@ -134,26 +134,25 @@ static Eo_Op_Description _jk_entry_op_desc[] = {
      EO_OP_FUNC_OVERRIDE(elm_obj_widget_on_focus, _jk_entry_elm_widget_on_focus),
      EO_OP_FUNC_OVERRIDE(elm_obj_widget_event, _jk_entry_elm_widget_event),
      EO_OP_FUNC_OVERRIDE(elm_obj_layout_sizing_eval, _jk_entry_elm_layout_sizing_eval),
-     EO_OP_FUNC(jk_entry_min_max_set, _jk_entry_min_max_set, ""),
-     EO_OP_FUNC(jk_entry_min_max_get, _jk_entry_min_max_get, ""),
-     EO_OP_FUNC(jk_entry_step_set, _jk_entry_step_set, ""),
-     EO_OP_FUNC(jk_entry_step_get, _jk_entry_step_get, ""),
-     EO_OP_FUNC(jk_entry_wrap_set, _jk_entry_wrap_set, ""),
-     EO_OP_FUNC(jk_entry_wrap_get, _jk_entry_wrap_get, ""),
-     EO_OP_FUNC(jk_entry_interval_set, _jk_entry_interval_set, ""),
-     EO_OP_FUNC(jk_entry_interval_get, _jk_entry_interval_get, ""),
-     EO_OP_FUNC(jk_entry_round_set, _jk_entry_round_set, ""),
-     EO_OP_FUNC(jk_entry_round_get, _jk_entry_round_get, ""),
-     EO_OP_FUNC(jk_entry_editable_set, _jk_entry_editable_set, ""),
-     EO_OP_FUNC(jk_entry_editable_get, _jk_entry_editable_get, ""),
-     EO_OP_FUNC(jk_entry_base_set, _jk_entry_base_set, ""),
-     EO_OP_FUNC(jk_entry_base_get, _jk_entry_base_get, ""),
-     EO_OP_FUNC(jk_entry_value_set, _jk_entry_value_set, ""),
-     EO_OP_FUNC(jk_entry_value_get, _jk_entry_value_get, ""),
-     EO_OP_FUNC(jk_entry_label_format_set, _jk_entry_label_format_set, ""),
-     EO_OP_FUNC(jk_entry_label_format_get, _jk_entry_label_format_get, ""),
-     EO_OP_FUNC(jk_entry_special_value_add, _jk_entry_special_value_add, ""),
-     EO_OP_SENTINEL
+     EO_OP_FUNC(jk_entry_min_max_set, _jk_entry_min_max_set),
+     EO_OP_FUNC(jk_entry_min_max_get, _jk_entry_min_max_get),
+     EO_OP_FUNC(jk_entry_step_set, _jk_entry_step_set),
+     EO_OP_FUNC(jk_entry_step_get, _jk_entry_step_get),
+     EO_OP_FUNC(jk_entry_wrap_set, _jk_entry_wrap_set),
+     EO_OP_FUNC(jk_entry_wrap_get, _jk_entry_wrap_get),
+     EO_OP_FUNC(jk_entry_interval_set, _jk_entry_interval_set),
+     EO_OP_FUNC(jk_entry_interval_get, _jk_entry_interval_get),
+     EO_OP_FUNC(jk_entry_round_set, _jk_entry_round_set),
+     EO_OP_FUNC(jk_entry_round_get, _jk_entry_round_get),
+     EO_OP_FUNC(jk_entry_editable_set, _jk_entry_editable_set),
+     EO_OP_FUNC(jk_entry_editable_get, _jk_entry_editable_get),
+     EO_OP_FUNC(jk_entry_base_set, _jk_entry_base_set),
+     EO_OP_FUNC(jk_entry_base_get, _jk_entry_base_get),
+     EO_OP_FUNC(jk_entry_value_set, _jk_entry_value_set),
+     EO_OP_FUNC(jk_entry_value_get, _jk_entry_value_get),
+     EO_OP_FUNC(jk_entry_label_format_set, _jk_entry_label_format_set),
+     EO_OP_FUNC(jk_entry_label_format_get, _jk_entry_label_format_get),
+     EO_OP_FUNC(jk_entry_special_value_add, _jk_entry_special_value_add),
 };
 
 static const Eo_Event_Description *_jk_entry_event_desc[] = {

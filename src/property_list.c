@@ -1140,7 +1140,8 @@ property_list_new(Evas_Object* win)
   //elm_box_pack_end(bx, gl);
   p->root = gl;
   elm_genlist_focus_on_selection_set(gl, EINA_FALSE);
-  elm_config_focus_autoscroll_mode_set(ELM_FOCUS_AUTOSCROLL_MODE_NONE);
+  //elm_config_focus_autoscroll_mode_set(ELM_FOCUS_AUTOSCROLL_MODE_NONE);
+  elm_config_focus_autoscroll_mode_set(ELM_FOCUS_AUTOSCROLL_MODE_AUTO);
 
   //Elm_Genlist_Item_Class *class_entry, *class_group, *class_node;
   class_entry = elm_genlist_item_class_new();
