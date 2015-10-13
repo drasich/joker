@@ -224,10 +224,7 @@ _entry_cleared(
   else {
     printf("entry cleared but do nothing ::: %s  \n", name);
   }
-
-
 }
-
 
 
 static void
@@ -251,7 +248,7 @@ _print_signal(
   printf("signal from  %s :::::  %s \n", name,  data);
 }
 
-static int test = 1;
+//static int test = 1;
 
 static void
 _onfocused(
@@ -318,6 +315,7 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
   printf("Style user stack is empty.\n");
 
   const char* yep = "aaa";
+  /*
   elm_object_text_set(en, "aaa");
   if (test == 1)
   yep = "xxx";
@@ -326,6 +324,7 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
   if (test == 3)
   yep = "zzz";
   test++;
+  */
 
   elm_object_text_set(en, yep);
   evas_object_name_set(en, yep);
@@ -521,6 +520,10 @@ _jk_entry_base_get(Eo *obj, Jk_Entry_Data *pd)
 EOLIAN static void
 _jk_entry_value_set(Eo *obj, Jk_Entry_Data *pd, double val)
 {
+  char buf[1024];
+  snprintf(buf, sizeof(buf), "%.0f", val);
+  elm_object_text_set(pd->entry, buf);
+
 
 }
 
