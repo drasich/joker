@@ -54,6 +54,8 @@ typedef struct
   int state;
   Evas_Coord startx, starty;
   Eina_Bool want_select;
+  double value;
+  double value_saved;
 
 } Jk_Entry_Data;
 
@@ -137,6 +139,7 @@ _show_entry(Eo* o, Jk_Entry_Data* pd, Eina_Bool b)
   printf("SHOW ENTRY \n");
   elm_layout_signal_emit(o, "visible,0", "bg");
   elm_entry_editable_set(pd->entry, EINA_TRUE);
+  pd->value_saved = pd->value;
 
   elm_entry_text_style_user_push(pd->entry, user_style);
   elm_entry_select_all(pd->entry);
@@ -169,7 +172,9 @@ _entry_activated(
       Evas_Object *o,
       void* event)
 {
-  Jk_Entry_Data* pd = data;
+  Eo* parent = data;
+  JK_ENTRY_DATA_GET(parent, pd);
+
   pd->state = STATE_SHOW;
 
   printf("leaving entry \n");
@@ -181,6 +186,18 @@ _entry_activated(
 
   elm_entry_text_style_user_push(o, user_style);
   pd->want_select = EINA_FALSE;
+
+  const char* str = elm_object_text_get(o);
+  if (!str) return;
+  char* end;
+  double n = strtod(str, &end);
+
+  if (n == pd->value) return;
+
+  pd->value = n;
+
+  printf("wrote %s, %f,, ENTRY ACTIVATED will send changed signal \n ", str, pd->value);
+  eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED, NULL));
 }
 
 static void
@@ -189,9 +206,11 @@ _entry_unfocused(
       Evas_Object *o,
       void* event)
 {
+  Eo* parent = data;
+  JK_ENTRY_DATA_GET(parent, pd);
+
   const char* name = evas_object_name_get(o);
   printf("entry unfocused ::: %s  \n", name);
-  Jk_Entry_Data* pd = data;
   pd->state = STATE_SHOW;
 
   Eo* smart = evas_object_data_get(o, "smart");
@@ -202,6 +221,17 @@ _entry_unfocused(
   elm_entry_text_style_user_push(o, user_style);
   pd->want_select = EINA_FALSE;
 
+  const char* str = elm_object_text_get(o);
+  if (!str) return;
+  char* end;
+  double n = strtod(str, &end);
+
+  if (n == pd->value) return;
+
+  pd->value = n;
+
+  printf("wrote %s, %f,, ENTRY UNFOCUSED will send changed signal \n ", str, pd->value);
+  eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED, NULL));
 }
 
 static void
@@ -265,7 +295,7 @@ EOLIAN static void
 _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 {
   ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd);
-  JK_ENTRY_DATA_GET(obj, ed);
+  //JK_ENTRY_DATA_GET(obj, ed);
 
   eo_do_super(obj, JK_ENTRY_CLASS, evas_obj_smart_add());
   elm_widget_sub_object_parent_add(obj);
@@ -343,8 +373,8 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
   elm_layout_sizing_eval(obj);
   evas_object_data_set(en, "smart", obj);
 
-  evas_object_smart_callback_add(en, "activated", _entry_activated, pd);
-  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused, pd);
+  evas_object_smart_callback_add(en, "activated", _entry_activated, obj);
+  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused, obj);
   //evas_object_smart_callback_add(en, "focused", _select_all, pd);
   evas_object_smart_callback_add(en, "selection,changed", _print_signal, "selection changed");
   evas_object_smart_callback_add(en, "selection,cleared", _entry_cleared, pd);
@@ -523,14 +553,14 @@ _jk_entry_value_set(Eo *obj, Jk_Entry_Data *pd, double val)
   char buf[1024];
   snprintf(buf, sizeof(buf), "%.0f", val);
   elm_object_text_set(pd->entry, buf);
-
-
+  pd->value = val;
 }
 
 EOLIAN static double
 _jk_entry_value_get(Eo *obj, Jk_Entry_Data *pd)
 {
-
+  printf("value get : %f \n", pd->value);
+  return pd->value;
 }
 
 EOLIAN static void

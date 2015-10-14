@@ -704,7 +704,7 @@ _spinner_changed_cb_list(
   PropertyValue* val = data;
   JkPropertyList* pl = val->list;
   const char* name = evas_object_name_get(obj);
-  double v =  elm_spinner_value_get(obj);
+  double v = elm_spinner_value_get(obj);
   float f = v;
   memcpy(val->data, &f, sizeof f);
 
@@ -784,6 +784,26 @@ gl_content_float_get(
   return bx;
 }
 
+static void
+_jk_entry_changed_cb_list(
+      void* data,
+      Evas_Object *obj,
+      void* event)
+{
+  PropertyValue* val = data;
+  JkPropertyList* pl = val->list;
+  const char* name = evas_object_name_get(obj);
+  double v;
+  eo_do(obj, v = jk_entry_value_get());
+  float f = v;
+  memcpy(val->data, &f, sizeof f);
+
+  if (pl->changed_float) {
+    pl->changed_float(pl->data, val->path, &v);
+  }
+}
+
+
 Evas_Object*
 gl_content_float_get_test(
       void *data,
@@ -833,6 +853,8 @@ gl_content_float_get_test(
   //elm_spinner_value_set(en, atof(value));
    evas_object_show(en);
    elm_box_pack_end(bx, en);
+
+  evas_object_smart_callback_add(en, "changed", _jk_entry_changed_cb_list, val);
 
   const float* f = val->data;
   eo_do(en, jk_entry_value_set(*f));
