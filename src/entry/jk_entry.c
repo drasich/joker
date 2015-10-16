@@ -291,6 +291,36 @@ _onfocused(
    elm_entry_select_all(o);
 }
 
+static void
+_drag_cb(void *data,
+         Evas_Object *_obj EINA_UNUSED,
+         const char *emission EINA_UNUSED,
+         const char *source EINA_UNUSED)
+{
+   printf("drag cb \n");
+}
+
+static void
+_drag_start_cb(void *data,
+         Evas_Object *_obj EINA_UNUSED,
+         const char *emission EINA_UNUSED,
+         const char *source EINA_UNUSED)
+{
+   printf("drag start cb \n");
+}
+
+static void
+_drag_stop_cb(void *data,
+         Evas_Object *_obj EINA_UNUSED,
+         const char *emission EINA_UNUSED,
+         const char *source EINA_UNUSED)
+{
+   printf("drag stop cb \n");
+}
+
+
+
+
 EOLIAN static void
 _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 {
@@ -388,6 +418,11 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
   elm_layout_signal_callback_add(obj, "mouse,up,1", "bg", _onup, pd);
   elm_layout_signal_callback_add(obj, "mouse,clicked,1", "bg", _onclicked, pd);
 
+  elm_layout_signal_callback_add(obj, "drag", "*", _drag_cb, obj);
+  elm_layout_signal_callback_add(obj, "drag,start", "*", _drag_start_cb, obj);
+  elm_layout_signal_callback_add(obj, "drag,stop", "*", _drag_stop_cb, obj);
+  elm_layout_signal_callback_add(obj, "drag,step", "*", _drag_stop_cb, obj);
+  elm_layout_signal_callback_add(obj, "drag,page", "*", _drag_stop_cb, obj);
 
 }
 
