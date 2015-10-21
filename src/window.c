@@ -549,7 +549,6 @@ JkPropertyList* jk_property_list_new(Window* w)
 
   */
 
-    //chris
   //Evas* e = evas_object_evas_get(w->win);
   //Evas_Object* panel = smart_panel_add(e);
   Evas_Object* panel = layout_panel_add(w->win);

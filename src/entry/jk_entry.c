@@ -273,9 +273,6 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
   eo_do_super(obj, JK_ENTRY_CLASS, evas_obj_smart_add());
   elm_widget_sub_object_parent_add(obj);
 
-  elm_layout_file_set(obj, "edc/entry.edj", "main");
-
-
   /*
      pd->rect = evas_object_rectangle_add(evas_object_evas_get(obj));
   //evas_object_color_set(pd->rect, rand() % 255, rand() % 255, rand() % 255, 255/2);
@@ -298,6 +295,8 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 */
 
 
+  elm_layout_file_set(obj, "edc/entry.edj", "main");
+
   Evas_Object* en = elm_entry_add(obj);
   elm_entry_single_line_set(en, EINA_TRUE);
   elm_entry_editable_set(en, EINA_FALSE);
@@ -305,6 +304,7 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   //evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  //evas_object_size_hint_align_set(en, EVAS_HINT_FILL, EVAS_HINT_FILL);
   //elm_object_text_set(en, "<align=center>hello</align>");
   //elm_entry_text_style_user_push(en, "DEFAULT='align=center'");
   //elm_entry_text_style_user_push(en, "DEFAULT='color=#0f0'");

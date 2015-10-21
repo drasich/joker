@@ -359,6 +359,12 @@ gl_content_string_get(
   bx = elm_box_add(obj);
   elm_box_horizontal_set(bx, EINA_TRUE);
   elm_box_padding_set(bx, 4, 0);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bx, 0, fh);
 
   Evas_Object* label = elm_label_add(bx);
 
@@ -383,8 +389,9 @@ gl_content_string_get(
 
   Evas_Object* en = elm_entry_add(obj);
   elm_entry_scrollable_set(en, EINA_TRUE);
-  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  //evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, EVAS_HINT_FILL);
   const char* value = val->data;
   elm_object_text_set(en, value);
   //elm_entry_scrollbar_policy_set(en,
@@ -543,6 +550,53 @@ _on_button_option_clicked(
 }
 
 Evas_Object*
+gl_content_node_get(
+      void *data,
+      Evas_Object *obj,
+      const char *part)
+{
+  Evas_Object *bx, *bt, *ck;
+
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+
+  bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bx, 0, fh);
+  elm_box_align_set(bx, 0, 1);
+  //elm_box_align_set(bx, 0, 0.5f);
+  elm_box_padding_set(bx, 4, 0);
+
+  Evas_Object* label = elm_label_add(bx);
+
+  PropertyValue* val = data;
+
+   {
+    unsigned int num;
+    char** ss = eina_str_split_full(val->path, "/", 0, &num);
+    const char* name = ss[num-1];
+
+    char s[256];
+    sprintf(s, "<b>%s</b>", name);
+    //if (val->item && elm_genlist_item_expanded_get(val->item))
+    //sprintf(s, "%s : ", name);
+    //else
+    //sprintf(s, "%s", name);
+
+    elm_object_text_set(label, s);
+    elm_box_pack_end(bx, label);
+    evas_object_show(label);
+
+    free(ss[0]);
+    free(ss);
+   }
+
+   return bx;
+}
+
+
+Evas_Object*
 gl_content_enum_get(
       void *data,
       Evas_Object *obj,
@@ -554,7 +608,11 @@ gl_content_enum_get(
 
   bx = elm_box_add(obj);
   elm_box_horizontal_set(bx, EINA_TRUE);
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bx, 0, fh);
   elm_box_align_set(bx, 0, 1);
+  //elm_box_align_set(bx, 0, 0.5f);
   elm_box_padding_set(bx, 4, 0);
 
   Evas_Object* label = elm_label_add(bx);
@@ -569,9 +627,9 @@ gl_content_enum_get(
     char s[256];
     //sprintf(s, "<b> %s </b> : ", name);
     if (val->item && elm_genlist_item_expanded_get(val->item))
-    sprintf(s, "%s : ", name);
+    sprintf(s, "<b>%s</b> : ", name);
     else
-    sprintf(s, "%s", name);
+    sprintf(s, "<b>%s</b>", name);
 
     elm_object_text_set(label, s);
     evas_object_show(label);
@@ -608,9 +666,6 @@ gl_content_enum_get(
   elm_box_pack_end(bx, hoversel);
 
   evas_object_show(hoversel);
-
-  //evas_object_size_hint_min_set(bx, 1 * elm_config_scale_get(),
-  //      50 * elm_config_scale_get());
    }
 
    return bx;
@@ -798,6 +853,12 @@ gl_content_float_get_test(
   elm_box_horizontal_set(bx, EINA_TRUE);
   elm_box_padding_set(bx, 4, 0);
 
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bx, 0, fh);
+
   PropertyValue* val = data;
 
   const char* name;
@@ -820,6 +881,16 @@ gl_content_float_get_test(
     free(ss);
    }
 
+  /*
+  Eo* l = elm_layout_add(obj);
+  elm_layout_file_set(l, "edc/entry.edj", "main");
+  evas_object_size_hint_weight_set(l, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(l, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  evas_object_show(l);
+   elm_box_pack_end(bx, l);
+   return bx;
+   */
+
    //Evas_Object* en = smart_entry_add(evas_object_evas_get(obj));
    //Evas_Object* en = smart_entry_add(obj);
    //chris
@@ -829,11 +900,18 @@ gl_content_float_get_test(
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   //evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  evas_object_size_hint_min_set(en,1,1);
-  //elm_spinner_value_set(en, atof(value));
-   evas_object_show(en);
+  evas_object_show(en);
    elm_box_pack_end(bx, en);
 
+  /*
+     Eo* rect = evas_object_rectangle_add(evas_object_evas_get(obj));
+  evas_object_show(rect);
+  evas_object_color_set(rect, rand() % 255, rand() % 255, rand() % 255, 255/2);
+  evas_object_size_hint_weight_set(rect, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(rect, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+   elm_box_pack_end(bx, rect);
+   */
 
   return bx;
 }
@@ -1141,7 +1219,8 @@ property_list_new(Evas_Object* win)
   p->root = gl;
   elm_genlist_focus_on_selection_set(gl, EINA_FALSE);
   //elm_config_focus_autoscroll_mode_set(ELM_FOCUS_AUTOSCROLL_MODE_NONE);
-  elm_config_focus_autoscroll_mode_set(ELM_FOCUS_AUTOSCROLL_MODE_AUTO);
+  //elm_config_focus_autoscroll_mode_set(ELM_FOCUS_AUTOSCROLL_MODE_SHOW);
+  elm_config_focus_autoscroll_mode_set(ELM_FOCUS_AUTOSCROLL_MODE_BRING_IN);
 
   //Elm_Genlist_Item_Class *class_entry, *class_group, *class_node;
   class_entry = elm_genlist_item_class_new();
@@ -1167,10 +1246,10 @@ property_list_new(Evas_Object* win)
   class_group->func.del = NULL;
 
   class_node = elm_genlist_item_class_new();
-  class_node->item_style = "default";
-  class_node->func.text_get = gl_text_get_node;
-  class_node->func.content_get = NULL;
-  class_node->func.state_get = NULL;
+  class_node->item_style = "full";//"default";
+  class_node->func.text_get = NULL;//gl_text_get_node;
+  class_node->func.content_get = gl_content_node_get;// NULL;
+  class_node->func.state_get = gl_state_get;
   class_node->func.del = NULL;
 
   class_enum = elm_genlist_item_class_new();
