@@ -309,16 +309,17 @@ window_new()
 
   Evas_Object* win = elm_win_util_standard_add("3d view", "3d view");
   w->win = win;
-  printf("pointer win %p \n", win);
+  printf("pointer w, win, %p, %p \n", w, w->win);
   elm_win_autodel_set(win, EINA_TRUE);
   evas_object_smart_callback_add(win, "delete,request", simple_window_del, NULL);
 
   Eo* table = elm_table_add(win);
   evas_object_size_hint_weight_set(table, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  //elm_win_resize_object_add(win, table);
+  elm_win_resize_object_add(win, table);
   evas_object_show(table);
   elm_table_homogeneous_set(table, EINA_TRUE);
 
+  /*
   Eo* edje = create_edje(win);
   w->edje = edje;
   elm_win_resize_object_add(win, edje);
@@ -326,8 +327,10 @@ window_new()
   evas_object_resize(edje, 200, 200);
   evas_object_show(edje);
   edje_object_part_swallow(edje, "part_glview", table);
+
   //elm_win_resize_object_add(win, edje);
   //evas_object_size_hint_weight_set(edje, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  */
 
   /*
   Evas_Object* box = elm_box_add(win);

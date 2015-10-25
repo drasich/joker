@@ -108,5 +108,4 @@ Evas_Object* jk_window_new(rust_elm_callback cb, const void* cb_data);
 void jk_exit();
 
 
-
 #endif
