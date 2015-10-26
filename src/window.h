@@ -66,7 +66,8 @@ struct _Window
   window_key_down key_down;
 };
 
-Window* window_new();
+Window* window_new(int width,int height);
+
 void tmp_func(
       Window* window,
       void* data,

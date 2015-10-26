@@ -303,7 +303,7 @@ static Evas_Object* _create_select_rect(Evas_Object* parent)
 }
 
 Window*
-window_new()
+window_new(int width, int height)
 {
   Window* w = calloc(1, sizeof *w);
 
@@ -365,7 +365,8 @@ window_new()
 
   w->rect = _create_select_rect(win);
 
-  evas_object_resize(win, 400, 256);
+  //evas_object_resize(win, 400, 256);
+  evas_object_resize(win, width, height);
   //evas_object_resize(win, 864, 434);
   evas_object_show(win);
 
