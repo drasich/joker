@@ -528,6 +528,21 @@ JkPropertySet* jk_property_set_new(Window* w)
   return ps;
 }
 
+
+_on_panel_geom(
+      void *data,
+      Evas *evas,
+      Evas_Object *o,
+      void *einfo)
+{
+  JkPropertyList* p = data;
+  if (p->move) {
+    int x, y, w, h;
+    evas_object_geometry_get(o, &x, &y, &w, &h);
+    p->move(p->data, x , y, w, h);
+  }
+}
+
 JkPropertyList* jk_property_list_new(Window* w)
 {
   /*
@@ -565,6 +580,9 @@ JkPropertyList* jk_property_list_new(Window* w)
   //smart_panel_content_set(panel, p->root);
   elm_object_part_content_set(panel, "content", p->root);
   p->win = panel;
+
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom, p);
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom, p);
 
   return p;
 

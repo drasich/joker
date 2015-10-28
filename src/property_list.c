@@ -1205,7 +1205,9 @@ void jk_property_list_register_cb(
       property_register_change register_change_enum,
       property_register_change register_change_option,
       property_tree_object_cb expand,
-      property_tree_object_cb contract
+      property_tree_object_cb contract,
+      panel_geom_cb move
+
       )
 {
   pl->data = data;
@@ -1218,6 +1220,7 @@ void jk_property_list_register_cb(
   pl->register_change_option = register_change_option;
   pl->expand = expand;
   pl->contract = contract;
+  pl->move = move;
 }
 
 JkPropertyList*

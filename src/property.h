@@ -53,7 +53,7 @@ struct _PropertyNode
   //path => propertyentry/evas_object
   //example name OR position/x OR parameter/life/max
   Eina_Hash* leafs;
-  //name =>  PropertyNode;  
+  //name =>  PropertyNode;
   //example position or parameter or life
   Eina_Hash* nodes;
   Elm_Object_Item* item;
@@ -100,12 +100,12 @@ void property_set_string_add(
       );
 
 void property_set_float_add(
-      JkPropertySet* ps, 
+      JkPropertySet* ps,
       const char* name,
       float value);
 
 void property_set_node_add(
-      JkPropertySet* ps, 
+      JkPropertySet* ps,
       const char* path);
 
 //TODO TO BE TESTED
@@ -120,6 +120,10 @@ typedef void (*property_tree_object_cb)(
       void* data,
       void* object,
       Elm_Object_Item* parent);
+
+typedef void (*panel_geom_cb)(
+      void* data, int x, int y, int w, int h);
+
 
 typedef struct _PropertyList JkPropertyList;
 
@@ -142,6 +146,9 @@ struct _PropertyList
   property_register_change register_change_option;
   property_tree_object_cb expand;
   property_tree_object_cb contract;
+
+  panel_geom_cb move;
+  panel_geom_cb resize;
 };
 
 typedef struct _PropertyValue PropertyValue;
@@ -170,41 +177,42 @@ void jk_property_list_register_cb(
       property_register_change register_change_enum,
       property_register_change register_change_option,
       property_tree_object_cb expand,
-      property_tree_object_cb contract
+      property_tree_object_cb contract,
+      panel_geom_cb move
       );
 
 PropertyValue* property_list_node_add(
-      JkPropertyList* pl, 
+      JkPropertyList* pl,
       const char* path);
 
 void property_list_nodes_remove(
-      JkPropertyList* pl, 
+      JkPropertyList* pl,
       const char* path);
 
 PropertyValue* property_list_float_add(
-      JkPropertyList* ps, 
+      JkPropertyList* ps,
       const char* path,
       float value);
 
 PropertyValue* property_list_string_add(
-      JkPropertyList* ps, 
+      JkPropertyList* ps,
       const char* path,
       const char* value);
 
 void property_list_group_add(
-      JkPropertyList* ps, 
+      JkPropertyList* ps,
       const char* path);
 
 PropertyValue*
 property_list_enum_add(
-      JkPropertyList* pl, 
+      JkPropertyList* pl,
       const char* path,
       char* possible_values,
       const char* value);
 
 PropertyValue*
 property_list_option_add(
-      JkPropertyList* pl, 
+      JkPropertyList* pl,
       const char* path,
       const char* value);
 
@@ -229,7 +237,7 @@ void property_list_float_update(
 void property_expand(PropertyValue* value);
 
 void property_show(
-      JkPropertyList* p, 
+      JkPropertyList* p,
       bool b);
 
 #endif
