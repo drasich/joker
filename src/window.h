@@ -99,7 +99,7 @@ bool exit_callback_call();
 
 JkProperty* window_property_new(Window* w);
 JkPropertySet* jk_window_property_set_new(Window* w);
-JkPropertyList* jk_property_list_new(Window* w);
+JkPropertyList* jk_property_list_new(Window* w, int x, int y, int width, int height);
 
 void window_rect_visible_set(Window* w, bool b);
 void window_rect_set(Window* win, float x, float y, float w, float h);
