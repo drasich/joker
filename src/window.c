@@ -450,6 +450,8 @@ JkTree* window_tree_new(Window* w)
   return t;
   */
 
+
+   /*
   Evas_Object* win = elm_win_add(w->win, "tree", ELM_WIN_BASIC);
   elm_win_title_set(win, "scene tree");
   //Evas_Object* win = elm_win_util_standard_add("genlist3", "Genlist 3");
@@ -466,6 +468,28 @@ JkTree* window_tree_new(Window* w)
   evas_object_show(win);
 
   return t;
+  */
+
+  //chris
+  Evas_Object* panel = layout_panel_add(w->win);
+  evas_object_move(panel, 440, 10);
+  evas_object_show(panel);
+
+
+  JkTree* t = tree_widget_new(panel);
+  evas_object_size_hint_weight_set(t->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+
+  evas_object_resize(panel, 300, 400);
+
+  //smart_panel_content_set(panel, p->root);
+  elm_object_part_content_set(panel, "content", t->root);
+  t->win = panel;
+
+  //evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom, t);
+  //evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom, t);
+
+  return t;
+
 }
 
 JkAction* window_action_new(Window* w)
