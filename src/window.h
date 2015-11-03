@@ -85,7 +85,7 @@ void window_callback_set(
       window_key_down key_down
       );
 
-JkTree* window_tree_new(Window* w);
+JkTree* window_tree_new(Window* w, int x, int y, int width, int height);
 JkAction* window_action_new(Window* w);
 JkCommand* window_command_new(Window* w);
 void window_button_new(Window* w);

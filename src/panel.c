@@ -521,12 +521,14 @@ smart_panel_content_set(Evas_Object *o, Evas_Object* content)
 
 }
 
-Eo* layout_panel_add(Evas_Object* parent)
+Eo* layout_panel_add(Evas_Object* parent, const char* name)
 {
 	Eo* ly = elm_layout_add(parent);
-   	elm_layout_file_set(ly, "edc/panel.edj", "main");
+  elm_layout_file_set(ly, "edc/panel.edj", "main");
 
 	Smart_Panel* priv = calloc(1, sizeof *priv);
+
+  elm_layout_text_set(ly, "text", name);
 
   elm_layout_signal_callback_add(ly, "mouse,down,1", "bar",_ondown_edge, priv);
   elm_layout_signal_callback_add(ly, "mouse,move", "bar",_onmove_edge, priv);

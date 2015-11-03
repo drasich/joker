@@ -2,6 +2,7 @@
 #define __property__
 #include "Elementary.h"
 #include "stdbool.h"
+#include "common.h"
 
 typedef struct _Property JkProperty;
 
@@ -120,10 +121,6 @@ typedef void (*property_tree_object_cb)(
       void* data,
       void* object,
       Elm_Object_Item* parent);
-
-typedef void (*panel_geom_cb)(
-      void* data, int x, int y, int w, int h);
-
 
 typedef struct _PropertyList JkPropertyList;
 

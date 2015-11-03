@@ -239,7 +239,9 @@ void tree_register_cb(
       tree_object_can_expand can_expand,
       tree_object_expand expand,
       tree_selected selected,
-      tree_selected unselected)
+      tree_selected unselected,
+      panel_geom_cb move
+      )
 {
   t->name_get = name;
   t->item_selected = item_selected;
@@ -247,6 +249,9 @@ void tree_register_cb(
   t->expand = expand;
   t->selected = selected;
   t->unselected = unselected;
+
+  t->move = move;
+  t->resize = move;
 
   t->data = data;
 }

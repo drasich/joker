@@ -4,6 +4,7 @@
 //#include "context.h"
 //#include "view.h"
 #include "stdbool.h"
+#include "common.h"
 
 typedef struct _Tree JkTree;
 
@@ -36,6 +37,8 @@ struct _Tree
   tree_object_expand expand;
   tree_selected selected;
   tree_selected unselected;
+  panel_geom_cb move;
+  panel_geom_cb resize;
 
   void* data;
 };
@@ -48,7 +51,8 @@ void tree_register_cb(
       tree_object_can_expand can_expand,
       tree_object_expand expand,
       tree_selected selected,
-      tree_selected unselected
+      tree_selected unselected,
+      panel_geom_cb move
       );
 
 

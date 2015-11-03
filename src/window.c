@@ -441,8 +441,36 @@ bool exit_callback_call()
   return false;
 }
 
+_on_panel_geom(
+      void *data,
+      Evas *evas,
+      Evas_Object *o,
+      void *einfo)
+{
+  JkPropertyList* p = data;
+  if (p->move) {
+    int x, y, w, h;
+    evas_object_geometry_get(o, &x, &y, &w, &h);
+    p->move(p->data, x , y, w, h);
+  }
+}
 
-JkTree* window_tree_new(Window* w)
+_on_panel_geom_tree(
+      void *data,
+      Evas *evas,
+      Evas_Object *o,
+      void *einfo)
+{
+  JkTree* t = data;
+  if (t->move) {
+    int x, y, w, h;
+    evas_object_geometry_get(o, &x, &y, &w, &h);
+    t->move(t->data, x , y, w, h);
+  }
+}
+
+
+JkTree* window_tree_new(Window* w, int x, int y, int width, int height)
 {
   /*
   JkTree* t = tree_widget_new(w->win);
@@ -471,22 +499,22 @@ JkTree* window_tree_new(Window* w)
   */
 
   //chris
-  Evas_Object* panel = layout_panel_add(w->win);
-  evas_object_move(panel, 440, 10);
+  Evas_Object* panel = layout_panel_add(w->win, "tree");
+  evas_object_move(panel, x, y);
   evas_object_show(panel);
 
 
   JkTree* t = tree_widget_new(panel);
   evas_object_size_hint_weight_set(t->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
-  evas_object_resize(panel, 300, 400);
+  evas_object_resize(panel, width, height);
 
   //smart_panel_content_set(panel, p->root);
   elm_object_part_content_set(panel, "content", t->root);
   t->win = panel;
 
-  //evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom, t);
-  //evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom, t);
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom_tree, t);
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom_tree, t);
 
   return t;
 
@@ -552,21 +580,6 @@ JkPropertySet* jk_property_set_new(Window* w)
   return ps;
 }
 
-
-_on_panel_geom(
-      void *data,
-      Evas *evas,
-      Evas_Object *o,
-      void *einfo)
-{
-  JkPropertyList* p = data;
-  if (p->move) {
-    int x, y, w, h;
-    evas_object_geometry_get(o, &x, &y, &w, &h);
-    p->move(p->data, x , y, w, h);
-  }
-}
-
 JkPropertyList* jk_property_list_new(Window* w, int x, int y, int width, int height)
 {
   /*
@@ -594,7 +607,7 @@ JkPropertyList* jk_property_list_new(Window* w, int x, int y, int width, int hei
 
   //Evas* e = evas_object_evas_get(w->win);
   //Evas_Object* panel = smart_panel_add(e);
-  Evas_Object* panel = layout_panel_add(w->win);
+  Evas_Object* panel = layout_panel_add(w->win, "property");
   evas_object_move(panel, x, y);
   evas_object_show(panel);
 
