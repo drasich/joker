@@ -56,6 +56,7 @@ typedef struct
   Eina_Bool want_select;
   double value;
   double value_saved;
+  double diff;
 
 } Jk_Entry_Data;
 
@@ -86,6 +87,7 @@ _ondown(
   Jk_Entry_Data* pd = data;
   printf(" on down : %s, %s, %s \n", emission, source, elm_object_text_get(pd->entry));
   pd->state = STATE_MOUSE_DOWN;
+  pd->diff = 0;
   Evas* e = evas_object_evas_get(o);
   evas_pointer_output_xy_get(e, &pd->startx, &pd->starty);
   elm_object_scroll_hold_push(o);
@@ -100,17 +102,22 @@ _onmove(
 
 {
   Jk_Entry_Data* pd = data;
+  Evas* e = evas_object_evas_get(o);
+  Evas_Coord mx, my;
+  evas_pointer_output_xy_get(e, &mx, &my);
   if (pd->state == STATE_MOUSE_DOWN)
    {
-    Evas* e = evas_object_evas_get(o);
-    Evas_Coord mx, my;
-    evas_pointer_output_xy_get(e, &mx, &my);
     if (mx != pd->startx || my != pd->starty) {
       pd->state = STATE_MOVE;
     }
    }
   if (pd->state == STATE_MOVE) {
-    printf(" on move : %s, %s \n", emission, source);
+    printf(" on move : %s, %s, %d \n", emission, source, mx);
+    pd->diff += mx - pd->startx;
+    //evas_event_feed_mouse_move(e, pd->startx, pd->starty, 0, NULL);
+    Ecore_Evas *ee = ecore_evas_ecore_evas_get(e);
+    Ecore_Window ew = ecore_evas_window_get(ee);
+    ecore_x_mouse_move_send(ew, pd->startx, pd->starty);
   }
 }
 
@@ -297,16 +304,36 @@ _drag_cb(void *data,
          const char *emission EINA_UNUSED,
          const char *source EINA_UNUSED)
 {
-   printf("drag cb \n");
+  // printf("drag cb \n");
+  /*
+  int x, y;
+  evas_object_geometry_get(obj, &x, &y, NULL, NULL);
+  printf("drag cb %d, %d \n", x, y);
+  */
+
+  Eo* obj = data;
+  ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd);
+
+  double pos;
+  eo_do((Eo *)wd->resize_obj,
+        //edje_obj_part_drag_value_get("elm.dragable.slider", &pos, NULL));
+        edje_obj_part_drag_value_get("bg", &pos, NULL));
+
+  //printf("drag cb pos %f \n", pos);
 }
 
 static void
 _drag_start_cb(void *data,
-         Evas_Object *_obj EINA_UNUSED,
+         Evas_Object *obj EINA_UNUSED,
          const char *emission EINA_UNUSED,
          const char *source EINA_UNUSED)
 {
-   printf("drag start cb \n");
+  int x, y;
+  evas_object_geometry_get(obj, &x, &y, NULL, NULL);
+  printf("drag start cb %d, %d \n", x, y);
+  Eo* parent = data;
+  JK_ENTRY_DATA_GET(parent, pd);
+  pd->value_saved = pd->value;
 }
 
 static void
