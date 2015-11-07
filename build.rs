@@ -16,6 +16,9 @@ fn main() {
     if let Ok(ref mut info) = pkg_config::find_library("ecore-x") {
         paths.append(&mut info.include_paths);
     }
+    //if let Ok(ref mut info) = pkg_config::find_library("ecore-evas") {
+        //paths.append(&mut info.include_paths);
+    //}
     if let Ok(ref mut cypher) = env::var("DEP_CYPHER_INCLUDE") {
         paths.push(PathBuf::from(&*cypher));
     }

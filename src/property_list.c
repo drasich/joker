@@ -858,6 +858,30 @@ _jk_entry_changed_cb_list(
   }
 }
 
+static void
+_jk_entry_changed_end_cb_list(
+      void* data,
+      Evas_Object *obj,
+      void* event)
+{
+  PropertyValue* val = data;
+  JkPropertyList* pl = val->list;
+  const char* name = evas_object_name_get(obj);
+  double v;
+  eo_do(obj, v = jk_entry_value_get());
+  float f = v;
+  memcpy(val->data, &f, sizeof f);
+
+  double vs;
+  eo_do(obj, vs = jk_entry_value_saved_get());
+
+  //printf("jk entry END %f %f \n", vs, v);
+
+  if (pl->register_change_float) {
+    pl->register_change_float(pl->data, val->path, &vs, &v, 1);
+  }
+}
+
 
 Evas_Object*
 gl_content_float_get_test(
@@ -932,6 +956,7 @@ gl_content_float_get_test(
 
    elm_box_pack_end(bx, rect);
    */
+  evas_object_smart_callback_add(en, "changed,end", _jk_entry_changed_end_cb_list, val);
   evas_object_smart_callback_add(en, "changed", _jk_entry_changed_cb_list, val);
 
   const float* f = val->data;

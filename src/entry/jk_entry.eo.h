@@ -49,6 +49,8 @@ EOAPI void  jk_entry_value_set(double val);
 
 EOAPI double  jk_entry_value_get(void);
 
+EOAPI double  jk_entry_value_saved_get(void);
+
 EOAPI void  jk_entry_label_format_set(const char *fmt);
 
 EOAPI const char * jk_entry_label_format_get(void);
@@ -56,6 +58,7 @@ EOAPI const char * jk_entry_label_format_get(void);
 EOAPI void  jk_entry_special_value_add(double value, const char *label);
 
 EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_CHANGED;
+EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_CHANGED_END;
 EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_DELAY_CHANGED;
 EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_SPINNER_DRAG_START;
 EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_SPINNER_DRAG_STOP;
@@ -65,6 +68,11 @@ EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_LANGUAGE_CHANGED;
  * No description
  */
 #define JK_ENTRY_EVENT_CHANGED (&(_JK_ENTRY_EVENT_CHANGED))
+
+/**
+ * No description
+ */
+#define JK_ENTRY_EVENT_CHANGED_END (&(_JK_ENTRY_EVENT_CHANGED_END))
 
 /**
  * No description

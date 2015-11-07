@@ -1,5 +1,7 @@
 EOAPI const Eo_Event_Description _JK_ENTRY_EVENT_CHANGED =
    EO_EVENT_DESCRIPTION("changed");
+EOAPI const Eo_Event_Description _JK_ENTRY_EVENT_CHANGED_END =
+   EO_EVENT_DESCRIPTION("changed,end");
 EOAPI const Eo_Event_Description _JK_ENTRY_EVENT_DELAY_CHANGED =
    EO_EVENT_DESCRIPTION("delay,changed");
 EOAPI const Eo_Event_Description _JK_ENTRY_EVENT_SPINNER_DRAG_START =
@@ -72,6 +74,10 @@ EOAPI EO_VOID_FUNC_BODYV(jk_entry_value_set, EO_FUNC_CALL(val), double val);
 double _jk_entry_value_get(Eo *obj, Jk_Entry_Data *pd);
 
 EOAPI EO_FUNC_BODY(jk_entry_value_get, double, 0);
+
+double _jk_entry_value_saved_get(Eo *obj, Jk_Entry_Data *pd);
+
+EOAPI EO_FUNC_BODY(jk_entry_value_saved_get, double, 0);
 
 void _jk_entry_label_format_set(Eo *obj, Jk_Entry_Data *pd, const char *fmt);
 
@@ -150,6 +156,7 @@ static const Eo_Op_Description _jk_entry_op_desc[] = {
      EO_OP_FUNC(jk_entry_base_get, _jk_entry_base_get),
      EO_OP_FUNC(jk_entry_value_set, _jk_entry_value_set),
      EO_OP_FUNC(jk_entry_value_get, _jk_entry_value_get),
+     EO_OP_FUNC(jk_entry_value_saved_get, _jk_entry_value_saved_get),
      EO_OP_FUNC(jk_entry_label_format_set, _jk_entry_label_format_set),
      EO_OP_FUNC(jk_entry_label_format_get, _jk_entry_label_format_get),
      EO_OP_FUNC(jk_entry_special_value_add, _jk_entry_special_value_add),
@@ -157,6 +164,7 @@ static const Eo_Op_Description _jk_entry_op_desc[] = {
 
 static const Eo_Event_Description *_jk_entry_event_desc[] = {
      JK_ENTRY_EVENT_CHANGED,
+     JK_ENTRY_EVENT_CHANGED_END,
      JK_ENTRY_EVENT_DELAY_CHANGED,
      JK_ENTRY_EVENT_SPINNER_DRAG_START,
      JK_ENTRY_EVENT_SPINNER_DRAG_STOP,

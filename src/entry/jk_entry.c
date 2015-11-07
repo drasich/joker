@@ -3,6 +3,8 @@
 #include <Eo.h>
 #include "elm_widget.h"
 #include "jk_entry.eo.h"
+//#include <Ecore_X.h>
+//#include <Ecore_Evas.h>
 
 #define MY_CLASS JK_ENTRY_CLASS
 
@@ -56,7 +58,7 @@ typedef struct
   Eina_Bool want_select;
   double value;
   double value_saved;
-  double diff;
+  int diff;
 
 } Jk_Entry_Data;
 
@@ -75,6 +77,15 @@ _jk_entry_eo_base_constructor(Eo *obj, Jk_Entry_Data *pd EINA_UNUSED)
   return obj;
 }
 
+void _value_set(Jk_Entry_Data* pd, double val)
+{
+  char buf[1024];
+  snprintf(buf, sizeof(buf), "%.3f", val);
+  elm_object_text_set(pd->entry, buf);
+  pd->value = val;
+}
+
+
 static void
 _ondown(
       void *data EINA_UNUSED,
@@ -88,6 +99,7 @@ _ondown(
   printf(" on down : %s, %s, %s \n", emission, source, elm_object_text_get(pd->entry));
   pd->state = STATE_MOUSE_DOWN;
   pd->diff = 0;
+  pd->value_saved = pd->value;
   Evas* e = evas_object_evas_get(o);
   evas_pointer_output_xy_get(e, &pd->startx, &pd->starty);
   elm_object_scroll_hold_push(o);
@@ -101,23 +113,27 @@ _onmove(
       const char  *source)
 
 {
-  Jk_Entry_Data* pd = data;
+  Eo* parent = data;
+  JK_ENTRY_DATA_GET(parent, pd);
+
   Evas* e = evas_object_evas_get(o);
   Evas_Coord mx, my;
   evas_pointer_output_xy_get(e, &mx, &my);
-  if (pd->state == STATE_MOUSE_DOWN)
-   {
+  if (pd->state == STATE_MOUSE_DOWN){
     if (mx != pd->startx || my != pd->starty) {
       pd->state = STATE_MOVE;
     }
-   }
+  }
   if (pd->state == STATE_MOVE) {
-    printf(" on move : %s, %s, %d \n", emission, source, mx);
     pd->diff += mx - pd->startx;
+    //printf(" on move : %s, %s, %d, %d, diff : %d \n", emission, source, pd->startx, mx, pd->diff);
+    pd->startx = mx;
+    _value_set(pd, pd->value_saved + 0.5f * pd->diff);
+    eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED, NULL));
     //evas_event_feed_mouse_move(e, pd->startx, pd->starty, 0, NULL);
-    Ecore_Evas *ee = ecore_evas_ecore_evas_get(e);
-    Ecore_Window ew = ecore_evas_window_get(ee);
-    ecore_x_mouse_move_send(ew, pd->startx, pd->starty);
+    //Ecore_Evas *ee = ecore_evas_ecore_evas_get(e);
+    //Ecore_Window ew = ecore_evas_window_get(ee);
+    //ecore_x_mouse_move_send(ew, pd->startx, pd->starty);
   }
 }
 
@@ -129,9 +145,12 @@ _onup(
       const char  *source)
 
 {
-  Jk_Entry_Data* pd = data;
-  printf(" on up : %s, %s \n", emission, source);
+  Eo* parent = data;
+  JK_ENTRY_DATA_GET(parent, pd);
+  //printf(" on up : %s, %s \n", emission, source);
   elm_object_scroll_hold_pop(o);
+  pd->state = STATE_SHOW;
+  eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED_END, NULL));
 }
 
 static void
@@ -184,7 +203,7 @@ _entry_activated(
 
   pd->state = STATE_SHOW;
 
-  printf("leaving entry \n");
+  //printf("leaving entry \n");
 
   Eo* smart = evas_object_data_get(o, "smart");
 
@@ -203,8 +222,8 @@ _entry_activated(
 
   pd->value = n;
 
-  printf("wrote %s, %f,, ENTRY ACTIVATED will send changed signal \n ", str, pd->value);
-  eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED, NULL));
+  //printf("wrote %s, %f,, ENTRY ACTIVATED will send changed signal \n ", str, pd->value);
+  eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED_END, NULL));
 }
 
 static void
@@ -217,7 +236,7 @@ _entry_unfocused(
   JK_ENTRY_DATA_GET(parent, pd);
 
   const char* name = evas_object_name_get(o);
-  printf("entry unfocused ::: %s  \n", name);
+  //printf("entry unfocused ::: %s  \n", name);
   pd->state = STATE_SHOW;
 
   Eo* smart = evas_object_data_get(o, "smart");
@@ -237,8 +256,8 @@ _entry_unfocused(
 
   pd->value = n;
 
-  printf("wrote %s, %f,, ENTRY UNFOCUSED will send changed signal \n ", str, pd->value);
-  eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED, NULL));
+  //printf("wrote %s, %f,, ENTRY UNFOCUSED will send changed signal \n ", str, pd->value);
+  eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED_END, NULL));
 }
 
 static void
@@ -441,8 +460,8 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
   evas_object_smart_callback_add(en, "cursor,changed,manual", _print_signal, "cursor,changed,manual");
 
   elm_layout_signal_callback_add(obj, "mouse,down,1", "bg",_ondown, pd);
-  elm_layout_signal_callback_add(obj, "mouse,move", "bg", _onmove, pd);
-  elm_layout_signal_callback_add(obj, "mouse,up,1", "bg", _onup, pd);
+  elm_layout_signal_callback_add(obj, "mouse,move", "bg", _onmove, obj);
+  elm_layout_signal_callback_add(obj, "mouse,up,1", "bg", _onup, obj);
   elm_layout_signal_callback_add(obj, "mouse,clicked,1", "bg", _onclicked, pd);
 
   elm_layout_signal_callback_add(obj, "drag", "*", _drag_cb, obj);
@@ -612,10 +631,7 @@ _jk_entry_base_get(Eo *obj, Jk_Entry_Data *pd)
 EOLIAN static void
 _jk_entry_value_set(Eo *obj, Jk_Entry_Data *pd, double val)
 {
-  char buf[1024];
-  snprintf(buf, sizeof(buf), "%.0f", val);
-  elm_object_text_set(pd->entry, buf);
-  pd->value = val;
+  _value_set(pd, val);
 }
 
 EOLIAN static double
@@ -663,6 +679,12 @@ _jk_entry_evas_object_smart_resize(Eo *obj, Jk_Entry_Data *pd, Evas_Coord w, Eva
   eo_do_super(obj, MY_CLASS, evas_obj_smart_resize(w, h));
 
   //evas_object_resize(pd->rect, w, h);
+}
+
+EOLIAN static double
+_jk_entry_value_saved_get(Eo *obj, Jk_Entry_Data *pd)
+{
+  return pd->value_saved;
 }
 
 #include "jk_entry.eo.c"
