@@ -3,7 +3,6 @@
 #include <Eo.h>
 #include "elm_widget.h"
 #include "jk_entry.eo.h"
-//#include <Ecore_X.h>
 //#include <Ecore_Evas.h>
 
 #define MY_CLASS JK_ENTRY_CLASS
@@ -127,13 +126,10 @@ _onmove(
   if (pd->state == STATE_MOVE) {
     pd->diff += mx - pd->startx;
     //printf(" on move : %s, %s, %d, %d, diff : %d \n", emission, source, pd->startx, mx, pd->diff);
-    pd->startx = mx;
     _value_set(pd, pd->value_saved + 0.5f * pd->diff);
     eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED, NULL));
-    //evas_event_feed_mouse_move(e, pd->startx, pd->starty, 0, NULL);
-    //Ecore_Evas *ee = ecore_evas_ecore_evas_get(e);
-    //Ecore_Window ew = ecore_evas_window_get(ee);
-    //ecore_x_mouse_move_send(ew, pd->startx, pd->starty);
+    Ecore_Evas *ee = ecore_evas_ecore_evas_get(e);
+    ecore_evas_pointer_warp(ee, pd->startx, my);
   }
 }
 
