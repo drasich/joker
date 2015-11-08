@@ -522,19 +522,23 @@ JkTree* window_tree_new(Window* w, int x, int y, int width, int height)
 
 JkAction* window_action_new(Window* w)
 {
-  Evas_Object* win = elm_win_add(w->win, "action", ELM_WIN_BASIC);
-  elm_win_title_set(win, "action");
+  Eo* win = w->win;
 
-  Evas_Object* bg = elm_bg_add(win);
-  evas_object_show(bg);
-  evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, bg);
+  Eo* tb = elm_box_add(win);
+  evas_object_size_hint_weight_set(tb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, tb);
+  evas_object_show(tb);
 
-  JkAction* a = widget_action_new(win);
-  evas_object_size_hint_weight_set(a->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, a->root);
-  //evas_object_resize(win, 256, 256);
-  evas_object_show(win);
+  Eo* panel = elm_panel_add(win);
+  elm_panel_orient_set(panel, ELM_PANEL_ORIENT_BOTTOM);
+  evas_object_size_hint_weight_set(panel, 0, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(panel, 0.5, 1);
+  elm_box_pack_end(tb, panel);
+  evas_object_show(panel);
+
+  JkAction* a = widget_action_new(panel);
+  evas_object_size_hint_weight_set(a->root, EVAS_HINT_EXPAND, 0);
+  elm_object_content_set(panel, a->root);
 
   return a;
 }
