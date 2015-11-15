@@ -300,3 +300,29 @@ command_show(JkCommand* command)
     evas_object_show(command->root);
   }
 }
+
+JkCommand* window_command_new(Window* w)
+{
+  /*
+  Evas_Object* win = elm_win_add(w->win, "command", ELM_WIN_BASIC);
+  elm_win_title_set(win, "command");
+
+  Evas_Object* bg = elm_bg_add(win);
+  evas_object_show(bg);
+  evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, bg);
+  */
+
+  Evas_Object* win = w->win;
+
+  JkCommand* c = widget_command_new(win);
+  evas_object_size_hint_weight_set(c->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  //elm_win_resize_object_add(win, c->root);
+  //evas_object_resize(win, 256, 256);
+  //evas_object_show(win);
+  //
+
+
+  return c;
+}
+

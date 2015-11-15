@@ -3,8 +3,7 @@
 #include "stdbool.h"
 #include "tree.h"
 #include "property.h"
-#include "action.h"
-#include "command.h"
+#include "cypher.h"
 
 typedef struct _Window Window;
 
@@ -85,9 +84,6 @@ void window_callback_set(
       window_key_down key_down
       );
 
-JkTree* window_tree_new(Window* w, int x, int y, int width, int height);
-JkAction* window_action_new(Window* w);
-JkCommand* window_command_new(Window* w);
 void window_button_new(Window* w);
 
 typedef void (*rust_elm_callback)(void* data);
@@ -106,7 +102,7 @@ void window_rect_set(Window* win, float x, float y, float w, float h);
 
 //Evas_Object* jk_window_new();
 Evas_Object* jk_window_new(rust_elm_callback cb, const void* cb_data);
-void jk_exit();
 
+//JkTree* window_tree_new(Window* w, int x, int y, int width, int height);
 
 #endif

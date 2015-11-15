@@ -3,12 +3,11 @@
 #include "common.h"
 #define __UNUSED__
 
+//TODO remove this fn
 void _add_buttons(Evas_Object* win, Evas_Object* box);
 
-
-JkAction* widget_action_new(Evas_Object* win)
+static JkAction* widget_action_new(Evas_Object* win)
 {
-  printf("tree widget new !!win: %p \n",win);
   JkAction *a = calloc(1, sizeof *a);
   a->win = win;
 
@@ -97,3 +96,27 @@ void action_show(
 {
   object_show(action->win, b);
 }
+
+JkAction* window_action_new(Window* w)
+{
+  Eo* win = w->win;
+
+  Eo* tb = elm_box_add(win);
+  evas_object_size_hint_weight_set(tb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, tb);
+  evas_object_show(tb);
+
+  Eo* panel = elm_panel_add(win);
+  elm_panel_orient_set(panel, ELM_PANEL_ORIENT_BOTTOM);
+  evas_object_size_hint_weight_set(panel, 0, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(panel, 0.5, 1);
+  elm_box_pack_end(tb, panel);
+  evas_object_show(panel);
+
+  JkAction* a = widget_action_new(panel);
+  evas_object_size_hint_weight_set(a->root, EVAS_HINT_EXPAND, 0);
+  elm_object_content_set(panel, a->root);
+
+  return a;
+}
+

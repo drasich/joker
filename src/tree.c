@@ -130,7 +130,7 @@ gl4_select(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_info)
 }
 
 JkTree* 
-tree_widget_new(Evas_Object* win)
+_tree_widget_new(Evas_Object* win)
 {
   printf("tree widget new !!win: %p \n",win);
   JkTree *t = calloc(1, sizeof *t);
@@ -342,5 +342,6 @@ void tree_show(JkTree* t, bool b)
 {
   object_show(t->win, b);
 }
+
 
 

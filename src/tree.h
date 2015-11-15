@@ -56,7 +56,6 @@ void tree_register_cb(
       );
 
 
-JkTree* tree_widget_new(Evas_Object* win);
 //void tree_object_select(JkTree* t, struct _Object* o);
 //void tree_objects_select(JkTree* t, Eina_List* objects);
 //void tree_object_update(JkTree* t, struct _Object* o);
@@ -76,6 +75,9 @@ void tree_update(JkTree* t);
 void tree_item_update(Elm_Object_Item* item);
 
 void tree_show(JkTree* t, bool b);
+
+JkTree* 
+_tree_widget_new(Evas_Object* win);
 
 #endif
 

@@ -3,6 +3,7 @@
 #include "stdbool.h"
 #include <Elementary.h>
 #include <Eina.h>
+#include "window.h"
 
 typedef struct _Action JkAction;
 
@@ -14,7 +15,7 @@ struct _Action
   Evas_Object* gl;
 };
 
-JkAction* widget_action_new(Evas_Object* win);
+JkAction* window_action_new(Window* w);
 
 typedef void (*button_callback)(void *data);
 

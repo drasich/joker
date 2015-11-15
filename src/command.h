@@ -3,6 +3,7 @@
 #include "stdbool.h"
 #include <Elementary.h>
 #include <Eina.h>
+#include "window.h"
 
 typedef struct _Command JkCommand;
 
@@ -39,6 +40,8 @@ void command_new(
 void command_clean(JkCommand* command);
 
 void command_show(JkCommand* command);
+
+JkCommand* window_command_new(Window* w);
 
 #endif
 

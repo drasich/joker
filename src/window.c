@@ -1,13 +1,10 @@
+//These are enabled in the build process
 /* Enable access to unstable EFL API that are still in beta */
-#define EFL_BETA_API_SUPPORT 1
-
+//#define EFL_BETA_API_SUPPORT 1
 /* Enable access to unstable EFL EO API. */
-#define EFL_EO_API_SUPPORT 1
+//#define EFL_EO_API_SUPPORT 1
 
 #include "glview.h"
-#include "shader.h"
-#include "buffer.h"
-#include "cypher.h"
 #include "window.h"
 #include "panel.h"
 
@@ -36,8 +33,6 @@ static void
 _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
 {
   Evas_Event_Key_Down *ev = (Evas_Event_Key_Down*)event_info;
-  EINA_LOG_DBG("KEY: down, keyname: %s , key %s", ev->keyname, ev->key);
-  //printf("KEY: down, keyname: %s , key %s\n", ev->keyname, ev->key);
 
   Window* w = data;
   if (w->key_down) {
@@ -48,10 +43,6 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
           ev->key,
           ev->timestamp);
   }
-
-  //View* v = evas_object_data_get(o, "view");
-  //Control* cl = v->control;
-  //control_key_down(cl, ev);
 }
 static void
 _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
@@ -66,8 +57,6 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   int prevx = ev->prev.canvas.x - x;
   int prevy = ev->prev.canvas.y - y;
-  //View* v = evas_object_data_get(o, "view");
-  //
   int mod_flag = _modifier_get(ev->modifiers);
 
   Window* win = data;
@@ -82,18 +71,6 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
           prevy,
           ev->timestamp);
   }
-
-  /*
-  const Evas_Modifier * mods = ev->modifiers;
-  if ( evas_key_modifier_is_set(mods, "Control") &&
-        (ev->buttons & 1) != 0 ) {
-    //_handle_rect_select(v,ev);
-    return;
-  }
-  */
-
-  //Control* cl = v->control;
-  //control_mouse_move(cl, ev);
 }
 
 static void
@@ -112,29 +89,6 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
           ev->canvas.y,
           ev->timestamp);
   }
-
-  /*
-  View* v = evas_object_data_get(o, "view");
-  Scene* s = v->context->scene;
-  Control* cl = v->control;
-  if (control_mouse_down(cl, ev))
-    return;
-
-  //if (ev->button == 3 ){
-  const Evas_Modifier * mods = ev->modifiers;
-  if ( ev->button == 1 && evas_key_modifier_is_set(mods, "Control")) {
-    _makeRect(v, ev);
-    return;
-  }
-
-  if (ev->button == 3) {
-    Evas_Object* win = evas_object_top_get (evas_object_evas_get(o));
-    Evas_Object* menu = _context_menu_create(win, v);
-    evas_object_show(menu);
-    elm_menu_move(menu, ev->canvas.x, ev->canvas.y);
-    return;
-  }
-  */
 }
 
 static void
@@ -142,7 +96,6 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
 {
   Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
   //if (ev->button != 1) return;
-  //printf("MOUSE: up   @ %4i %4i\n", ev->canvas.x, ev->canvas.y);
 
   Window* w = data;
   if (w->mouse_up) {
@@ -154,23 +107,7 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
           ev->canvas.y,
           ev->timestamp);
   }
-
-  //evas_object_hide(indicator[0]);
-  //
-  /*
-  View* v = evas_object_data_get(o, "view");
-  Evas_Object* rect = v->select_rect;
-  evas_object_hide(rect);
-
-  Control* cl = v->control;
-  if (control_mouse_up(cl, ev))
-  return;
-
-  _mouse_up_select(v, ev);
-  */
 }
-
-
 
 static void
 _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
@@ -189,7 +126,6 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
           ev->timestamp);
   }
 
-
   /*
   View* v = evas_object_data_get(o, "view");
   //float x = ev->cur.canvas.x - ev->prev.canvas.x;
@@ -198,33 +134,6 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   axis = vec3_mul(axis, 1.5f);
   camera_pan(v->camera, axis);
   */
-}
-
-
-
-
-
-
-//extern Evas_Object* win;
-
-void
-create_simple_window()
-{
-  Evas_Object* win = elm_win_util_standard_add("3d view", "3d view");
-  elm_win_autodel_set(win, EINA_TRUE);
-  evas_object_smart_callback_add(win, "delete,request", simple_window_del, NULL);
-
-  Evas_Object* box = elm_box_add(win);
-  evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, box);
-  evas_object_show(box);
-
-  Evas_Object* glview = _create_glview(win);
-  elm_box_pack_end(box, glview);
-
-  evas_object_resize(win, 256, 256);
-  //evas_object_resize(win, 64, 64);
-  evas_object_show(win);
 }
 
 void jk_init()
@@ -237,7 +146,6 @@ void jk_init()
   elm_config_accel_preference_set("opengl");
   elm_config_focus_highlight_animate_set(EINA_TRUE);
   elm_config_focus_highlight_enabled_set(EINA_TRUE);
-  //create_simple_window();
 }
 
 EAPI_MAIN int
@@ -385,7 +293,6 @@ _close_window(void *data, Evas_Object *obj, void *event_info)
   }
 }
 
-
 Evas_Object*
 jk_window_new(rust_elm_callback cb, const void* cb_data)
 {
@@ -400,8 +307,6 @@ jk_window_new(rust_elm_callback cb, const void* cb_data)
 
   return win;
 }
-
-
 
 static rust_elm_callback _init_callback_cb = 0;
 static void* _init_callback_data = 0;
@@ -454,121 +359,6 @@ _on_panel_geom(
     p->move(p->data, x , y, w, h);
   }
 }
-
-_on_panel_geom_tree(
-      void *data,
-      Evas *evas,
-      Evas_Object *o,
-      void *einfo)
-{
-  JkTree* t = data;
-  if (t->move) {
-    int x, y, w, h;
-    evas_object_geometry_get(o, &x, &y, &w, &h);
-    t->move(t->data, x , y, w, h);
-  }
-}
-
-
-JkTree* window_tree_new(Window* w, int x, int y, int width, int height)
-{
-  /*
-  JkTree* t = tree_widget_new(w->win);
-  edje_object_part_swallow(w->edje, "part_tree", t->root);
-  return t;
-  */
-
-
-   /*
-  Evas_Object* win = elm_win_add(w->win, "tree", ELM_WIN_BASIC);
-  elm_win_title_set(win, "scene tree");
-  //Evas_Object* win = elm_win_util_standard_add("genlist3", "Genlist 3");
-
-  Evas_Object* bg = elm_bg_add(win);
-  evas_object_show(bg);
-  evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, bg);
-
-  JkTree* t = tree_widget_new(win);
-  evas_object_size_hint_weight_set(t->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, t->root);
-  evas_object_resize(win, 256, 256);
-  evas_object_show(win);
-
-  return t;
-  */
-
-  //chris
-  Evas_Object* panel = layout_panel_add(w->win, "tree");
-  evas_object_move(panel, x, y);
-  evas_object_show(panel);
-
-
-  JkTree* t = tree_widget_new(panel);
-  evas_object_size_hint_weight_set(t->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-
-  evas_object_resize(panel, width, height);
-
-  //smart_panel_content_set(panel, p->root);
-  elm_object_part_content_set(panel, "content", t->root);
-  t->win = panel;
-
-  evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom_tree, t);
-  evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom_tree, t);
-
-  return t;
-
-}
-
-JkAction* window_action_new(Window* w)
-{
-  Eo* win = w->win;
-
-  Eo* tb = elm_box_add(win);
-  evas_object_size_hint_weight_set(tb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, tb);
-  evas_object_show(tb);
-
-  Eo* panel = elm_panel_add(win);
-  elm_panel_orient_set(panel, ELM_PANEL_ORIENT_BOTTOM);
-  evas_object_size_hint_weight_set(panel, 0, EVAS_HINT_EXPAND);
-  evas_object_size_hint_align_set(panel, 0.5, 1);
-  elm_box_pack_end(tb, panel);
-  evas_object_show(panel);
-
-  JkAction* a = widget_action_new(panel);
-  evas_object_size_hint_weight_set(a->root, EVAS_HINT_EXPAND, 0);
-  elm_object_content_set(panel, a->root);
-
-  return a;
-}
-
-JkCommand* window_command_new(Window* w)
-{
-  /*
-  Evas_Object* win = elm_win_add(w->win, "command", ELM_WIN_BASIC);
-  elm_win_title_set(win, "command");
-
-  Evas_Object* bg = elm_bg_add(win);
-  evas_object_show(bg);
-  evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, bg);
-  */
-
-  Evas_Object* win = w->win;
-
-  JkCommand* c = widget_command_new(win);
-  evas_object_size_hint_weight_set(c->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  //elm_win_resize_object_add(win, c->root);
-  //evas_object_resize(win, 256, 256);
-  //evas_object_show(win);
-  //
-
-
-  return c;
-}
-
-
 
 JkProperty* window_property_new(Window* w)
 {
@@ -702,7 +492,69 @@ void tmp_func(
   evas_object_data_set(gl, "cb_resize", resize);
 }
 
-void jk_exit()
+//TODO move to tree
+_on_panel_geom_tree(
+      void *data,
+      Evas *evas,
+      Evas_Object *o,
+      void *einfo)
 {
-  elm_exit();
+  JkTree* t = data;
+  if (t->move) {
+    int x, y, w, h;
+    evas_object_geometry_get(o, &x, &y, &w, &h);
+    t->move(t->data, x , y, w, h);
+  }
 }
+
+
+JkTree* window_tree_new(Window* w, int x, int y, int width, int height)
+{
+  /*
+  JkTree* t = tree_widget_new(w->win);
+  edje_object_part_swallow(w->edje, "part_tree", t->root);
+  return t;
+  */
+
+
+   /*
+  Evas_Object* win = elm_win_add(w->win, "tree", ELM_WIN_BASIC);
+  elm_win_title_set(win, "scene tree");
+  //Evas_Object* win = elm_win_util_standard_add("genlist3", "Genlist 3");
+
+  Evas_Object* bg = elm_bg_add(win);
+  evas_object_show(bg);
+  evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, bg);
+
+  JkTree* t = tree_widget_new(win);
+  evas_object_size_hint_weight_set(t->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, t->root);
+  evas_object_resize(win, 256, 256);
+  evas_object_show(win);
+
+  return t;
+  */
+
+  //chris
+  Evas_Object* panel = layout_panel_add(w->win, "tree");
+  evas_object_move(panel, x, y);
+  evas_object_show(panel);
+
+
+  JkTree* t = _tree_widget_new(panel);
+  evas_object_size_hint_weight_set(t->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+
+  evas_object_resize(panel, width, height);
+
+  //smart_panel_content_set(panel, p->root);
+  elm_object_part_content_set(panel, "content", t->root);
+  t->win = panel;
+
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom_tree, t);
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom_tree, t);
+
+  return t;
+
+}
+
