@@ -120,3 +120,23 @@ JkAction* window_action_new(Window* w)
   return a;
 }
 
+
+void
+action_menu_new(
+      JkAction* action,
+      const char* name)
+{
+  //TODO
+}
+
+void
+action_menu_add(
+      JkAction* action,
+      const char* menu_name,
+      const char* name,
+      button_callback fn,
+      void* data)
+{
+  //TODO
+}
+
