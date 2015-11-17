@@ -90,14 +90,17 @@ void _add_buttons(Evas_Object* win, Evas_Object* box)
   //evas_object_smart_callback_add(tg, "changed", _dragger_global_local_changed_cb, v);
 }
 
-void action_show(
+void
+action_show(
       JkAction* action,
       bool b)
 {
   object_show(action->win, b);
 }
 
-JkAction* window_action_new(Window* w)
+
+JkAction*
+window_action_new(Window* w)
 {
   Eo* win = w->win;
 
@@ -119,6 +122,32 @@ JkAction* window_action_new(Window* w)
 
   return a;
 }
+
+
+JkAction*
+window_action_new_up(Window* w)
+{
+  Eo* win = w->win;
+
+  Eo* tb = elm_box_add(win);
+  evas_object_size_hint_weight_set(tb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, tb);
+  evas_object_show(tb);
+
+  Eo* panel = elm_panel_add(win);
+  elm_panel_orient_set(panel, ELM_PANEL_ORIENT_TOP);
+  evas_object_size_hint_weight_set(panel, 0, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(panel, 0.5, 0);
+  elm_box_pack_end(tb, panel);
+  evas_object_show(panel);
+
+  JkAction* a = widget_action_new(panel);
+  evas_object_size_hint_weight_set(a->root, EVAS_HINT_EXPAND, 0);
+  elm_object_content_set(panel, a->root);
+
+  return a;
+}
+
 
 
 void

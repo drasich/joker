@@ -16,6 +16,7 @@ struct _Action
 };
 
 JkAction* window_action_new(Window* w);
+JkAction* window_action_new_up(Window* w);
 
 typedef void (*button_callback)(void *data);
 
