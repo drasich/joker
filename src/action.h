@@ -6,6 +6,7 @@
 #include "window.h"
 
 typedef struct _Action JkAction;
+typedef struct Evas_Object JkLabel;
 
 struct _Action
 {
@@ -32,6 +33,14 @@ void action_button_new(
       const char* name,
       void* data,
       button_callback fn);
+
+JkLabel* action_label_new(
+      const JkAction* action,
+      const char* name);
+
+void jk_label_set(
+      const JkLabel* label,
+      const char* name);
 
 void action_show(
       JkAction* action,

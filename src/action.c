@@ -169,3 +169,24 @@ action_menu_add(
   //TODO
 }
 
+JkLabel* action_label_new(
+      const JkAction* action,
+      const char* name)
+{
+  Evas_Object* win = action->root;
+  Evas_Object* box = action->box;
+
+  Evas_Object* l = elm_label_add(win);
+  elm_object_text_set(l, name);
+  evas_object_show(l);
+  elm_box_pack_end(box, l);
+  return l;
+}
+
+void jk_label_set(
+      const JkLabel* label,
+      const char* name)
+{
+  elm_object_text_set(label, name);
+}
+
