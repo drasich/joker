@@ -343,5 +343,11 @@ void tree_show(JkTree* t, bool b)
   object_show(t->win, b);
 }
 
+void tree_clear(JkTree* t)
+{
+  elm_genlist_clear(t->gl);
+}
+
+
 
 

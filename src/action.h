@@ -7,6 +7,7 @@
 
 typedef struct _Action JkAction;
 typedef struct Evas_Object JkLabel;
+typedef struct Evas_Object JkEntry;
 
 struct _Action
 {
@@ -37,6 +38,12 @@ void action_button_new(
 JkLabel* action_label_new(
       const JkAction* action,
       const char* name);
+
+JkEntry* action_entry_new(
+      JkAction* action,
+      const char* name,
+      void* data,
+      button_callback fn);
 
 void jk_label_set(
       const JkLabel* label,

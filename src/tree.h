@@ -75,6 +75,7 @@ void tree_update(JkTree* t);
 void tree_item_update(Elm_Object_Item* item);
 
 void tree_show(JkTree* t, bool b);
+void tree_clear(JkTree* t);
 
 JkTree* 
 _tree_widget_new(Evas_Object* win);

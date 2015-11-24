@@ -318,7 +318,6 @@ _onclose(
 
 
 
-
 static Evas_Object *create_edje(Evas* e)
 {
   Evas_Object *edje;

@@ -190,3 +190,58 @@ void jk_label_set(
   elm_object_text_set(label, name);
 }
 
+static Evas_Object *create_edje(Evas* e)
+{
+  Evas_Object *edje;
+
+  edje = edje_object_add(e);
+  if (!edje) {
+    EINA_LOG_CRIT("could not create edje object!");
+    return NULL;
+   }
+
+  if (!edje_object_file_set(edje, "edc/entry_min.edj", "main")) {
+    int err = edje_object_load_error_get(edje);
+    const char *errmsg = edje_load_error_str(err);
+    EINA_LOG_ERR("could not load 'my_group' from .edj file : %s",
+          errmsg);
+
+    evas_object_del(edje);
+    return NULL;
+   }
+
+  return edje;
+}
+
+
+JkEntry* action_entry_new(
+      JkAction* action,
+      const char* name,
+      void* data,
+      button_callback fn)
+{
+  Evas_Object* win = action->root;
+  Evas_Object* box = action->box;
+
+	Eo* ly = elm_layout_add(win);
+  elm_layout_file_set(ly, "edc/entry_min.edj", "main");
+  evas_object_show(ly);
+
+  Evas_Object* en = elm_entry_add(win);
+  elm_object_part_content_set(ly, "entry", en);
+  elm_entry_single_line_set(en, EINA_TRUE);
+  elm_entry_scrollable_set(en, EINA_TRUE);
+  elm_object_text_set(en, name);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_pack_end(box, ly);
+  evas_object_show(en);
+
+  //TODO
+  ButtonCallbackData* bcd = calloc(1, sizeof *bcd);
+  bcd->data = data;
+  bcd->fn = fn;
+  //evas_object_smart_callback_add(bt, "clicked", _button_callback, bcd);
+  return en;
+}
+
