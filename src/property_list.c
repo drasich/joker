@@ -10,7 +10,8 @@ static Elm_Genlist_Item_Class *class_entry,
                               *class_node,
                               *class_enum,
                               *class_float,
-                              *class_option;
+                              *class_option,
+                              *class_item;
 
 static PropertyNode*
 _property_node_find(
@@ -346,29 +347,20 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
 
 }
 
-Evas_Object*
-gl_content_string_get(
-      void *data,
-      Evas_Object *obj,
-      const char *part)
+Eo* entry_new(PropertyValue* val, Eo* obj)
 {
-  Evas_Object *bx, *bt, *ck;
-
-  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
-
-  bx = elm_box_add(obj);
+  Eo* bx = elm_box_add(obj);
   elm_box_horizontal_set(bx, EINA_TRUE);
   elm_box_padding_set(bx, 4, 0);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  evas_object_show(bx);
 
   Evas_Coord fw = -1, fh = -1;
   elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   evas_object_size_hint_min_set(bx, 0, fh);
 
   Evas_Object* label = elm_label_add(bx);
-
-  PropertyValue* val = data;
 
    {
     unsigned int num;
@@ -420,6 +412,57 @@ gl_content_string_get(
 
    return bx;
 }
+
+
+Evas_Object*
+gl_content_string_get(
+      void *data,
+      Evas_Object *obj,
+      const char *part)
+{
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+
+  Eo* bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bx, 0, fh);
+
+  PropertyValue* val = data;
+  Eo* en = entry_new(val, obj);
+  elm_box_pack_end(bx, en);
+  return bx;
+}
+
+Evas_Object*
+gl_content_item_get(
+      void *data,
+      Evas_Object *obj,
+      const char *part)
+{
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+
+  Eo* bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bx, 0, fh);
+
+  PropertyValue* val = data;
+  printf(" val : %p \n", val);
+  printf(" val->pv : %p \n", val->pv);
+  elm_box_pack_end(bx, val->pv->create_child(val, obj));
+  return bx;
+}
+
 
 static void
 _hoversel_selected_cb(
@@ -1194,7 +1237,48 @@ property_list_string_add(
   val->list = pl;
   val->data = strdup(value);
 
+  val->create_child = entry_new;
+
+  /*
   val->item = elm_genlist_item_append(pl->list, class_entry,
+                           val,
+                           node->item,
+                           ELM_GENLIST_ITEM_NONE,
+                           NULL,
+                           NULL);
+
+  eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+  */
+
+  free(s[0]);
+  free(s);
+
+  return val;
+}
+
+PropertyValue*
+property_list_single_item_add(
+      JkPropertyList* pl,
+      PropertyValue* pv,
+      const char* path,
+      const char* value)
+{
+  PropertyNode* node = _property_list_node_find_parent(pl, path);
+  if (!node) {
+    printf("%s, could not find a root\n", __FUNCTION__);
+    return NULL;
+  }
+
+  unsigned int num;
+  char** s = eina_str_split_full(path, "/", 0, &num);
+
+  PropertyValue *val = calloc(1, sizeof *val);
+  val->path = strdup(path);//s[num-1];
+  val->list = pl;
+  val->data = strdup(value);
+  val->pv = pv;
+
+  val->item = elm_genlist_item_append(pl->list, class_item,
                            val,
                            node->item,
                            ELM_GENLIST_ITEM_NONE,
@@ -1207,6 +1291,7 @@ property_list_string_add(
   free(s);
 
   return val;
+
 }
 
 void property_list_string_update(
@@ -1281,6 +1366,13 @@ property_list_new(Evas_Object* win)
   class_entry->func.content_get = gl_content_string_get;
   class_entry->func.state_get = gl_state_get;
   class_entry->func.del = NULL;
+
+  class_item = elm_genlist_item_class_new();
+  class_item->item_style = "full";//"default";
+  class_item->func.text_get = NULL;
+  class_item->func.content_get = gl_content_item_get;
+  class_item->func.state_get = gl_state_get;
+  class_item->func.del = NULL;
 
   class_float = elm_genlist_item_class_new();
   class_float->item_style = "full";//"default";

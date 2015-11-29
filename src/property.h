@@ -148,7 +148,9 @@ struct _PropertyList
   panel_geom_cb resize;
 };
 
+
 typedef struct _PropertyValue PropertyValue;
+typedef Eo* (*item_create)(PropertyValue* val, Eo* obj);
 
 struct _PropertyValue
 {
@@ -157,6 +159,9 @@ struct _PropertyValue
   Elm_Object_Item* item;
   JkPropertyList* list;
   void* user_data;
+
+  PropertyValue* pv;
+  item_create create_child;
 };
 
 
@@ -193,6 +198,13 @@ PropertyValue* property_list_float_add(
 
 PropertyValue* property_list_string_add(
       JkPropertyList* ps,
+      const char* path,
+      const char* value);
+
+PropertyValue*
+property_list_single_item_add(
+      JkPropertyList* pl,
+      PropertyValue* pv,
       const char* path,
       const char* value);
 
