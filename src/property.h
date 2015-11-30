@@ -146,6 +146,9 @@ struct _PropertyList
 
   panel_geom_cb move;
   panel_geom_cb resize;
+
+  button_callback vec_add;
+  button_callback vec_del;
 };
 
 
@@ -181,6 +184,11 @@ void jk_property_list_register_cb(
       property_tree_object_cb contract,
       panel_geom_cb move
       );
+
+void jk_property_list_register_vec_cb(
+      JkPropertyList* ps,
+      button_callback add_cb,
+      button_callback del_cb);
 
 PropertyValue* property_list_node_add(
       JkPropertyList* pl,

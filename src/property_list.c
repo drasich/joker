@@ -473,7 +473,7 @@ gl_content_vec_get(
 
   Eo* bx = elm_box_add(obj);
   elm_box_horizontal_set(bx, EINA_TRUE);
-  elm_box_padding_set(bx, 4, 0);
+  //elm_box_padding_set(bx, 4, 0);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
@@ -489,11 +489,13 @@ gl_content_vec_get(
   elm_object_text_set(bt, "+");
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
+  btn_cb_set(bt, val->list->vec_add, val);
 
   bt = elm_button_add(obj);
   elm_object_text_set(bt, "-");
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
+  btn_cb_set(bt, val->list->vec_del, val);
   
   return bx;
 }
@@ -1408,6 +1410,15 @@ void jk_property_list_register_cb(
   pl->expand = expand;
   pl->contract = contract;
   pl->move = move;
+}
+
+void jk_property_list_register_vec_cb(
+      JkPropertyList* ps,
+      button_callback add_cb,
+      button_callback del_cb)
+{
+  ps->vec_add = add_cb;
+  ps->vec_del = del_cb;
 }
 
 JkPropertyList*

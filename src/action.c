@@ -68,10 +68,7 @@ action_button_new(
   //evas_object_move(bt, 15, 15);
   //evas_object_data_set(bt, "view", v);
 
-  ButtonCallbackData* bcd = calloc(1, sizeof *bcd);
-  bcd->data = data;
-  bcd->fn = fn;
-  evas_object_smart_callback_add(bt, "clicked", _button_callback, bcd);
+  btn_cb_set(bt, fn ,data);
 }
 
 //TODO move the local/global check and remove this function.

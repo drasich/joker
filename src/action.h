@@ -4,6 +4,7 @@
 #include <Elementary.h>
 #include <Eina.h>
 #include "window.h"
+#include "common.h"
 
 typedef struct _Action JkAction;
 typedef struct Evas_Object JkLabel;
@@ -19,15 +20,6 @@ struct _Action
 
 JkAction* window_action_new(Window* w);
 JkAction* window_action_new_up(Window* w);
-
-typedef void (*button_callback)(void *data);
-
-typedef struct _ButtonCallbackData ButtonCallbackData;
-struct _ButtonCallbackData
-{
-  void* data;
-  button_callback fn;
-};
 
 void action_button_new(
       JkAction* action,
