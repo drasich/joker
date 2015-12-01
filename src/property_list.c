@@ -489,13 +489,13 @@ gl_content_vec_get(
   elm_object_text_set(bt, "+");
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
-  btn_cb_set(bt, val->list->vec_add, val);
+  btn_cb_set(bt, val->list->vec_add, val->list->data);
 
   bt = elm_button_add(obj);
   elm_object_text_set(bt, "-");
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
-  btn_cb_set(bt, val->list->vec_del, val);
+  btn_cb_set(bt, val->list->vec_del, val->list->data);
   
   return bx;
 }
