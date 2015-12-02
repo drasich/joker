@@ -463,6 +463,24 @@ gl_content_item_get(
   return bx;
 }
 
+struct _BtCb
+{
+  property_register_change cb;
+  void* data;
+};
+
+static void _bt_cb(void* data)
+{
+  struct _BtCb *btcb = data;
+  PropertyValue* val = btcb->data;
+  btcb->cb(
+        val->list->data,
+        val->path,
+        NULL,
+        NULL,
+        0);
+}
+
 Evas_Object*
 gl_content_vec_get(
       void *data,
@@ -489,13 +507,19 @@ gl_content_vec_get(
   elm_object_text_set(bt, "+");
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
-  btn_cb_set(bt, val->list->vec_add, val->list->data);
+  struct _BtCb *btcb = calloc(1, sizeof *btcb);
+  btcb->cb = val->list->vec_add;
+  btcb->data = val;
+  btn_cb_set(bt, _bt_cb, btcb);
 
   bt = elm_button_add(obj);
   elm_object_text_set(bt, "-");
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
-  btn_cb_set(bt, val->list->vec_del, val->list->data);
+  btcb = calloc(1, sizeof *btcb);
+  btcb->cb = val->list->vec_del;
+  btcb->data = val;
+  btn_cb_set(bt, _bt_cb, btcb);
   
   return bx;
 }
@@ -1414,8 +1438,8 @@ void jk_property_list_register_cb(
 
 void jk_property_list_register_vec_cb(
       JkPropertyList* ps,
-      button_callback add_cb,
-      button_callback del_cb)
+      property_register_change add_cb,
+      property_register_change del_cb)
 {
   ps->vec_add = add_cb;
   ps->vec_del = del_cb;
