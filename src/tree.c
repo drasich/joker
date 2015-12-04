@@ -8,6 +8,7 @@
 
 static Elm_Genlist_Item_Class *itc1;
 static Elm_Genlist_Item_Class *itc4;
+static bool dontCallback = false;
 
 static char *
 gl_item_text_get(void *data, Evas_Object *obj, const char *part __UNUSED__)
@@ -119,14 +120,15 @@ gl4_unselect(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_inf
 static void
 gl4_select(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_info)
 {
-   Elm_Object_Item *glit = event_info;
+  if (dontCallback) return;
+  Elm_Object_Item *glit = event_info;
 
-   void* o = elm_object_item_data_get(glit);
-   JkTree* t = data;
+  void* o = elm_object_item_data_get(glit);
+  JkTree* t = data;
 
-    if (t->selected) {
-      t->selected(t->data, o, glit);
-    }
+  if (t->selected) {
+    t->selected(t->data, o, glit);
+  }
 }
 
 JkTree* 
@@ -305,8 +307,10 @@ void tree_object_select(JkTree* t, void* o)
 
 void tree_item_select(Elm_Object_Item* item)
 {
+  dontCallback = true;
   elm_genlist_item_show(item, ELM_GENLIST_ITEM_SCROLLTO_MIDDLE);
   elm_genlist_item_selected_set(item, EINA_TRUE);
+  dontCallback = false;
 }
 
 void tree_deselect_all(JkTree *t)
