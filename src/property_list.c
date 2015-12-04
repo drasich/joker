@@ -12,7 +12,8 @@ static Elm_Genlist_Item_Class *class_entry,
                               *class_float,
                               *class_option,
                               *class_item,
-                              *class_vec;
+                              *class_vec,
+                              *class_vec_node;
 
 static PropertyNode*
 _property_node_find(
@@ -533,6 +534,54 @@ gl_content_vec_get(
   
   return bx;
 }
+
+Evas_Object*
+gl_content_vec_node_get(
+      void *data,
+      Evas_Object *obj,
+      const char *part)
+{
+  Evas_Object *bx, *bt, *ck;
+
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+
+  bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bx, 0, fh);
+  elm_box_align_set(bx, 0, 1);
+  //elm_box_align_set(bx, 0, 0.5f);
+  elm_box_padding_set(bx, 4, 0);
+
+  Evas_Object* label = elm_label_add(bx);
+
+  PropertyValue* val = data;
+
+   {
+    unsigned int num;
+    char** ss = eina_str_split_full(val->path, "/", 0, &num);
+    const char* name = ss[num-1];
+
+    char s[256];
+    sprintf(s, "<b>%s</b>", name);
+    //if (val->item && elm_genlist_item_expanded_get(val->item))
+    //sprintf(s, "%s : ", name);
+    //else
+    //sprintf(s, "%s", name);
+
+    elm_object_text_set(label, s);
+    elm_box_pack_end(bx, label);
+    evas_object_show(label);
+
+    free(ss[0]);
+    free(ss);
+   }
+
+   return bx;
+}
+
+
 
 
 static void
@@ -1202,6 +1251,46 @@ PropertyValue* property_list_node_add(
   return val;
 }
 
+PropertyValue* property_list_vec_add(
+      JkPropertyList* pl,
+      const char* path)
+{
+  PropertyNode* node = _property_list_node_find_parent(pl, path);
+  if (!node) {
+    printf("%s, could not find a root for %s\n", __FUNCTION__, path);
+    return NULL;
+  }
+
+  unsigned int num;
+  char** s = eina_str_split_full(path, "/", 0, &num);
+  PropertyNode* child = property_list_node_new();
+  eina_hash_add(node->nodes, strdup(s[num-1]), child);
+
+  PropertyValue *val = calloc(1, sizeof *val);
+  val->path = strdup(path);//s[num-1];
+  val->list = pl;
+  //val->data = strdup(value);
+  //val->user_data = possible_values;
+
+  child->item = elm_genlist_item_append(pl->list, class_vec_node,
+                           val, //path,//strdup(s[num-1]),
+                           node->item, //git/* parent */,
+                           ELM_GENLIST_ITEM_TREE,
+                           NULL,//gl4_sel/* func */,
+                           NULL/* func data */);
+
+  val->item = child->item;
+
+  printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
+        node, s[num-1],child, child->item);
+
+  free(s[0]);
+  free(s);
+
+  return val;
+}
+
+
 void property_list_nodes_remove(
       JkPropertyList* pl,
       const char* path)
@@ -1503,6 +1592,12 @@ property_list_new(Evas_Object* win)
   class_vec->func.state_get = gl_state_get;
   class_vec->func.del = NULL;
 
+  class_vec_node = elm_genlist_item_class_new();
+  class_vec_node->item_style = "full";//"default";
+  class_vec_node->func.text_get = NULL;//gl_text_get_node;
+  class_vec_node->func.content_get = gl_content_vec_node_get;// NULL;
+  class_vec_node->func.state_get = gl_state_get;
+  class_vec_node->func.del = NULL;
 
   class_float = elm_genlist_item_class_new();
   class_float->item_style = "full";//"default";
