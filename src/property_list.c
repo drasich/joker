@@ -488,6 +488,8 @@ static void _bt_cb(void* data)
   if ( elm_genlist_item_type_get(val->item) != ELM_GENLIST_ITEM_TREE)
   parent = elm_genlist_item_parent_get(val->item);
 
+  elm_genlist_item_update(parent);
+
   if ( elm_genlist_item_type_get(parent) == ELM_GENLIST_ITEM_TREE &&
         elm_genlist_item_expanded_get(parent)) {
     //because tree anim takes time we have to do this
@@ -574,7 +576,7 @@ gl_content_vec_node_get(
     const char* name = ss[num-1];
 
     char s[256];
-    sprintf(s, "<b>%s</b>", name);
+    sprintf(s, "<b>%s</b>, len : %d", name, val->len);
     //if (val->item && elm_genlist_item_expanded_get(val->item))
     //sprintf(s, "%s : ", name);
     //else
@@ -1290,6 +1292,7 @@ PropertyValue* property_list_vec_add(
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);//s[num-1];
   val->list = pl;
+  val->len = len;
   //val->data = strdup(value);
   //val->user_data = possible_values;
 
@@ -1526,6 +1529,15 @@ void property_list_string_update(
   val->data = strdup(value);
   elm_genlist_item_update(val->item);
 }
+
+void property_list_vec_update(
+      PropertyValue* val,
+      int len)
+{
+  val->len = len;
+  elm_genlist_item_update(val->item);
+}
+
 
 void jk_property_list_register_cb(
       JkPropertyList* pl,

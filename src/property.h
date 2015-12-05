@@ -162,6 +162,7 @@ struct _PropertyValue
   Elm_Object_Item* item;
   JkPropertyList* list;
   void* user_data;
+  int len;
 
   item_create create_child;
 };
@@ -244,6 +245,10 @@ PropertyNode* property_list_node_new();
 void property_list_string_update(
       PropertyValue* val,
       const char* value);
+
+void property_list_vec_update(
+      PropertyValue* val,
+      int len);
 
 void property_list_option_update(
       PropertyValue* val,
