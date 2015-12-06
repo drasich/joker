@@ -479,6 +479,16 @@ static void _bt_cb(void* data)
         NULL,
         NULL,
         0);
+
+  Elm_Object_Item* parent = elm_genlist_item_parent_get(val->item);
+
+  if ( elm_genlist_item_type_get(parent) == ELM_GENLIST_ITEM_TREE &&
+        elm_genlist_item_expanded_get(parent)) {
+    //because tree anim takes time we have to do this
+    elm_genlist_item_subitems_clear(parent);
+    elm_genlist_item_expanded_set(parent, EINA_FALSE);
+    elm_genlist_item_expanded_set(parent, EINA_TRUE);
+  }
 }
 
 Evas_Object*
@@ -1681,6 +1691,7 @@ void property_list_option_update(
 void
 property_expand(PropertyValue* val)
 {
+    elm_genlist_item_expanded_set(val->item, EINA_FALSE);
     elm_genlist_item_expanded_set(val->item, EINA_TRUE);
 }
 
