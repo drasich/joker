@@ -481,7 +481,12 @@ static void _bt_cb(void* data)
         NULL,
         0);
 
-  Elm_Object_Item* parent = elm_genlist_item_parent_get(val->item);
+  elm_genlist_item_update(val->item);
+
+  Elm_Object_Item* parent = val->item;
+
+  if ( elm_genlist_item_type_get(val->item) != ELM_GENLIST_ITEM_TREE)
+  parent = elm_genlist_item_parent_get(val->item);
 
   if ( elm_genlist_item_type_get(parent) == ELM_GENLIST_ITEM_TREE &&
         elm_genlist_item_expanded_get(parent)) {
@@ -489,6 +494,11 @@ static void _bt_cb(void* data)
     elm_genlist_item_subitems_clear(parent);
     elm_genlist_item_expanded_set(parent, EINA_FALSE);
     elm_genlist_item_expanded_set(parent, EINA_TRUE);
+  }
+  else {
+    printf("TODO remove and recreate....\n");
+    //TODO recreate none -> tree
+    // AND tree -> none
   }
 }
 
@@ -541,7 +551,7 @@ gl_content_vec_node_get(
       Evas_Object *obj,
       const char *part)
 {
-  Evas_Object *bx, *bt, *ck;
+  Evas_Object *bx, *ck;
 
   if (strcmp(part, "elm.swallow.content") != 0) return NULL;
 
@@ -577,6 +587,15 @@ gl_content_vec_node_get(
     free(ss[0]);
     free(ss);
    }
+
+  Eo* bt = elm_button_add(obj);
+  elm_object_text_set(bt, "+");
+  evas_object_show(bt);
+  elm_box_pack_end(bx, bt);
+  struct _BtCb *btcb = calloc(1, sizeof *btcb);
+  btcb->cb = val->list->vec_add;
+  btcb->data = val;
+  btn_cb_set(bt, _bt_cb, btcb);
 
    return bx;
 }
@@ -1253,7 +1272,9 @@ PropertyValue* property_list_node_add(
 
 PropertyValue* property_list_vec_add(
       JkPropertyList* pl,
-      const char* path)
+      const char* path,
+      int len
+      )
 {
   PropertyNode* node = _property_list_node_find_parent(pl, path);
   if (!node) {
