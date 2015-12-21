@@ -7,3 +7,9 @@ JkList* jk_list_new()
   //l->test = 12;
   return l;
 }
+
+Eo* jk_list_wdg_new(Eo* win, const char* name)
+{
+  Evas_Object* panel = layout_panel_add(win, name);
+  return panel;
+}
