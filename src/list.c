@@ -1,5 +1,6 @@
 #include "list.h"
 #include "stdlib.h"
+#include "panel.h"
 
 JkList* jk_list_new()
 {
@@ -8,8 +9,11 @@ JkList* jk_list_new()
   return l;
 }
 
-Eo* jk_list_wdg_new(Eo* win, const char* name)
+Eo* jk_list_wdg_new(Window* w, const char* name)
 {
-  Evas_Object* panel = layout_panel_add(win, name);
+  Evas_Object* panel = layout_panel_add(w->win, name);
+  evas_object_move(panel, 100,100);
+  evas_object_resize(panel, 500,500);
   return panel;
 }
+

@@ -2,6 +2,7 @@
 #define __list__
 
 #include "Elementary.h"
+#include "window.h"
 
 typedef struct _JkList JkList;
 
@@ -13,7 +14,7 @@ struct _JkList
 
 JkList* jk_list_new();
 
-Eo* jk_list_wdg_new(Eo* win, const char* name);
+Eo* jk_list_wdg_new(Window* win, const char* name);
 
 
 #endif
