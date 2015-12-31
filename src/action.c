@@ -38,7 +38,7 @@ _button_callback(
   bcd->fn(bcd->data);
 }
 
-void
+Evas_Object*
 action_button_new(
       JkAction* action,
       const char* name,
@@ -69,6 +69,40 @@ action_button_new(
   //evas_object_data_set(bt, "view", v);
 
   btn_cb_set(bt, fn ,data);
+
+  return bt;
+}
+
+Evas_Object*
+action_button_new1(
+      JkAction* action,
+      const char* name)
+{
+  Evas_Object* win = action->root;
+  Evas_Object* box = action->box;
+
+  Evas_Object* bt = elm_button_add(win);
+  elm_object_focus_allow_set(bt, 0);
+
+  elm_object_text_set(bt, name);
+  evas_object_show(bt);
+  elm_box_pack_end(box, bt);
+
+  int r,g,b,a;
+  evas_object_color_get(bt, &r,&g,&b,&a);
+  float f = 0.7f;
+  r *= f;
+  g *= f;
+  b *= f;
+  a *= f;
+
+  evas_object_color_set(bt, r,g,b,a);
+  //evas_object_resize(bt, 100, 25);
+  //evas_object_move(bt, 15, 15);
+  //evas_object_data_set(bt, "view", v);
+
+
+  return bt;
 }
 
 //TODO move the local/global check and remove this function.

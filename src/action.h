@@ -21,11 +21,15 @@ struct _Action
 JkAction* window_action_new(Window* w);
 JkAction* window_action_new_up(Window* w);
 
-void action_button_new(
+Evas_Object* action_button_new(
       JkAction* action,
       const char* name,
       void* data,
       button_callback fn);
+
+Evas_Object* action_button_new1(
+      JkAction* action,
+      const char* name);
 
 JkLabel* action_label_new(
       const JkAction* action,
