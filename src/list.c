@@ -12,6 +12,7 @@ JkList* jk_list_new()
 static Eo* _content_new(Evas_Object* win)
 {
   Evas_Object* box = elm_box_add(win);
+  elm_box_homogeneous_set(box, EINA_FALSE);
   //evas_object_size_hint_align_set(box, EVAS_HINT_FILL, EVAS_HINT_FILL);
   evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_show(box);
@@ -28,7 +29,6 @@ static Eo* _content_new(Evas_Object* win)
   elm_entry_single_line_set(e, EINA_TRUE);
   elm_entry_scrollable_set(e, EINA_TRUE);
   evas_object_size_hint_align_set(e, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  evas_object_size_hint_weight_set(e, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_show(e);
   elm_box_pack_end(box, e);
 
