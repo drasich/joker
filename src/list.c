@@ -159,7 +159,6 @@ static Evas_Object* _create_genlist(Evas_Object* win)
   int i;
 
   api_data *api = calloc(1, sizeof(api_data));
-  evas_object_event_callback_add(win, EVAS_CALLBACK_FREE, _cleanup_cb, api);
 
   bx = elm_box_add(win);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -187,6 +186,7 @@ static Evas_Object* _create_genlist(Evas_Object* win)
   elm_genlist_mode_set(gl, ELM_LIST_COMPRESS);
   elm_genlist_homogeneous_set(gl, EINA_TRUE);
   elm_box_pack_end(bx2, gl);
+  evas_object_event_callback_add(gl, EVAS_CALLBACK_FREE, _cleanup_cb, api);
   api->gl = gl;
   evas_object_show(gl);
   evas_object_smart_callback_add(gl, "selected", _gl_focus_item_cb, "selected");
@@ -211,7 +211,6 @@ static Evas_Object* _create_genlist(Evas_Object* win)
         ELM_GENLIST_ITEM_NONE,
         NULL, NULL);
 
-  evas_object_resize(win, 420, 600);
   evas_object_show(win);
   elm_object_focus_set(entry, EINA_TRUE);
   evas_object_smart_callback_add(entry, "changed,user", _entry_change_cb, api);
@@ -231,5 +230,17 @@ Eo* jk_list_wdg_new(Window* w, const char* name)
   elm_object_part_content_set(panel, "content", content);
 
   return panel;
+}
+
+
+void do_something_with_slice(void* slice, size_t len)
+{
+  char** yop = slice;
+  printf("len : %d \n", len);
+  for (int i = 0; i < len; ++i)
+   {
+    //printf("slice : %d, %s \n",i, *(yop+i));
+    printf("slice : %d, %s \n",i, yop[i]);
+   }
 }
 
