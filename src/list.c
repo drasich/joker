@@ -180,13 +180,13 @@ static Evas_Object* _create_genlist(Evas_Object* win)
   evas_object_show(bx2);
 
   gl = elm_genlist_add(bx);
+  evas_object_event_callback_add(gl, EVAS_CALLBACK_FREE, _cleanup_cb, api);
   evas_object_size_hint_weight_set(gl, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_align_set(gl, EVAS_HINT_FILL, EVAS_HINT_FILL);
   elm_genlist_select_mode_set(gl, ELM_OBJECT_SELECT_MODE_ALWAYS);
   elm_genlist_mode_set(gl, ELM_LIST_COMPRESS);
   elm_genlist_homogeneous_set(gl, EINA_TRUE);
   elm_box_pack_end(bx2, gl);
-  evas_object_event_callback_add(gl, EVAS_CALLBACK_FREE, _cleanup_cb, api);
   api->gl = gl;
   evas_object_show(gl);
   evas_object_smart_callback_add(gl, "selected", _gl_focus_item_cb, "selected");
@@ -211,8 +211,7 @@ static Evas_Object* _create_genlist(Evas_Object* win)
         ELM_GENLIST_ITEM_NONE,
         NULL, NULL);
 
-  evas_object_show(win);
-  elm_object_focus_set(entry, EINA_TRUE);
+  //elm_object_focus_set(entry, EINA_TRUE);
   evas_object_smart_callback_add(entry, "changed,user", _entry_change_cb, api);
 
   return bx;
