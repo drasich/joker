@@ -87,8 +87,13 @@ char *genlist_demo_names[] = {
 static char *
 glf_text_get(void *data, Evas_Object *obj EINA_UNUSED, const char *part EINA_UNUSED)
 {
+   char** names = evas_object_data_get(obj, "names");
+   size_t len = evas_object_data_get(obj, "len");
+  //printf("item len : %d \n ", ((int) (uintptr_t)len));
+  printf("item len : %d \n ", len);
    char buf[256];
-   snprintf(buf, sizeof(buf), "%s", genlist_demo_names[((int)(uintptr_t)data)%50]);
+   //snprintf(buf, sizeof(buf), "%s", genlist_demo_names[((int)(uintptr_t)data)%50]);
+   snprintf(buf, sizeof(buf), "%s", names[((int)(uintptr_t)data)%len]);
    return strdup(buf);
 }
 
@@ -152,7 +157,14 @@ _cleanup_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void 
    free(api);
 }
 
-static Evas_Object* _create_genlist(Evas_Object* win)
+struct __JkList
+{
+  Evas_Object* box;
+  Evas_Object* gl;
+  Elm_Genlist_Item_Class *itc;
+};
+
+static struct __JkList* _create_genlist(Evas_Object* win)
 {
   Evas_Object *bx, *bx2, *entry, *gl;
   Elm_Genlist_Item_Class *itc = NULL;
@@ -197,6 +209,9 @@ static Evas_Object* _create_genlist(Evas_Object* win)
   evas_object_smart_callback_add(gl, "filter,done", _gl_filter_finished_cb, NULL);
   evas_object_event_callback_add(gl, EVAS_CALLBACK_KEY_DOWN, _gl_focus_key_down_cb, NULL);
 
+  evas_object_data_set(gl, "names", genlist_demo_names);
+  evas_object_data_set(gl, "len", 50);
+
   itc = elm_genlist_item_class_new();
   itc->item_style = "default";
   itc->func.text_get = glf_text_get;
@@ -214,7 +229,12 @@ static Evas_Object* _create_genlist(Evas_Object* win)
   //elm_object_focus_set(entry, EINA_TRUE);
   evas_object_smart_callback_add(entry, "changed,user", _entry_change_cb, api);
 
-  return bx;
+  struct __JkList* ll = calloc(1, sizeof *ll);
+  ll->box = bx;
+  ll->gl = gl;
+  ll->itc = itc;
+
+  return ll;
 }
 
 
@@ -225,10 +245,27 @@ Eo* jk_list_wdg_new(Window* w, const char* name)
   evas_object_resize(panel, 100,100);
 
   //Eo* content = _content_new(w->win);
-  Eo* content = _create_genlist(w->win);
-  elm_object_part_content_set(panel, "content", content);
+  struct __JkList* ll = _create_genlist(w->win);
+  elm_object_part_content_set(panel, "content", ll->box);
+
+  evas_object_data_set(panel, "jklist", ll);
 
   return panel;
+}
+
+void jklist_set_names(Evas_Object* panel, char** names, size_t len)
+{
+  struct __JkList* ll = evas_object_data_get(panel, "jklist");
+  evas_object_data_set(ll->gl, "names", names);
+  evas_object_data_set(ll->gl, "len", len);
+
+  elm_genlist_clear(ll->gl);
+
+  for (int i = 0; i < len; i++)
+  elm_genlist_item_append(ll->gl, ll->itc,
+        (void *)(long)i, NULL,
+        ELM_GENLIST_ITEM_NONE,
+        NULL, NULL);
 }
 
 
