@@ -65,6 +65,20 @@ _gl_focus_item_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
 }
 
 static void
+_gl_select_item_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
+{
+   printf("%s: %p\n", (char *)data, event_info);
+   select_callback fn = evas_object_data_get(obj, "fn");
+   void* fn_data = evas_object_data_get(obj, "fn_data");
+   if (fn && fn_data) {
+     Elm_Object_Item *glit = event_info;
+     const char* t = elm_object_item_text_get(glit);
+     fn(fn_data, t);
+   }
+}
+
+
+static void
 _gl_focus_key_down_cb(void *data EINA_UNUSED, Evas *e EINA_UNUSED,
                       Evas_Object *obj EINA_UNUSED, void *event_info)
 {
@@ -201,7 +215,7 @@ static struct __JkList* _create_genlist(Evas_Object* win)
   elm_box_pack_end(bx2, gl);
   api->gl = gl;
   evas_object_show(gl);
-  evas_object_smart_callback_add(gl, "selected", _gl_focus_item_cb, "selected");
+  evas_object_smart_callback_add(gl, "selected", _gl_select_item_cb, "selected");
   evas_object_smart_callback_add(gl, "unselected", _gl_focus_item_cb, "unselected");
   evas_object_smart_callback_add(gl, "activated", _gl_focus_item_cb, "activated");
   evas_object_smart_callback_add(gl, "highlighted", _gl_focus_item_cb, "highlighted");
@@ -266,6 +280,19 @@ void jklist_set_names(Evas_Object* panel, char** names, size_t len)
         (void *)(long)i, NULL,
         ELM_GENLIST_ITEM_NONE,
         NULL, NULL);
+}
+
+void jk_list_fn_set(
+      Evas_Object *o,
+      select_callback fn,
+      void* data)
+{
+  printf("list fn \n");
+  struct __JkList* ll = evas_object_data_get(o, "jklist");
+  Evas_Object* list = ll->gl;
+
+  evas_object_data_set(list, "fn", fn);
+  evas_object_data_set(list, "fn_data", data);
 }
 
 

@@ -4,6 +4,7 @@
 #include "stdbool.h"
 
 typedef void (*button_callback)(void *data);
+typedef void (*select_callback)(void *data, const char* name);
 
 typedef struct _ButtonCallbackData ButtonCallbackData;
 struct _ButtonCallbackData
