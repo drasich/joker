@@ -67,7 +67,6 @@ _gl_focus_item_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
 static void
 _gl_select_item_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
 {
-   printf("%s: %p\n", (char *)data, event_info);
    select_callback fn = evas_object_data_get(obj, "fn");
    void* fn_data = evas_object_data_get(obj, "fn_data");
    if (fn && fn_data) {
@@ -75,7 +74,18 @@ _gl_select_item_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
      const char* t = elm_object_item_text_get(glit);
      fn(fn_data, t);
    }
+   Evas_Object* panel = data;
+   evas_object_hide(panel);
 }
+
+static void
+_gl_unfocus_item_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
+{
+  printf("unfocus ______________ \n");
+  Evas_Object* panel = data;
+  evas_object_hide(panel);
+}
+
 
 
 static void
@@ -215,7 +225,7 @@ static struct __JkList* _create_genlist(Evas_Object* win)
   elm_box_pack_end(bx2, gl);
   api->gl = gl;
   evas_object_show(gl);
-  evas_object_smart_callback_add(gl, "selected", _gl_select_item_cb, "selected");
+
   evas_object_smart_callback_add(gl, "unselected", _gl_focus_item_cb, "unselected");
   evas_object_smart_callback_add(gl, "activated", _gl_focus_item_cb, "activated");
   evas_object_smart_callback_add(gl, "highlighted", _gl_focus_item_cb, "highlighted");
@@ -261,6 +271,9 @@ Eo* jk_list_wdg_new(Window* w, const char* name)
   //Eo* content = _content_new(w->win);
   struct __JkList* ll = _create_genlist(w->win);
   elm_object_part_content_set(panel, "content", ll->box);
+
+  evas_object_smart_callback_add(ll->gl, "selected", _gl_select_item_cb, panel);
+  //evas_object_smart_callback_add(ll->gl, "unfocused", _gl_unfocus_item_cb, panel);
 
   evas_object_data_set(panel, "jklist", ll);
 
