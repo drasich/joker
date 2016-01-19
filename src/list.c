@@ -74,8 +74,8 @@ _gl_select_item_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
      const char* t = elm_object_item_text_get(glit);
      fn(fn_data, t);
    }
-   Evas_Object* panel = data;
-   evas_object_hide(panel);
+   Evas_Object* container = data;
+   evas_object_hide(container);
 }
 
 static void
@@ -261,8 +261,7 @@ static struct __JkList* _create_genlist(Evas_Object* win)
   return ll;
 }
 
-
-Eo* jk_list_wdg_new(Window* w, const char* name)
+static Eo* _createpanel(Window* w, const char* name)
 {
   Evas_Object* panel = layout_panel_add(w->win, name);
   evas_object_move(panel, 100,100);
@@ -278,7 +277,51 @@ Eo* jk_list_wdg_new(Window* w, const char* name)
   evas_object_data_set(panel, "jklist", ll);
 
   return panel;
+
 }
+
+static Eo* _createhover(Window* w, const char* name)
+{
+  Evas_Object* hover = elm_hover_add(w->win);
+  //evas_object_resize(hover, 200,400);
+  elm_hover_parent_set(hover, w->win);
+
+  Evas_Object* panel = layout_panel_add(w->win, name);
+  //evas_object_move(panel, 100,100);
+  evas_object_size_hint_min_set(panel, 200, 400);
+
+  struct __JkList* ll = _create_genlist(w->win);
+  elm_object_part_content_set(panel, "content", ll->box);
+  evas_object_size_hint_min_set(panel, 200, 400);
+  //evas_object_resize(panel, 200,400);
+
+  //Eo* content = _content_new(w->win);
+  //struct __JkList* ll = _create_genlist(w->win);
+  //elm_object_style_set(hover,"popout");
+  //elm_object_part_content_set(hover, "bottom", ll->box);
+  elm_object_part_content_set(hover, "bottom", panel);
+  evas_object_size_hint_min_set(panel, 200, 400);
+
+  evas_object_smart_callback_add(ll->gl, "selected", _gl_select_item_cb, hover);
+  //evas_object_smart_callback_add(ll->gl, "unfocused", _gl_unfocus_item_cb, panel);
+
+  evas_object_data_set(hover, "jklist", ll);
+
+  return hover;
+
+}
+
+
+Eo* jk_list_wdg_new(Window* w, const char* name)
+{
+  return _createpanel(w, name);
+}
+
+Eo* jk_list_wdg_new2(Window* w, const char* name)
+{
+  return _createhover(w, name);
+}
+
 
 void jklist_set_names(Evas_Object* panel, char** names, size_t len)
 {
