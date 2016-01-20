@@ -261,8 +261,8 @@ _onup_resize(
 
 static void
 _onmove_resize(
-        void *data EINA_UNUSED,
-        Evas_Object *o EINA_UNUSED,
+        void *data,
+        Evas_Object *o,
         const char  *emission,
         const char  *source)
 
@@ -275,6 +275,10 @@ _onmove_resize(
     Evas_Coord x, y, w, h;
     evas_object_geometry_get (o, &x, &y, &w, &h);
 
+    Evas_Coord minw, minh;
+    Eo* inside = elm_layout_edje_get(o);
+    evas_object_size_hint_min_get(o, &minw, &minh);
+
     Evas_Coord mx, my;
     Evas* e = evas_object_evas_get(o);
     evas_pointer_output_xy_get(e, &mx, &my);
@@ -282,23 +286,32 @@ _onmove_resize(
     int curx = mx;
     int cury = my;
 
+    int sizew = w;
+    int sizeh = h;
+
     if ( d->dir == 0) {
-        evas_object_resize(o, (curx + priv->x) - x, (cury + priv->y) - y);
+        sizew = (curx + priv->x) - x;
+        sizeh = (cury + priv->y) - y;
     }
     else if ( d->dir == 1) {
-        evas_object_resize(o, (curx + priv->x) - x, h);
+        sizew = (curx + priv->x) - x;
     }
     else if ( d->dir == 2) {
         evas_object_move(o, curx + priv->x, y);
-        evas_object_resize(o, priv->right - (curx + priv->x) , h);
+        sizew = priv->right - (curx + priv->x);
     }
     else if ( d->dir == 3) {
         evas_object_move(o, curx + priv->x, y);
-        evas_object_resize(o, priv->right - (curx + priv->x) , (cury + priv->y) - y);
+        sizew = priv->right - (curx + priv->x);
+        sizeh = (cury + priv->y) - y;
     }
     else if ( d->dir == 4) {
-        evas_object_resize(o, w, (cury + priv->y) - y);
+        sizeh = (cury + priv->y) - y;
     }
+
+    sizew = sizew < minw? minw : sizew;
+    sizeh = sizeh < minh? minh : sizeh;
+    evas_object_resize(o, sizew, sizeh);
 }
 
 static void
@@ -559,8 +572,6 @@ Eo* layout_panel_add(Evas_Object* parent, const char* name)
   elm_layout_signal_callback_add(ly, "mouse,up,1", "resizebottom",_onup_resize, data);
 
   elm_layout_signal_callback_add(ly, "mouse,clicked,1", "close", _onclose, priv);
-
-
 
 	return ly;
 }

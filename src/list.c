@@ -206,6 +206,10 @@ static struct __JkList* _create_genlist(Evas_Object* win)
   evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, 0.0);
   elm_object_part_text_set(entry, "guide", "Search.");
+  int w , h;
+  evas_object_size_hint_min_get(entry, &w, &h);
+  w = w < 100? 100:w;
+  evas_object_size_hint_min_set(entry, w, h);
   elm_box_pack_end(bx, entry);
   evas_object_show(entry);
 
@@ -215,6 +219,19 @@ static struct __JkList* _create_genlist(Evas_Object* win)
   elm_box_pack_end(bx, bx2);
   evas_object_show(bx2);
 
+  Eo* table = elm_table_add(win);
+  elm_table_add(table);
+
+  evas_object_size_hint_weight_set(table, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(table, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  Eo* rect = evas_object_rectangle_add(evas_object_evas_get(win));
+  evas_object_size_hint_min_set(rect, 250, 200);
+  evas_object_size_hint_align_set(rect, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  evas_object_size_hint_weight_set(rect, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_table_pack(table, rect, 0, 0, 1, 1);
+  evas_object_show(table);
+
   gl = elm_genlist_add(bx);
   evas_object_event_callback_add(gl, EVAS_CALLBACK_FREE, _cleanup_cb, api);
   evas_object_size_hint_weight_set(gl, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -222,7 +239,8 @@ static struct __JkList* _create_genlist(Evas_Object* win)
   elm_genlist_select_mode_set(gl, ELM_OBJECT_SELECT_MODE_ALWAYS);
   elm_genlist_mode_set(gl, ELM_LIST_COMPRESS);
   elm_genlist_homogeneous_set(gl, EINA_TRUE);
-  elm_box_pack_end(bx2, gl);
+  elm_table_pack(table, gl , 0, 0, 1, 1);
+  elm_box_pack_end(bx2, table);
   api->gl = gl;
   evas_object_show(gl);
 
@@ -283,24 +301,18 @@ static Eo* _createpanel(Window* w, const char* name)
 static Eo* _createhover(Window* w, const char* name)
 {
   Evas_Object* hover = elm_hover_add(w->win);
-  //evas_object_resize(hover, 200,400);
   elm_hover_parent_set(hover, w->win);
+  //elm_object_style_set(hover,"popout");
 
   Evas_Object* panel = layout_panel_add(w->win, name);
-  //evas_object_move(panel, 100,100);
-  evas_object_size_hint_min_set(panel, 200, 400);
 
   struct __JkList* ll = _create_genlist(w->win);
   elm_object_part_content_set(panel, "content", ll->box);
-  evas_object_size_hint_min_set(panel, 200, 400);
-  //evas_object_resize(panel, 200,400);
+  elm_layout_sizing_eval(panel);
 
   //Eo* content = _content_new(w->win);
-  //struct __JkList* ll = _create_genlist(w->win);
-  //elm_object_style_set(hover,"popout");
   //elm_object_part_content_set(hover, "bottom", ll->box);
   elm_object_part_content_set(hover, "bottom", panel);
-  evas_object_size_hint_min_set(panel, 200, 400);
 
   evas_object_smart_callback_add(ll->gl, "selected", _gl_select_item_cb, hover);
   //evas_object_smart_callback_add(ll->gl, "unfocused", _gl_unfocus_item_cb, panel);
