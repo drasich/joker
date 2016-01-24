@@ -217,7 +217,8 @@ property_list_single_item_add(
 PropertyValue*
 property_list_single_vec_add(
       JkPropertyList* pl,
-      PropertyValue* pv);
+      PropertyValue* pv,
+      bool is_node);
 
 void property_list_group_add(
       JkPropertyList* ps,
