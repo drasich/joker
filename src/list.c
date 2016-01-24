@@ -96,29 +96,10 @@ _gl_focus_key_down_cb(void *data EINA_UNUSED, Evas *e EINA_UNUSED,
    printf("\n=== Key Down : %s ===\n", ev->keyname);
 }
 
-char *genlist_demo_names[] = {
-        "Aaliyah", "Aamir", "Aaralyn", "Aaron", "Abagail",
-        "Babitha", "Bahuratna", "Bandana", "Bulbul", "Cade", "Caldwell",
-        "Chandan", "Caster", "Dagan ", "Daulat", "Dag", "Earl", "Ebenzer",
-        "Ellison", "Elizabeth", "Filbert", "Fitzpatrick", "Florian", "Fulton",
-        "Frazer", "Gabriel", "Gage", "Galen", "Garland", "Gauhar", "Hadden",
-        "Hafiz", "Hakon", "Haleem", "Hank", "Hanuman", "Jabali ", "Jaimini",
-        "Jayadev", "Jake", "Jayatsena", "Jonathan", "Kamaal", "Jeirk",
-        "Jasper", "Jack", "Mac", "Macy", "Marlon", "Milson",
-        NULL
-};
-
 static char *
 glf_text_get(void *data, Evas_Object *obj EINA_UNUSED, const char *part EINA_UNUSED)
 {
-   char** names = evas_object_data_get(obj, "names");
-   size_t len = evas_object_data_get(obj, "len");
-  //printf("item len : %d \n ", ((int) (uintptr_t)len));
-  printf("item len : %d \n ", len);
-   char buf[256];
-   //snprintf(buf, sizeof(buf), "%s", genlist_demo_names[((int)(uintptr_t)data)%50]);
-   snprintf(buf, sizeof(buf), "%s", names[((int)(uintptr_t)data)%len]);
-   return strdup(buf);
+   return strdup(data);
 }
 
 Eina_Bool
@@ -126,9 +107,8 @@ gl_filter_get(void *data, Evas_Object *obj EINA_UNUSED, void *key)
 {
    if (!strlen((char *)key)) return EINA_TRUE;
 
-   if (strcasestr(genlist_demo_names[((int)(uintptr_t)data)%50], (char *)key))
+   if (strcasestr(data, (char*) key))
      return EINA_TRUE;
-   // Default case should return false (item fails filter hence will be hidden)
    return EINA_FALSE;
 }
 
@@ -251,9 +231,6 @@ static struct __JkList* _create_genlist(Evas_Object* win)
   evas_object_smart_callback_add(gl, "filter,done", _gl_filter_finished_cb, NULL);
   evas_object_event_callback_add(gl, EVAS_CALLBACK_KEY_DOWN, _gl_focus_key_down_cb, NULL);
 
-  evas_object_data_set(gl, "names", genlist_demo_names);
-  evas_object_data_set(gl, "len", 50);
-
   itc = elm_genlist_item_class_new();
   itc->item_style = "default";
   itc->func.text_get = glf_text_get;
@@ -261,12 +238,6 @@ static struct __JkList* _create_genlist(Evas_Object* win)
   itc->func.filter_get = gl_filter_get;
   itc->func.state_get = NULL;
   itc->func.del = NULL;
-
-  for (i = 0; i < 500; i++)
-  elm_genlist_item_append(gl, itc,
-        (void *)(long)i, NULL,
-        ELM_GENLIST_ITEM_NONE,
-        NULL, NULL);
 
   //elm_object_focus_set(entry, EINA_TRUE);
   evas_object_smart_callback_add(entry, "changed,user", _entry_change_cb, api);
@@ -338,14 +309,14 @@ Eo* jk_list_wdg_new2(Window* w, const char* name)
 void jklist_set_names(Evas_Object* panel, char** names, size_t len)
 {
   struct __JkList* ll = evas_object_data_get(panel, "jklist");
-  evas_object_data_set(ll->gl, "names", names);
-  evas_object_data_set(ll->gl, "len", len);
-
   elm_genlist_clear(ll->gl);
 
   for (int i = 0; i < len; i++)
-  elm_genlist_item_append(ll->gl, ll->itc,
-        (void *)(long)i, NULL,
+  elm_genlist_item_append(
+        ll->gl,
+        ll->itc,
+        strdup(names[((int)(uintptr_t)i)%len]),
+        NULL,
         ELM_GENLIST_ITEM_NONE,
         NULL, NULL);
 }
