@@ -779,6 +779,62 @@ gl_content_node_get(
    return bx;
 }
 
+static Eo* _node_create(PropertyValue* val, Evas_Object* o)
+{
+  printf("node create !!!! \n");
+  Evas_Object* label = elm_label_add(o);
+
+  unsigned int num;
+  char** ss = eina_str_split_full(val->path, "/", 0, &num);
+  const char* name = ss[num-1];
+
+  char s[256];
+  sprintf(s, "<b>%s</b>", name);
+  //if (val->item && elm_genlist_item_expanded_get(val->item))
+  //sprintf(s, "%s : ", name);
+  //else
+  //sprintf(s, "%s", name);
+
+  elm_object_text_set(label, s);
+  //elm_box_pack_end(bx, label);
+  evas_object_show(label);
+
+  free(ss[0]);
+  free(ss);
+  return label;
+}
+
+Eo*
+gl_content_node_get2(
+      void* data,
+      Eo* obj,
+      const char *part)
+{
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+
+  Eo* bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bx, 0, fh);
+
+  PropertyValue* val = data;
+  printf(" val : %p \n", val);
+  if (val->create_child) {
+    elm_box_pack_end(bx, val->create_child(val, obj));
+  }
+  else {
+    Evas_Object* label = _node_create(val, bx);
+    elm_box_pack_end(bx, label);
+  }
+
+  return bx;
+}
+
 
 Evas_Object*
 gl_content_enum_get(
@@ -1088,6 +1144,7 @@ gl_content_float_get_test(
   evas_object_size_hint_min_set(bx, 0, fh);
 
   PropertyValue* val = data;
+  printf("float get test ::::::::: %s\n", val->path);
 
   const char* name;
 
@@ -1243,34 +1300,10 @@ PropertyValue* property_list_node_add(
     return NULL;
   }
 
-  unsigned int num;
-  char** s = eina_str_split_full(path, "/", 0, &num);
-  PropertyNode* child = property_list_node_new();
-  eina_hash_add(node->nodes, strdup(s[num-1]), child);
-
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);//s[num-1];
   val->list = pl;
-  val->data = child;
-  //val->data = strdup(value);
-  //val->user_data = possible_values;
-
-  /*
-  child->item = elm_genlist_item_append(pl->list, class_node,
-                           val,
-                           node->item,
-                           ELM_GENLIST_ITEM_TREE,
-                           NULL,
-                           NULL);
-
-  val->item = child->item;
-
-  printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
-        node, s[num-1],child, child->item);
-  */
-
-  free(s[0]);
-  free(s);
+  val->create_child = _node_create;
 
   return val;
 }
@@ -1286,35 +1319,25 @@ PropertyValue* property_list_single_node_add(
     return NULL;
   }
 
-  /*
   unsigned int num;
   char** s = eina_str_split_full(path, "/", 0, &num);
   PropertyNode* child = property_list_node_new();
   eina_hash_add(node->nodes, strdup(s[num-1]), child);
 
-  PropertyValue *val = calloc(1, sizeof *val);
-  val->path = strdup(path);//s[num-1];
-  val->list = pl;
-  //val->data = strdup(value);
-  //val->user_data = possible_values;
-  */
-
-  PropertyNode* child = val->data;
-
   child->item = elm_genlist_item_append(pl->list, class_node,
-                           val, //path,//strdup(s[num-1]),
-                           node->item, //git/* parent */,
+                           val,
+                           node->item,
                            ELM_GENLIST_ITEM_TREE,
-                           NULL,//gl4_sel/* func */,
-                           NULL/* func data */);
+                           NULL,
+                           NULL);
 
   val->item = child->item;
 
-  //printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
-  //      node, s[num-1],child, child->item);
+  printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
+        node, s[num-1],child, child->item);
 
-  //free(s[0]);
-  //free(s);
+  free(s[0]);
+  free(s);
 
   return val;
 }
@@ -1415,9 +1438,11 @@ property_list_float_add(
 {
   PropertyNode* node = _property_list_node_find_parent(pl, path);
   if (!node) {
-    printf("%s, could not find a root\n", __FUNCTION__);
+    printf("%s, could not find a root for %s\n", __FUNCTION__, path);
     return NULL;
   }
+
+  printf("adding float ::::::::: %s\n", path);
 
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);
@@ -1543,28 +1568,30 @@ property_list_single_vec_add(
     return NULL;
   }
 
-  /*
-  unsigned int num;
-  char** s = eina_str_split_full(path, "/", 0, &num);
-
-  PropertyValue *val = calloc(1, sizeof *val);
-  val->path = strdup(path);//s[num-1];
-  val->list = pl;
-  val->data = strdup(value);
-  val->pv = pv;
-  */
-
   val->item = elm_genlist_item_append(pl->list, class_vec,
-                           val,
-                           node->item,
-                           is_node? ELM_GENLIST_ITEM_TREE : ELM_GENLIST_ITEM_NONE,
-                           NULL,
-                           NULL);
+        val,
+        node->item,
+        is_node? ELM_GENLIST_ITEM_TREE : ELM_GENLIST_ITEM_NONE,
+        NULL,
+        NULL);
 
-  eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+  if (is_node) {
+    unsigned int num;
+    char** s = eina_str_split_full(path, "/", 0, &num);
+    PropertyNode* child = property_list_node_new();
+    eina_hash_add(node->nodes, strdup(s[num-1]), child);
 
-  //free(s[0]);
-  //free(s);
+    child->item = val->item;
+
+    printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
+          node, s[num-1],child, child->item);
+
+    free(s[0]);
+    free(s);
+  }
+  else {
+    eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+  }
 
   return val;
 }
@@ -1726,7 +1753,7 @@ property_list_new(Evas_Object* win)
   class_node = elm_genlist_item_class_new();
   class_node->item_style = "full";//"default";
   class_node->func.text_get = NULL;//gl_text_get_node;
-  class_node->func.content_get = gl_content_node_get;// NULL;
+  class_node->func.content_get = gl_content_node_get2;// NULL;
   class_node->func.state_get = gl_state_get;
   class_node->func.del = NULL;
 
