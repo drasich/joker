@@ -521,6 +521,7 @@ gl_content_vec_get(
   Evas_Coord fw = -1, fh = -1;
   elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   evas_object_size_hint_min_set(bx, 0, fh);
+  elm_box_align_set(bx, 0, 0.5f);
 
   PropertyValue* val = data;
   printf(" val : %p \n", val);
@@ -817,6 +818,8 @@ gl_content_node_get2(
   elm_box_padding_set(bx, 4, 0);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  elm_box_align_set(bx, 0, 0.5f);
 
   Evas_Coord fw = -1, fh = -1;
   elm_coords_finger_size_adjust(1, &fw, 1, &fh);
