@@ -163,6 +163,7 @@ struct _PropertyValue
   JkPropertyList* list;
   void* user_data;
   int len;
+  const char* added_name;
 
   item_create create_child;
 };
@@ -193,7 +194,8 @@ void jk_property_list_register_vec_cb(
 
 PropertyValue* property_list_node_add(
       JkPropertyList* pl,
-      const char* path);
+      const char* path,
+      const char* added_name);
 
 void property_list_nodes_remove(
       JkPropertyList* pl,

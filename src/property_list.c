@@ -790,7 +790,12 @@ static Eo* _node_create(PropertyValue* val, Evas_Object* o)
   const char* name = ss[num-1];
 
   char s[256];
-  sprintf(s, "<b>%s</b>", name);
+  if (val->added_name){
+    sprintf(s, "<b>%s</b> : %s", name, val->added_name);
+  }
+  else {
+    sprintf(s, "<b>%s</b>", name);
+  }
   //if (val->item && elm_genlist_item_expanded_get(val->item))
   //sprintf(s, "%s : ", name);
   //else
@@ -1295,7 +1300,8 @@ property_list_clear(JkPropertyList* pl)
 
 PropertyValue* property_list_node_add(
       JkPropertyList* pl,
-      const char* path)
+      const char* path,
+      const char* added_name)
 {
   PropertyNode* node = _property_list_node_find_parent(pl, path);
   if (!node) {
@@ -1307,6 +1313,9 @@ PropertyValue* property_list_node_add(
   val->path = strdup(path);//s[num-1];
   val->list = pl;
   val->create_child = _node_create;
+  if (added_name) {
+    val->added_name = strdup(added_name);
+  }
 
   return val;
 }
