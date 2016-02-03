@@ -558,3 +558,9 @@ JkTree* window_tree_new(Window* w, int x, int y, int width, int height)
 
 }
 
+void jk_window_request_update(Window* w)
+{
+   elm_glview_changed_set(w->glview);
+}
+
+

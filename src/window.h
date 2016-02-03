@@ -104,5 +104,7 @@ void window_rect_set(Window* win, float x, float y, float w, float h);
 Evas_Object* jk_window_new(rust_elm_callback cb, const void* cb_data);
 
 //JkTree* window_tree_new(Window* w, int x, int y, int width, int height);
+//
+void jk_window_request_update(Window* w);
 
 #endif
