@@ -244,6 +244,48 @@ static Evas_Object *create_edje(Evas* e)
   return edje;
 }
 
+static void
+_entry_focused_cb(
+      void* data,
+      Evas_Object *obj,
+      void* event)
+{
+  const char* value = elm_object_text_get(obj);
+  evas_object_data_set(obj, "saved_text", eina_stringshare_add(value));
+  printf("setting saved text to %s \n", value);
+}
+
+static void
+_entry_register_change_cb(
+      void* data,
+      Evas_Object *obj,
+      void* event)
+{
+  printf("entry activated or unfocused!!!!!!!!!!!!!!.\n");
+  //const char* name = evas_object_name_get(obj);
+  const char* value = elm_object_text_get(obj);
+  const char* old = evas_object_data_get(obj, "saved_text");
+
+  printf("before old value......... ::: %s\n", old);
+
+  if (old == NULL) {
+    printf("problem with the old value.........\n");
+    return;
+  }
+
+  evas_object_data_set(obj, "saved_text", eina_stringshare_add(value));
+
+  printf("after old value......... ::: %s\n", old);
+
+  ButtonCallbackData* bcd = data;
+
+  if (bcd->fn) {
+    bcd->fn(bcd->data);
+  }
+}
+
+
+
 
 JkEntry* action_entry_new(
       JkAction* action,
@@ -273,6 +315,14 @@ JkEntry* action_entry_new(
   bcd->data = data;
   bcd->fn = fn;
   //evas_object_smart_callback_add(bt, "clicked", _button_callback, bcd);
+
+  //evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb_list, val);
+  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, NULL);
+  //evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, NULL);
+  //evas_object_smart_callback_add(en, "press", _entry_press_cb, NULL);
+  evas_object_smart_callback_add(en, "activated", _entry_register_change_cb, bcd);
+  evas_object_smart_callback_add(en, "unfocused", _entry_register_change_cb, bcd);
+
   return en;
 }
 
