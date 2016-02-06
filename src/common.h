@@ -4,6 +4,7 @@
 #include "stdbool.h"
 
 typedef void (*button_callback)(void *data);
+typedef void (*entry_callback)(void *data, const char* text);
 typedef void (*select_callback)(void *data, const char* name);
 
 typedef struct _ButtonCallbackData ButtonCallbackData;
@@ -11,6 +12,13 @@ struct _ButtonCallbackData
 {
   void* data;
   button_callback fn;
+};
+
+typedef struct _EntryCallbackData EntryCallbackData;
+struct _EntryCallbackData
+{
+  void* data;
+  entry_callback fn;
 };
 
 void btn_cb_set(

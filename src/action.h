@@ -39,7 +39,7 @@ JkEntry* action_entry_new(
       JkAction* action,
       const char* name,
       void* data,
-      button_callback fn);
+      entry_callback fn);
 
 void jk_label_set(
       const JkLabel* label,

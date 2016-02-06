@@ -277,10 +277,10 @@ _entry_register_change_cb(
 
   printf("after old value......... ::: %s\n", old);
 
-  ButtonCallbackData* bcd = data;
+  EntryCallbackData* ecd = data;
 
-  if (bcd->fn) {
-    bcd->fn(bcd->data);
+  if (ecd->fn) {
+    ecd->fn(ecd->data, value);
   }
 }
 
@@ -291,7 +291,7 @@ JkEntry* action_entry_new(
       JkAction* action,
       const char* name,
       void* data,
-      button_callback fn)
+      entry_callback fn)
 {
   Evas_Object* win = action->root;
   Evas_Object* box = action->box;
@@ -311,17 +311,17 @@ JkEntry* action_entry_new(
   evas_object_show(en);
 
   //TODO
-  ButtonCallbackData* bcd = calloc(1, sizeof *bcd);
-  bcd->data = data;
-  bcd->fn = fn;
+  EntryCallbackData* ecd = calloc(1, sizeof *ecd);
+  ecd->data = data;
+  ecd->fn = fn;
   //evas_object_smart_callback_add(bt, "clicked", _button_callback, bcd);
 
   //evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb_list, val);
   evas_object_smart_callback_add(en, "focused", _entry_focused_cb, NULL);
   //evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, NULL);
   //evas_object_smart_callback_add(en, "press", _entry_press_cb, NULL);
-  evas_object_smart_callback_add(en, "activated", _entry_register_change_cb, bcd);
-  evas_object_smart_callback_add(en, "unfocused", _entry_register_change_cb, bcd);
+  evas_object_smart_callback_add(en, "activated", _entry_register_change_cb, ecd);
+  evas_object_smart_callback_add(en, "unfocused", _entry_register_change_cb, ecd);
 
   return en;
 }
