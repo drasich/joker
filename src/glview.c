@@ -76,8 +76,8 @@ _create_glview(Evas_Object* win, bool auto_refresh)
   elm_glview_render_func_set(glview, _draw_gl);
 
   if (auto_refresh) {
-    Ecore_Animator *ani = ecore_animator_add(_anim, glview);
-    evas_object_data_set(glview, "ani", ani);
+    //Ecore_Animator *ani = ecore_animator_add(_anim, glview);
+    //evas_object_data_set(glview, "ani", ani);
   }
 
   if (!gl)
