@@ -64,7 +64,7 @@ _draw_gl(Evas_Object *obj)
 
 
 Evas_Object*
-_create_glview(Evas_Object* win)
+_create_glview(Evas_Object* win, bool auto_refresh)
 {
   Evas_Object *glview;
 
@@ -75,8 +75,10 @@ _create_glview(Evas_Object* win)
   elm_glview_resize_func_set(glview, _resize_gl);
   elm_glview_render_func_set(glview, _draw_gl);
 
-  //Ecore_Animator *ani = ecore_animator_add(_anim, glview);
-  //evas_object_data_set(glview, "ani", ani);
+  if (auto_refresh) {
+    Ecore_Animator *ani = ecore_animator_add(_anim, glview);
+    evas_object_data_set(glview, "ani", ani);
+  }
 
   if (!gl)
   gl = elm_glview_gl_api_get(glview);
@@ -103,7 +105,7 @@ JkGlview* jk_glview_new(
 {
   JkGlview* jgl = calloc(1, sizeof *jgl);
 
-  Evas_Object* gl =  _create_glview(win);
+  Evas_Object* gl =  _create_glview(win, true);
 
   evas_object_data_set(gl, "cb_data", data);
   evas_object_data_set(gl, "cb_init", init);
@@ -114,5 +116,10 @@ JkGlview* jk_glview_new(
   jgl->glview = gl;
 
   return jgl;
+}
+
+void jk_glview_request_update(JkGlview* jgl)
+{
+   elm_glview_changed_set(jgl->glview);
 }
 

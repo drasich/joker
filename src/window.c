@@ -247,7 +247,7 @@ window_new(int width, int height)
   evas_object_show(box);
   */
 
-  Evas_Object* glview = _create_glview(win);
+  Evas_Object* glview = _create_glview(win, false);
   w->glview = glview;
   elm_table_pack(table, glview, 0, 0, 1, 5);
   //elm_table_pack(table, edje, 0, 5, 1, 5);
