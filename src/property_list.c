@@ -810,6 +810,70 @@ static Eo* _node_create(PropertyValue* val, Evas_Object* o)
   return label;
 }
 
+static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
+{
+  printf("enum create !!!! \n");
+
+  Eo* bx = elm_box_add(obj);
+  evas_object_show(bx);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bx, 0, fh);
+  elm_box_align_set(bx, 0, 1);
+  //elm_box_align_set(bx, 0, 0.5f);
+  elm_box_padding_set(bx, 4, 0);
+
+  Evas_Object* label = elm_label_add(bx);
+
+   {
+    unsigned int num;
+    char** ss = eina_str_split_full(val->path, "/", 0, &num);
+    const char* name = ss[num-1];
+
+    char s[256];
+    sprintf(s, "<b>%s</b> : ", name);
+
+    elm_object_text_set(label, s);
+    evas_object_show(label);
+    elm_box_pack_end(bx, label);
+
+    free(ss[0]);
+    free(ss);
+   }
+
+   {
+
+  const char* value = val->data;
+  Evas_Object* hoversel = elm_hoversel_add(obj);
+  elm_hoversel_hover_parent_set(hoversel, obj);
+  elm_object_text_set(hoversel, value);
+
+  unsigned int num;
+  char** s = eina_str_split_full(val->user_data, "/", 0, &num);
+  int i;
+  for (i = 0; i < num; ++i) {
+    elm_hoversel_item_add(hoversel, s[i], NULL, ELM_ICON_NONE, NULL, NULL);
+  }
+
+  free(s[0]);
+  free(s);
+
+  //evas_object_smart_callback_add(hoversel, "clicked",
+   //                               _hoversel_clicked_cb, NULL);
+   evas_object_smart_callback_add(hoversel, "selected",
+                                  _hoversel_selected_cb, val);
+   //evas_object_smart_callback_add(hoversel, "dismissed",
+    //                              _hoversel_dismissed_cb, NULL);
+  elm_box_pack_end(bx, hoversel);
+
+  evas_object_show(hoversel);
+   }
+
+   return bx;
+}
+
+
 Eo*
 gl_content_node_get2(
       void* data,
@@ -874,10 +938,10 @@ gl_content_enum_get(
 
     char s[256];
     //sprintf(s, "<b> %s </b> : ", name);
-    if (val->item && elm_genlist_item_expanded_get(val->item))
+    //if (val->item && elm_genlist_item_expanded_get(val->item))
     sprintf(s, "<b>%s</b> : ", name);
-    else
-    sprintf(s, "<b>%s</b>", name);
+    //else
+    //sprintf(s, "<b>%s</b>", name);
 
     elm_object_text_set(label, s);
     evas_object_show(label);
@@ -887,7 +951,7 @@ gl_content_enum_get(
     free(ss);
    }
 
-  if (val->item && elm_genlist_item_expanded_get(val->item))
+  //if (val->item && elm_genlist_item_expanded_get(val->item))
    {
 
   const char* value = val->data;
@@ -918,6 +982,41 @@ gl_content_enum_get(
 
    return bx;
 }
+
+Eo*
+gl_content_enum_get2(
+      void* data,
+      Eo* obj,
+      const char *part)
+{
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
+
+  Eo* bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  elm_box_align_set(bx, 0, 0.5f);
+
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bx, 0, fh);
+
+  PropertyValue* val = data;
+  printf(" val : %p, %s \n", val, (char*) val->user_data);
+  if (val->create_child) {
+    elm_box_pack_end(bx, val->create_child(val, obj));
+  }
+  else {
+    Evas_Object* label = _enum_create(val, bx);
+    elm_box_pack_end(bx, label);
+  }
+
+  return bx;
+}
+
+
 
 Evas_Object*
 gl_content_option_get(
@@ -1772,7 +1871,7 @@ property_list_new(Evas_Object* win)
   class_enum = elm_genlist_item_class_new();
   class_enum->item_style = "full";//"default";
   class_enum->func.text_get = NULL;//gl_text_get_node;
-  class_enum->func.content_get = gl_content_enum_get;
+  class_enum->func.content_get = gl_content_enum_get2;
   class_enum->func.state_get = gl_state_get;
   class_enum->func.del = NULL;
 
@@ -1799,6 +1898,67 @@ property_list_new(Evas_Object* win)
   return p;
 }
 
+PropertyValue* property_list_enum_add(
+      JkPropertyList* pl,
+      //const char* path,
+      //const char* added_name)
+      const char* path,
+      char* possible_values,
+      const char* value)
+{
+  PropertyNode* node = _property_list_node_find_parent(pl, path);
+  if (!node) {
+    printf("%s, could not find a root for %s\n", __FUNCTION__, path);
+    return NULL;
+  }
+
+  PropertyValue *val = calloc(1, sizeof *val);
+  val->path = strdup(path);//s[num-1];
+  val->list = pl;
+  val->data = strdup(value);
+  val->user_data = strdup(possible_values);
+  val->create_child = _enum_create;
+
+  eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+
+  return val;
+}
+
+PropertyValue* property_list_single_enum_add(
+      JkPropertyList* pl,
+      PropertyValue* val)
+{
+  const char* path = val->path;
+  PropertyNode* node = _property_list_node_find_parent(pl, path);
+  if (!node) {
+    printf("%s, could not find a root for %s\n", __FUNCTION__, path);
+    return NULL;
+  }
+
+  unsigned int num;
+  char** s = eina_str_split_full(path, "/", 0, &num);
+  PropertyNode* child = property_list_node_new();
+  eina_hash_add(node->nodes, strdup(s[num-1]), child);
+
+  child->item = elm_genlist_item_append(pl->list, class_node,//enum,
+                           val,
+                           node->item,
+                           ELM_GENLIST_ITEM_TREE,
+                           NULL,
+                           NULL);
+
+  val->item = child->item;
+
+  printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
+        node, s[num-1],child, child->item);
+
+  free(s[0]);
+  free(s);
+
+  return val;
+}
+
+/*
 PropertyValue*
 property_list_enum_add(
       JkPropertyList* pl,
@@ -1842,6 +2002,7 @@ property_list_enum_add(
 
   return val;
 }
+*/
 
 void property_list_enum_update(
       PropertyValue* val,
