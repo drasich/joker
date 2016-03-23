@@ -96,17 +96,38 @@ _create_glview(Evas_Object* win, bool auto_refresh)
   return glview;
 }
 
+static void
+_key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
+{
+  Evas_Event_Key_Down *ev = (Evas_Event_Key_Down*)event_info;
+
+  JkGlview* jgl = data;
+  if (jgl->key) {
+    jgl->key(
+          jgl->cb_data,
+          jk_key_modifier_get(ev->modifiers),
+          ev->keyname,
+          ev->key,
+          ev->keycode,
+          ev->timestamp);
+  }
+}
+
+
 JkGlview* jk_glview_new(
       Evas_Object* win,
       void* data,
       rust_callback init,
       rust_callback draw,
-      resize_callback resize)
+      resize_callback resize,
+      jk_key_down key
+      )
 {
   JkGlview* jgl = calloc(1, sizeof *jgl);
 
   Evas_Object* gl =  _create_glview(win, true);
 
+  //TODO remove these and make a struct
   evas_object_data_set(gl, "cb_data", data);
   evas_object_data_set(gl, "cb_init", init);
   evas_object_data_set(gl, "cb_draw", draw);
@@ -114,6 +135,10 @@ JkGlview* jk_glview_new(
   elm_win_resize_object_add(win, gl);
 
   jgl->glview = gl;
+  jgl->key = key;
+  jgl->cb_data = data;
+
+  evas_object_event_callback_add(gl, EVAS_CALLBACK_KEY_DOWN, _key_down, jgl);
 
   return jgl;
 }

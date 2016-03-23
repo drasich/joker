@@ -7,6 +7,7 @@
 #include "glview.h"
 #include "window.h"
 #include "panel.h"
+#include "input.h"
 
 #define __UNUSED__
 
@@ -15,19 +16,6 @@ simple_window_del(void *data, Evas_Object *obj, void *event_info)
 {
   elm_exit();
 }
-
-static int _modifier_get(const Evas_Modifier* m)
-{
-  int mod_flag = 0;
-  if (evas_key_modifier_is_set(m, "Shift")) {
-    mod_flag |= 1 << 0;
-  }
-  if (evas_key_modifier_is_set(m, "Control")) {
-    mod_flag |= 1 << 1;
-  }
-  return mod_flag;
-}
-
 
 static void
 _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
@@ -38,12 +26,14 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
   if (w->key_down) {
     w->key_down(
           w->data,
-          _modifier_get(ev->modifiers),
+          jk_key_modifier_get(ev->modifiers),
           ev->keyname,
           ev->key,
+          ev->keycode,
           ev->timestamp);
   }
 }
+
 static void
 _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
@@ -57,7 +47,7 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   int prevx = ev->prev.canvas.x - x;
   int prevy = ev->prev.canvas.y - y;
-  int mod_flag = _modifier_get(ev->modifiers);
+  int mod_flag = jk_key_modifier_get(ev->modifiers);
 
   Window* win = data;
   if (win->mouse_move) {
@@ -83,7 +73,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   if (w->mouse_down) {
     w->mouse_down(
           w->data,
-          _modifier_get(ev->modifiers),
+          jk_key_modifier_get(ev->modifiers),
           ev->button,
           ev->canvas.x,
           ev->canvas.y,
@@ -101,7 +91,7 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
   if (w->mouse_up) {
     w->mouse_up(
           w->data,
-          _modifier_get(ev->modifiers),
+          jk_key_modifier_get(ev->modifiers),
           ev->button,
           ev->canvas.x,
           ev->canvas.y,
@@ -118,7 +108,7 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   if (w->mouse_wheel) {
     w->mouse_wheel(
           w->data,
-          _modifier_get(ev->modifiers),
+          jk_key_modifier_get(ev->modifiers),
           ev->direction,
           ev->z,
           ev->canvas.x,
@@ -444,11 +434,11 @@ void
 window_callback_set(
       Window* w,
       const void* data,
-      window_mouse_down mouse_down,
-      window_mouse_up mouse_up,
-      window_mouse_move mouse_move,
-      window_mouse_wheel mouse_wheel,
-      window_key_down key_down
+      jk_mouse_down mouse_down,
+      jk_mouse_up mouse_up,
+      jk_mouse_move mouse_move,
+      jk_mouse_wheel mouse_wheel,
+      jk_key_down key_down
       )
 {
   w->data = data;

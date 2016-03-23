@@ -36,6 +36,7 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
         .file("src/common.c")
         .file("src/entry/jk_entry.c")
         .file("src/glview.c")
+        .file("src/input.c")
         .file("src/list.c")
         .file("src/monitor.c")
         .file("src/panel.c")

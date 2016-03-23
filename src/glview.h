@@ -2,6 +2,7 @@
 #define __glview__
 #include <Elementary.h>
 #include "gl.h"
+#include "input.h"
 #include "cypher.h"
 #include "stdbool.h"
 
@@ -18,6 +19,7 @@ struct _JkGlview
   rust_callback init;
   rust_callback draw;
   resize_callback resize;
+  jk_key_down key;
 };
 
 JkGlview* jk_glview_new(
@@ -25,7 +27,8 @@ JkGlview* jk_glview_new(
       void* data,
       rust_callback init,
       rust_callback draw,
-      resize_callback resize
+      resize_callback resize,
+      jk_key_down key
       );
 
 void jk_glview_request_update(JkGlview* jgl);
