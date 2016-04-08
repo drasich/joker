@@ -1411,6 +1411,7 @@ property_list_clear(JkPropertyList* pl)
 {
   elm_genlist_clear(pl->list);
   _property_node_clear(pl->node);
+  pl->node_first_group = NULL;
 }
 
 PropertyValue* property_list_node_add(
