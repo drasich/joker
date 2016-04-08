@@ -46,20 +46,38 @@ PropertyNode* _property_list_node_find(
       const char* path)
 {
   PropertyNode* node = NULL;
-  unsigned int count;
-  char** s = eina_str_split_full(path, "/", 0, &count);
 
-  node = _property_node_find(pl->node, s);
+  if (path) {
+    unsigned int count;
+    char** s = eina_str_split_full(path, "/", 0, &count);
 
-  free(s[0]);
-  free(s);
-  return node;
+    node = _property_node_find(pl->node, s);
+    if (!node && pl->node_first_group) {
+      node = _property_node_find(pl->node_first_group, s);
+    }
+
+    free(s[0]);
+    free(s);
+  }
+
+  if (node) {
+    return node;
+  }
+  else if (pl->node_first_group) {
+    return pl->node_first_group;
+  }
+  else {
+    return pl->node;
+  }
 }
 
 static const char*
 get_parent_node_string(const char* path)
 {
   char *c = strrchr(path,'/');
+
+  if (!c) return NULL;
+
   size_t size = c - path + 1;
   if (size < 1) {
     return "error_string";
@@ -1222,8 +1240,6 @@ _jk_entry_changed_end_cb_list(
   double vs;
   eo_do(obj, vs = jk_entry_value_saved_get());
 
-  //printf("jk entry END %f %f \n", vs, v);
-
   if (pl->register_change_float) {
     pl->register_change_float(pl->data, val->path, &vs, &v, 1);
   }
@@ -1524,6 +1540,7 @@ void property_list_group_add(
   char** s = eina_str_split_full(path, "/", 0, &num);
   PropertyNode* child = property_list_node_new();
   eina_hash_add(node->nodes, strdup(s[num-1]), child);
+  if (!pl->node_first_group) pl->node_first_group = child;
 
   child->item = elm_genlist_item_append(pl->list, class_group,
                            strdup(s[num-1]),

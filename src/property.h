@@ -133,6 +133,7 @@ struct _PropertyList
   void* data;
 
   PropertyNode* node;
+  PropertyNode* node_first_group;
 
   property_set_changed changed_float;
   property_set_changed changed_string;
