@@ -2027,6 +2027,10 @@ void property_list_enum_update(
       const char* value)
 {
   printf("enum update'''''''''''''''\n");
+  if (!strcmp(value, val->data)) {
+    return;
+  }
+
   if (val->data) free(val->data);
 
   bool was_expanded =

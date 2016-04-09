@@ -99,7 +99,7 @@ static void
 gl4_unselect(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_info)
 {
    Elm_Object_Item *glit = event_info;
-   printf("unselect item\n");
+   //printf("unselect item\n");
    //TODO
    /*
    View* v = data;
