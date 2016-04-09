@@ -297,7 +297,7 @@ _print_signal(
       void* event)
 {
   const char* name = evas_object_name_get(o);
-  //printf("signal from  %s :::::  %s \n", name,  data);
+  printf("signal from  %s :::::  %s \n", name,  data);
 }
 
 //static int test = 1;
@@ -451,12 +451,12 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
   evas_object_smart_callback_add(en, "activated", _entry_activated, obj);
   evas_object_smart_callback_add(en, "unfocused", _entry_unfocused, obj);
   //evas_object_smart_callback_add(en, "focused", _select_all, pd);
-  evas_object_smart_callback_add(en, "selection,changed", _print_signal, "selection changed");
+  //evas_object_smart_callback_add(en, "selection,changed", _print_signal, "selection changed");
   evas_object_smart_callback_add(en, "selection,cleared", _entry_cleared, pd);
-  evas_object_smart_callback_add(en, "selection,start", _print_signal, "selection start");
-  evas_object_smart_callback_add(en, "clicked", _print_signal, "clicked");
-  evas_object_smart_callback_add(en, "cursor,changed", _print_signal, "cursor,changed");
-  evas_object_smart_callback_add(en, "cursor,changed,manual", _print_signal, "cursor,changed,manual");
+  //evas_object_smart_callback_add(en, "selection,start", _print_signal, "selection start");
+  //evas_object_smart_callback_add(en, "clicked", _print_signal, "clicked");
+  //evas_object_smart_callback_add(en, "cursor,changed", _print_signal, "cursor,changed");
+  //evas_object_smart_callback_add(en, "cursor,changed,manual", _print_signal, "cursor,changed,manual");
 
   elm_layout_signal_callback_add(obj, "mouse,down,1", "bg",_ondown, pd);
   elm_layout_signal_callback_add(obj, "mouse,move", "bg", _onmove, obj);
