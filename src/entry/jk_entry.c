@@ -297,7 +297,7 @@ _print_signal(
       void* event)
 {
   const char* name = evas_object_name_get(o);
-  printf("signal from  %s :::::  %s \n", name,  data);
+  //printf("signal from  %s :::::  %s \n", name,  data);
 }
 
 //static int test = 1;
@@ -411,10 +411,13 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
   evas_object_data_set(obj, "realentry", en);
 
   const char* cur_style = elm_entry_text_style_user_peek(en);
+
+  /*
   if (cur_style)
   printf("Current style user: %s\n", cur_style);
   else
   printf("Style user stack is empty.\n");
+  */
 
   const char* yep = "aaa";
   /*
