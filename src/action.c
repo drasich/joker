@@ -163,7 +163,8 @@ window_action_new_up(Window* w)
 {
   Eo* win = w->win;
 
-  Eo* tb = elm_box_add(win);
+  //Eo* tb = elm_box_add(win);
+  Eo* tb = elm_table_add(win);
   evas_object_size_hint_weight_set(tb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   elm_win_resize_object_add(win, tb);
   evas_object_show(tb);
@@ -172,7 +173,8 @@ window_action_new_up(Window* w)
   elm_panel_orient_set(panel, ELM_PANEL_ORIENT_TOP);
   evas_object_size_hint_weight_set(panel, 0, 1);
   evas_object_size_hint_align_set(panel, 0.5, 0);
-  elm_box_pack_end(tb, panel);
+  //elm_box_pack_end(tb, panel);
+  elm_table_pack(tb, panel,0, 0, 4, 1);
   evas_object_show(panel);
 
   JkAction* a = widget_action_new(panel);
