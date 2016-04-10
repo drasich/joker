@@ -144,8 +144,8 @@ window_action_new(Window* w)
   Eo* panel = elm_panel_add(win);
   elm_panel_orient_set(panel, ELM_PANEL_ORIENT_BOTTOM);
   //evas_object_size_hint_weight_set(panel, 0, EVAS_HINT_EXPAND);
-  evas_object_size_hint_weight_set(panel, 0, 0);
-  evas_object_size_hint_align_set(panel, 0.5, 0);
+  evas_object_size_hint_weight_set(panel, 0, 1);
+  evas_object_size_hint_align_set(panel, 0.5, 1);
   //elm_box_pack_end(tb, panel);
   elm_table_pack(tb, panel,0, 4, 4, 1);
   evas_object_show(panel);
@@ -170,7 +170,7 @@ window_action_new_up(Window* w)
 
   Eo* panel = elm_panel_add(win);
   elm_panel_orient_set(panel, ELM_PANEL_ORIENT_TOP);
-  evas_object_size_hint_weight_set(panel, 0, 0);
+  evas_object_size_hint_weight_set(panel, 0, 1);
   evas_object_size_hint_align_set(panel, 0.5, 0);
   elm_box_pack_end(tb, panel);
   evas_object_show(panel);
