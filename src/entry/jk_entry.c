@@ -231,8 +231,6 @@ _entry_activated(
 
   if (n == pd->value) return;
 
-  if (pd->value == pd->value_saved) return;
-
   if (pd->value_str && pd->value_saved_str && !strcmp(pd->value_str, pd->value_saved_str)) {
         return;
   }
@@ -266,11 +264,12 @@ _entry_unfocused(
 
   const char* str = elm_object_text_get(o);
   if (!str) return;
+  printf("entry unfocuseddddddd STR : %s, %s, %s \n", pd->value_saved_str, pd->value_str, str);
+  if (pd->value_str && !strcmp(str, pd->value_str)) return;
   char* end;
   double n = strtod(str, &end);
 
   printf("entry unfocuseddddddd : %f, %f, %f \n", pd->value_saved, pd->value, n);
-  printf("entry unfocuseddddddd STR : %s, %s, %s \n", pd->value_saved_str, pd->value_str, str);
 
   if (n == pd->value) return;
 
