@@ -57,6 +57,8 @@ typedef struct
   Eina_Bool want_select;
   double value;
   double value_saved;
+  const char* value_str;
+  const char* value_saved_str;
   int diff;
 
 } Jk_Entry_Data;
@@ -78,9 +80,13 @@ _jk_entry_eo_base_constructor(Eo *obj, Jk_Entry_Data *pd EINA_UNUSED)
 
 void _value_set(Jk_Entry_Data* pd, double val)
 {
-  char buf[1024];
-  snprintf(buf, sizeof(buf), "%.3f", val);
-  elm_object_text_set(pd->entry, buf);
+  if (!pd->value_str) {
+    pd->value_str = calloc(1, 1024);
+  }
+
+  snprintf(pd->value_str, sizeof(pd->value_str), "%.3f", val);
+
+  elm_object_text_set(pd->entry, pd->value_str);
   pd->value = val;
 }
 
@@ -99,6 +105,10 @@ _ondown(
   pd->state = STATE_MOUSE_DOWN;
   pd->diff = 0;
   pd->value_saved = pd->value;
+
+  if (pd->value_saved_str) free(pd->value_saved_str);
+  pd->value_saved_str = strdup(pd->value_str);
+
   Evas* e = evas_object_evas_get(o);
   evas_pointer_output_xy_get(e, &pd->startx, &pd->starty);
   elm_object_scroll_hold_push(o);
@@ -163,6 +173,9 @@ _show_entry(Eo* o, Jk_Entry_Data* pd, Eina_Bool b)
   elm_entry_editable_set(pd->entry, EINA_TRUE);
   pd->value_saved = pd->value;
 
+  if (pd->value_saved_str) free(pd->value_saved_str);
+  pd->value_saved_str = strdup(pd->value_str);
+
   elm_entry_text_style_user_push(pd->entry, user_style);
   elm_entry_select_all(pd->entry);
   //elm_object_focus_set(pd->entry, EINA_TRUE);
@@ -214,7 +227,13 @@ _entry_activated(
   char* end;
   double n = strtod(str, &end);
 
+  printf("entry activated : %f, %f, %f \n", pd->value_saved, pd->value, n);
+
   if (n == pd->value) return;
+
+  if (pd->value_str && pd->value_saved_str && !strcmp(pd->value_str, pd->value_saved_str)) {
+        return;
+  }
 
   pd->value = n;
 
@@ -245,8 +264,12 @@ _entry_unfocused(
 
   const char* str = elm_object_text_get(o);
   if (!str) return;
+  printf("entry unfocuseddddddd STR : %s, %s, %s \n", pd->value_saved_str, pd->value_str, str);
+  if (pd->value_str && !strcmp(str, pd->value_str)) return;
   char* end;
   double n = strtod(str, &end);
+
+  printf("entry unfocuseddddddd : %f, %f, %f \n", pd->value_saved, pd->value, n);
 
   if (n == pd->value) return;
 
@@ -349,6 +372,9 @@ _drag_start_cb(void *data,
   Eo* parent = data;
   JK_ENTRY_DATA_GET(parent, pd);
   pd->value_saved = pd->value;
+
+  if (pd->value_saved_str) free(pd->value_saved_str);
+  pd->value_saved_str = strdup(pd->value_str);
 }
 
 static void
@@ -475,6 +501,8 @@ EOLIAN static void
 _jk_entry_evas_object_smart_del(Eo *obj, Jk_Entry_Data *pd)
 {
   eo_do_super(obj, MY_CLASS, evas_obj_smart_del());
+  if (pd->value_saved_str) free(pd->value_saved_str);
+  if (pd->value_str) free(pd->value_str);
 }
 
 EOLIAN static Eina_Bool
