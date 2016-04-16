@@ -224,16 +224,13 @@ _entry_activated(
 
   const char* str = elm_object_text_get(o);
   if (!str) return;
+  if (pd->value_saved_str && !strcmp(pd->value_saved_str, str)) return;
   char* end;
   double n = strtod(str, &end);
 
   printf("entry activated : %f, %f, %f \n", pd->value_saved, pd->value, n);
 
   if (n == pd->value) return;
-
-  if (pd->value_str && pd->value_saved_str && !strcmp(pd->value_str, pd->value_saved_str)) {
-        return;
-  }
 
   pd->value = n;
 
@@ -265,19 +262,44 @@ _entry_unfocused(
   const char* str = elm_object_text_get(o);
   if (!str) return;
   printf("entry unfocuseddddddd STR : %s, %s, %s \n", pd->value_saved_str, pd->value_str, str);
-  if (pd->value_str && !strcmp(str, pd->value_str)) return;
+  if (pd->value_saved_str && !strcmp(pd->value_saved_str, str)) return;
   char* end;
   double n = strtod(str, &end);
 
   printf("entry unfocuseddddddd : %f, %f, %f \n", pd->value_saved, pd->value, n);
 
+  if (n == pd->value_saved) return;
+
+  pd->value = n;
+
+  printf("wrote %s, %f,, ENTRY UNFOCUSED will send changed signal \n ", str, pd->value);
+  eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED_END, NULL));
+}
+
+static void
+_entry_changed(
+      void* data,
+      Evas_Object *o,
+      void* event)
+{
+  Eo* parent = data;
+  JK_ENTRY_DATA_GET(parent, pd);
+
+  const char* str = elm_object_text_get(o);
+  if (!str) return;
+  char* end;
+  double n = strtod(str, &end);
+
+  //printf("entry changed : %f, %f, %f \n", pd->value_saved, pd->value, n);
+
   if (n == pd->value) return;
 
   pd->value = n;
 
-  //printf("wrote %s, %f,, ENTRY UNFOCUSED will send changed signal \n ", str, pd->value);
-  eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED_END, NULL));
+  //printf("wrote %s, %f,, ENTRY CHANGED will send changed signal \n ", str, pd->value);
+  eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED, NULL));
 }
+
 
 static void
 _entry_cleared(
@@ -386,9 +408,6 @@ _drag_stop_cb(void *data,
    printf("drag stop cb \n");
 }
 
-
-
-
 EOLIAN static void
 _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 {
@@ -476,6 +495,7 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 
   evas_object_smart_callback_add(en, "activated", _entry_activated, obj);
   evas_object_smart_callback_add(en, "unfocused", _entry_unfocused, obj);
+  evas_object_smart_callback_add(en, "changed", _entry_changed, obj);
   //evas_object_smart_callback_add(en, "focused", _select_all, pd);
   //evas_object_smart_callback_add(en, "selection,changed", _print_signal, "selection changed");
   evas_object_smart_callback_add(en, "selection,cleared", _entry_cleared, pd);
@@ -551,7 +571,7 @@ EOLIAN static Eina_Bool
 _jk_entry_elm_widget_event(Eo *obj, Jk_Entry_Data *pd, Evas_Object *source, Evas_Callback_Type type, void *event_info)
 {
   printf("jkjkjkjkjkjk %s \n", __FUNCTION__);
-
+  return EINA_FALSE;
 }
 
 EOLIAN static void
