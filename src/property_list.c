@@ -562,7 +562,7 @@ gl_content_vec_get(
   btcb->cb = val->list->vec_del;
   btcb->data = val;
   btn_cb_set(bt, _bt_cb, btcb);
-  
+
   return bx;
 }
 
@@ -1267,7 +1267,6 @@ gl_content_float_get_test(
   evas_object_size_hint_min_set(bx, 0, fh);
 
   PropertyValue* val = data;
-  printf("float get test ::::::::: %s\n", val->path);
 
   const char* name;
 
@@ -1598,7 +1597,6 @@ void property_list_float_update(
       PropertyValue* val,
       float value)
 {
-  printf("property list float update %f, item : %p \n", value, val->item);
   memcpy(val->data, &value, sizeof value);
   elm_genlist_item_update(val->item);
 }
