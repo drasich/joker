@@ -155,7 +155,6 @@ _entry_focused_cb(
 {
   const char* value = elm_object_text_get(obj);
   evas_object_data_set(obj, "saved_text", eina_stringshare_add(value));
-  printf("setting saved text to %s \n", value);
 
    struct _EntryState *es = evas_object_data_get(obj, "state");
 
@@ -209,14 +208,11 @@ _entry_register_change_cb(
       Evas_Object *obj,
       void* event)
 {
-  printf("entry activated or unfocused!!!!!!!!!!!!!!.\n");
   PropertyValue* val = data;
   JkPropertyList* pl = val->list;
   //const char* name = evas_object_name_get(obj);
   const char* value = elm_object_text_get(obj);
   const char* old = evas_object_data_get(obj, "saved_text");
-
-  printf("before old value......... ::: %s\n", old);
 
   if (old == NULL) {
     printf("problem with the old value.........\n");
@@ -224,8 +220,6 @@ _entry_register_change_cb(
   }
 
   evas_object_data_set(obj, "saved_text", eina_stringshare_add(value));
-
-  printf("after old value......... ::: %s\n", old);
 
   if (pl->register_change_string) {
     pl->register_change_string(pl->data, val->path, old, value, 1);
@@ -235,7 +229,6 @@ _entry_register_change_cb(
 static void
 _spinner_drag_start_cb(void *data, Evas_Object *obj, void *event)
 {
-  printf("spinner drag start\n");
   double *v = calloc(1, sizeof *v);
   *v = elm_spinner_value_get(obj);
   //TODO alloc the double
@@ -263,7 +256,6 @@ static void
 _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
 {
   double *saved = evas_object_data_get(obj,"saved");
-  printf("spinner drag stop %f \n", *saved);
 
   PropertyValue* val = data;
   JkPropertyList* pl = val->list;
@@ -477,7 +469,6 @@ gl_content_item_get(
   evas_object_size_hint_min_set(bx, 0, fh);
 
   PropertyValue* val = data;
-  printf(" val : %p \n", val);
   elm_box_pack_end(bx, val->create_child(val, obj));
   return bx;
 }
@@ -542,7 +533,6 @@ gl_content_vec_get(
   elm_box_align_set(bx, 0, 0.5f);
 
   PropertyValue* val = data;
-  printf(" val : %p \n", val);
   elm_box_pack_end(bx, val->create_child(val, obj));
 
   Eo* bt = elm_button_add(obj);
@@ -633,7 +623,6 @@ _hoversel_selected_cb(
   const char* old = elm_object_text_get(obj);
   const char *txt = elm_object_item_text_get(event_info);
 
-  printf("'selected' callback is called. (selected item : %s)\n", txt);
   elm_object_text_set(obj, txt);
 
   PropertyValue* val = data;
@@ -800,7 +789,6 @@ gl_content_node_get(
 
 static Eo* _node_create(PropertyValue* val, Evas_Object* o)
 {
-  printf("node create !!!! \n");
   Evas_Object* label = elm_label_add(o);
 
   unsigned int num;
@@ -830,8 +818,6 @@ static Eo* _node_create(PropertyValue* val, Evas_Object* o)
 
 static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
 {
-  printf("enum create !!!! \n");
-
   Eo* bx = elm_box_add(obj);
   evas_object_show(bx);
   elm_box_horizontal_set(bx, EINA_TRUE);
@@ -913,7 +899,6 @@ gl_content_node_get2(
   evas_object_size_hint_min_set(bx, 0, fh);
 
   PropertyValue* val = data;
-  printf(" val : %p \n", val);
   if (val->create_child) {
     elm_box_pack_end(bx, val->create_child(val, obj));
   }
@@ -1022,7 +1007,6 @@ gl_content_enum_get2(
   evas_object_size_hint_min_set(bx, 0, fh);
 
   PropertyValue* val = data;
-  printf(" val : %p, %s \n", val, (char*) val->user_data);
   if (val->create_child) {
     elm_box_pack_end(bx, val->create_child(val, obj));
   }
@@ -1460,9 +1444,6 @@ PropertyValue* property_list_single_node_add(
 
   val->item = child->item;
 
-  printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
-        node, s[num-1],child, child->item);
-
   free(s[0]);
   free(s);
 
@@ -1502,9 +1483,6 @@ PropertyValue* property_list_vec_add(
                            NULL/* func data */);
 
   val->item = child->item;
-
-  printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
-        node, s[num-1],child, child->item);
 
   free(s[0]);
   free(s);
@@ -1551,8 +1529,6 @@ void property_list_group_add(
 
   //elm_genlist_item_select_mode_set(child->item, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY);
 
-  printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
-        node, s[num-1],child, child->item);
 
   free(s[0]);
   free(s);
@@ -1569,8 +1545,6 @@ property_list_float_add(
     printf("%s, could not find a root for %s\n", __FUNCTION__, path);
     return NULL;
   }
-
-  printf("adding float ::::::::: %s\n", path);
 
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);
@@ -1709,9 +1683,6 @@ property_list_single_vec_add(
     eina_hash_add(node->nodes, strdup(s[num-1]), child);
 
     child->item = val->item;
-
-    printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
-          node, s[num-1],child, child->item);
 
     free(s[0]);
     free(s);
@@ -1965,9 +1936,6 @@ PropertyValue* property_list_single_enum_add(
 
   val->item = child->item;
 
-  printf("added node : parent node %p, child name %s, child node %p, child item %p \n",
-        node, s[num-1],child, child->item);
-
   free(s[0]);
   free(s);
 
@@ -2024,7 +1992,6 @@ void property_list_enum_update(
       PropertyValue* val,
       const char* value)
 {
-  printf("enum update'''''''''''''''\n");
   if (!strcmp(value, val->data)) {
     return;
   }
@@ -2108,7 +2075,6 @@ void property_list_option_update(
     t = ELM_GENLIST_ITEM_NONE;
   }
 
-  printf("update option %s \n", value);
   _update_option_item(val, t);
 }
 
@@ -2123,7 +2089,6 @@ void property_show(
       JkPropertyList* p,
       bool b)
 {
-    printf("property show : %d \n", b);
   object_show(p->win, b);
 }
 
