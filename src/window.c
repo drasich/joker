@@ -287,7 +287,7 @@ Evas_Object*
 jk_window_new(rust_elm_callback cb, const void* cb_data)
 {
   Evas_Object* win = elm_win_util_standard_add("3d jk view", "3d jk view");
-  elm_win_autodel_set(win, EINA_TRUE);
+  //elm_win_autodel_set(win, EINA_TRUE);
   evas_object_smart_callback_add(win, "delete,request", _close_window, NULL);
   evas_object_data_set(win, "cb", cb);
   evas_object_data_set(win, "cb_data", cb_data);
