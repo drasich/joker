@@ -302,7 +302,7 @@ Eo* jk_list_wdg_new(Window* w, const char* name)
 
 Eo* jk_list_wdg_new2(Window* w, const char* name)
 {
-  return _createhover(w, name);
+  return _createhover(w, strdup(name));
 }
 
 
@@ -311,14 +311,18 @@ void jklist_set_names(Evas_Object* panel, char** names, size_t len)
   struct __JkList* ll = evas_object_data_get(panel, "jklist");
   elm_genlist_clear(ll->gl);
 
-  for (int i = 0; i < len; i++)
-  elm_genlist_item_append(
-        ll->gl,
-        ll->itc,
-        strdup(names[((int)(uintptr_t)i)%len]),
-        NULL,
-        ELM_GENLIST_ITEM_NONE,
-        NULL, NULL);
+  for (int i = 0; i < len; i++) {
+    printf("set names ............... i : %d, ::: %s \n", i,
+          names[((int)(uintptr_t)i)%len]
+          );
+    elm_genlist_item_append(
+          ll->gl,
+          ll->itc,
+          strdup(names[((int)(uintptr_t)i)%len]),
+          NULL,
+          ELM_GENLIST_ITEM_NONE,
+          NULL, NULL);
+  }
 }
 
 void jk_list_fn_set(

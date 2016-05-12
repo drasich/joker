@@ -556,6 +556,7 @@ _jk_entry_elm_widget_focus_direction(Eo *obj, Jk_Entry_Data *pd, const Evas_Obje
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_on_focus(Eo *obj, Jk_Entry_Data *pd, Elm_Object_Item* item)
 {
+  printf("jk entry on focus\n");
   Eina_Bool int_ret = EINA_FALSE;
   eo_do_super(obj, MY_CLASS, int_ret = elm_obj_widget_on_focus(NULL));
   if (!int_ret) return EINA_FALSE;
