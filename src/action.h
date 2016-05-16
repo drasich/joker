@@ -31,18 +31,18 @@ Evas_Object* action_button_new1(
       JkAction* action,
       const char* name);
 
-JkLabel* action_label_new(
+Eo* action_label_new(
       const JkAction* action,
       const char* name);
 
-JkEntry* action_entry_new(
+Eo* action_entry_new(
       JkAction* action,
       const char* name,
       void* data,
       entry_callback fn);
 
 void jk_label_set(
-      const JkLabel* label,
+      Eo* label,
       const char* name);
 
 void action_show(

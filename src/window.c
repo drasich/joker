@@ -357,13 +357,6 @@ JkProperty* window_property_new(Window* w)
   return p;
 }
 
-JkPropertySet* jk_property_set_new(Window* w)
-{
-  JkPropertySet* ps = property_set_new(w->win);
-  //edje_object_part_swallow(w->edje, "part_property_test", ps->root);
-  return ps;
-}
-
 JkPropertyList* jk_property_list_new(Window* w, int x, int y, int width, int height)
 {
   /*

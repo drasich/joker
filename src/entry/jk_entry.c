@@ -57,8 +57,8 @@ typedef struct
   Eina_Bool want_select;
   double value;
   double value_saved;
-  const char* value_str;
-  const char* value_saved_str;
+  char* value_str;
+  char* value_saved_str;
   int diff;
 
 } Jk_Entry_Data;

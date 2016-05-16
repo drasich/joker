@@ -10,7 +10,7 @@ typedef struct _Property JkProperty;
 typedef void (*property_changed)(const void* object, const void* data);
 typedef const char* (*property_get)(const void* object);
 
-typedef void (*property_set_changed)(
+typedef void (*property_changed2)(
       const void* object,
       const char* path,
       const void* data);
@@ -64,9 +64,9 @@ struct _PropertyNode
 ////////////////////////
 
 
-typedef struct _PropertySet JkPropertySet;
+typedef struct _PropertyBox JkPropertyBox;
 
-struct _PropertySet
+struct _PropertyBox
 {
   Evas_Object* root;
   Evas_Object* box;
@@ -77,44 +77,44 @@ struct _PropertySet
 
   PropertyNode* node;
 
-  property_set_changed changed_float;
-  property_set_changed changed_string;
+  property_changed2 changed_float;
+  property_changed2 changed_string;
 };
 
-PropertyNode* property_set_node_new();
+PropertyNode* property_box_node_new();
 
-JkPropertySet* property_set_new(Evas_Object* win);
-void jk_property_set_register_cb(
-      JkPropertySet* ps,
+JkPropertyBox* property_box_new(Evas_Object* win);
+void jk_property_box_register_cb(
+      JkPropertyBox* ps,
       void * data,
-      property_set_changed changed_float,
-      property_set_changed changed_string
+      property_changed2 changed_float,
+      property_changed2 changed_string
       );
-void property_set_data_set(JkPropertySet* set, void* data);
+void property_box_data_set(JkPropertyBox* set, void* data);
 
-void property_set_clear(JkPropertySet* set);
+void property_box_clear(JkPropertyBox* set);
 
-void property_set_string_add(
-      JkPropertySet* ps,
+void property_box_string_add(
+      JkPropertyBox* ps,
       const char* name,
       const char* value
       );
 
-void property_set_float_add(
-      JkPropertySet* ps,
+void property_box_float_add(
+      JkPropertyBox* ps,
       const char* name,
       float value);
 
-void property_set_node_add(
-      JkPropertySet* ps,
+void property_box_node_add(
+      JkPropertyBox* ps,
       const char* path);
 
 //TODO TO BE TESTED
-void property_set_string_update(
-      JkPropertySet* set,
+void property_box_string_update(
+      JkPropertyBox* set,
       const char* path,
       const char* value);
-void property_set_float_update(JkPropertySet* set, const char* path, float value);
+void property_box_float_update(JkPropertyBox* set, const char* path, float value);
 
 /////////////////
 typedef void (*property_tree_object_cb)(
@@ -135,9 +135,9 @@ struct _PropertyList
   PropertyNode* node;
   PropertyNode* node_first_group;
 
-  property_set_changed changed_float;
-  property_set_changed changed_string;
-  property_set_changed changed_enum;
+  property_changed2 changed_float;
+  property_changed2 changed_string;
+  property_changed2 changed_enum;
   property_register_change register_change_string;
   property_register_change register_change_float;
   property_register_change register_change_enum;
@@ -176,9 +176,9 @@ void property_list_clear(JkPropertyList* pl);
 void jk_property_list_register_cb(
       JkPropertyList* ps,
       void * data,
-      property_set_changed changed_float,
-      property_set_changed changed_string,
-      property_set_changed changed_enum,
+      property_changed2 changed_float,
+      property_changed2 changed_string,
+      property_changed2 changed_enum,
       property_register_change register_change_string,
       property_register_change register_change_float,
       property_register_change register_change_enum,
@@ -267,5 +267,11 @@ void property_expand(PropertyValue* value);
 void property_show(
       JkPropertyList* p,
       bool b);
+
+
+
+//JkPropertyBox* jk_window_property_box_new(Window* w);
+
+
 
 #endif

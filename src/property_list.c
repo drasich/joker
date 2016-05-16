@@ -1743,9 +1743,9 @@ void property_list_vec_update(
 void jk_property_list_register_cb(
       JkPropertyList* pl,
       void * data,
-      property_set_changed changed_float,
-      property_set_changed changed_string,
-      property_set_changed changed_enum,
+      property_changed2 changed_float,
+      property_changed2 changed_string,
+      property_changed2 changed_enum,
       property_register_change register_change_string,
       property_register_change register_change_float,
       property_register_change register_change_enum,

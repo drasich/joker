@@ -2,7 +2,7 @@
 
 typedef void (*MonitorCallback)(void* data, const char* path, int event);
 
-typedef struct _CbData
+struct _CbData
 {
   MonitorCallback cb;
   void* data;

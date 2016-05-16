@@ -42,6 +42,7 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
         .file("src/panel.c")
         .file("src/property.c")
         .file("src/property_list.c")
+        .file("src/property_box.c")
         .file("src/tree.c")
         .file("src/window.c")
         .define("EVAS_GL", None)
