@@ -4,6 +4,7 @@
 #include "common.h"
 //#include "entry.h"
 #include "entry/jk_entry.eo.h"
+#include "panel.h"
 
 static void
 _spinner_changed_cb(void* data, Evas_Object *obj, void* event)
@@ -65,6 +66,38 @@ property_box_data_set(JkPropertyBox* set, void* data)
 {
   set->data = data;
 }
+
+PropertyNode* _property_node_find(
+      PropertyNode* node,
+      const char* path)
+{
+  char** s = eina_str_split(path, "/", 0);
+
+  int i = 0;
+  while (s[i]) {
+
+    if (s[i+1]) {
+      PropertyNode* next = eina_hash_find(node->nodes, s[i]);
+      if (next) {
+        node = next;
+        i++;
+      }
+      else {
+        //eina_hash_foreach(node->nodes,_nodes_print, NULL);
+        break;
+      }
+    }
+    else {
+      break;
+    }
+  }
+
+   free(s[0]);
+   free(s);
+
+   return node;
+}
+
 
 static PropertyNode* _property_box_node_find(
       JkPropertyBox* ps,
@@ -201,13 +234,6 @@ property_box_float_add(
   evas_object_smart_callback_add(sp, "changed", _spinner_changed_cb, ps );
 }
 
-void
-property_box_clear(JkPropertyBox* ps)
-{
-  elm_box_clear(ps->box);
-
-}
-
 void property_box_string_update(
       JkPropertyBox* set,
       const char* path,
@@ -282,4 +308,46 @@ JkPropertySet* jk_property_set_new(Window* w)
 }
 */
 
+static void _on_panel_geom(
+      void *data,
+      Evas *evas,
+      Evas_Object *o,
+      void *einfo)
+{
+  JkPropertyBox* p = data;
+  if (p->move) {
+    int x, y, w, h;
+    evas_object_geometry_get(o, &x, &y, &w, &h);
+    p->move(p->data, x , y, w, h);
+  }
+}
+
+
+JkPropertyBox* jk_property_box_new(Window* w, int x, int y, int width, int height)
+{
+  Evas_Object* panel = layout_panel_add(w->win, "property");
+  evas_object_move(panel, x, y);
+  evas_object_show(panel);
+
+  JkPropertyBox* p = property_box_new(panel);
+  evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_resize(panel, width, height);
+  //smart_panel_content_set(panel, p->root);
+  elm_object_part_content_set(panel, "content", p->root);
+  p->win = panel;
+
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom, p);
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom, p);
+
+  return p;
+
+}
+
+void
+property_box_clear(JkPropertyBox* pl)
+{
+  elm_box_clear(pl->box);
+  _property_node_clear(pl->node);
+  pl->node_first_group = NULL;
+}
 

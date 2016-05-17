@@ -3,6 +3,7 @@
 #include "Elementary.h"
 #include "stdbool.h"
 #include "common.h"
+#include "window.h"
 
 typedef struct _Property JkProperty;
 
@@ -68,17 +69,28 @@ typedef struct _PropertyBox JkPropertyBox;
 
 struct _PropertyBox
 {
+  Evas_Object* win;
   Evas_Object* root;
   Evas_Object* box;
 
-  const void* data;
-
-  //Eina_Hash* fields;
+  void* data;
 
   PropertyNode* node;
+  PropertyNode* node_first_group;
 
   property_changed2 changed_float;
   property_changed2 changed_string;
+  property_changed2 changed_enum;
+  property_register_change register_change_string;
+  property_register_change register_change_float;
+  property_register_change register_change_enum;
+  property_register_change register_change_option;
+
+  panel_geom_cb move;
+  panel_geom_cb resize;
+
+  property_register_change vec_add;
+  property_register_change vec_del;
 };
 
 PropertyNode* property_box_node_new();
@@ -270,8 +282,10 @@ void property_show(
 
 
 
+Eo* jk_property_panel_new(Window* w, int x, int y, int width, int height);
 //JkPropertyBox* jk_window_property_box_new(Window* w);
 
+void _property_node_clear(void* data);
 
 
 #endif

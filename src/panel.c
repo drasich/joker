@@ -577,4 +577,3 @@ Eo* layout_panel_add(Evas_Object* parent, const char* name)
 }
 
 
-

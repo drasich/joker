@@ -2,7 +2,7 @@
 #define __window__
 #include "stdbool.h"
 #include "tree.h"
-#include "property.h"
+//#include "property.h"
 #include "input.h"
 #include "cypher.h"
 
@@ -50,9 +50,6 @@ void init_callback_set(rust_elm_callback cb, void* data);
 bool init_callback_call();
 void exit_callback_set(rust_elm_callback cb, void* data);
 bool exit_callback_call();
-
-JkProperty* window_property_new(Window* w);
-JkPropertyList* jk_property_list_new(Window* w, int x, int y, int width, int height);
 
 void window_rect_visible_set(Window* w, bool b);
 void window_rect_set(Window* win, float x, float y, float w, float h);

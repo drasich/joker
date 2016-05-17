@@ -1370,7 +1370,7 @@ _property_value_free_cb(void *data)
   free(val);
 }
 
-static void
+void
 _property_node_clear(void* data)
 {
   PropertyNode* node = data;
@@ -2091,4 +2091,61 @@ void property_show(
 {
   object_show(p->win, b);
 }
+
+static void _on_panel_geom(
+      void *data,
+      Evas *evas,
+      Evas_Object *o,
+      void *einfo)
+{
+  JkPropertyList* p = data;
+  if (p->move) {
+    int x, y, w, h;
+    evas_object_geometry_get(o, &x, &y, &w, &h);
+    p->move(p->data, x , y, w, h);
+  }
+}
+
+JkPropertyList* jk_property_list_new(Window* w, int x, int y, int width, int height)
+{
+  /*
+  JkPropertyList* pl = property_list_new(w->win);
+  edje_object_part_swallow(w->edje, "part_property_test", pl->root);
+  return pl;
+  */
+
+    /*
+  Evas_Object* win = elm_win_add(w->win, "property", ELM_WIN_BASIC);
+  elm_win_title_set(win, "property");
+
+  Evas_Object* bg = elm_bg_add(win);
+  evas_object_show(bg);
+  evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, bg);
+
+  JkPropertyList* p = property_list_new(win);
+  evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, p->root);
+  evas_object_resize(win, 256, 256);
+  evas_object_show(win);
+
+  */
+
+  //Evas* e = evas_object_evas_get(w->win);
+  //Evas_Object* panel = smart_panel_add(e);
+  Evas_Object* panel = jk_property_panel_new(w,x,y,width,height);
+
+  JkPropertyList* p = property_list_new(panel);
+  evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  //smart_panel_content_set(panel, p->root);
+  elm_object_part_content_set(panel, "content", p->root);
+  p->win = panel;
+
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom, p);
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom, p);
+
+  return p;
+
+}
+
 

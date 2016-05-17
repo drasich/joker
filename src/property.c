@@ -1,5 +1,6 @@
 #include "property.h"
 #include "Elementary.h"
+#include "panel.h"
 
 static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
@@ -98,35 +99,15 @@ static Eina_Bool _nodes_print(
   printf("key : '%s'\n", key);
 }
 
-PropertyNode* _property_node_find(
-      PropertyNode* node,
-      const char* path)
+Eo* jk_property_panel_new(Window* w, int x, int y, int width, int height)
 {
-  char** s = eina_str_split(path, "/", 0);
+  Evas_Object* panel = layout_panel_add(w->win, "property");
+  evas_object_move(panel, x, y);
+  evas_object_show(panel);
 
-  int i = 0;
-  while (s[i]) {
+  evas_object_resize(panel, width, height);
 
-    if (s[i+1]) {
-      PropertyNode* next = eina_hash_find(node->nodes, s[i]);
-      if (next) {
-        node = next;
-        i++;
-      }
-      else {
-        //eina_hash_foreach(node->nodes,_nodes_print, NULL);
-        break;
-      }
-    }
-    else {
-      break;
-    }
-  }
-
-   free(s[0]);
-   free(s);
-
-   return node;
+  return panel;
 }
 
 

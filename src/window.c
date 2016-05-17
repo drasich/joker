@@ -336,72 +336,6 @@ bool exit_callback_call()
   return false;
 }
 
-_on_panel_geom(
-      void *data,
-      Evas *evas,
-      Evas_Object *o,
-      void *einfo)
-{
-  JkPropertyList* p = data;
-  if (p->move) {
-    int x, y, w, h;
-    evas_object_geometry_get(o, &x, &y, &w, &h);
-    p->move(p->data, x , y, w, h);
-  }
-}
-
-JkProperty* window_property_new(Window* w)
-{
-  JkProperty* p = property_entry_new(w->win);
-  edje_object_part_swallow(w->edje, "part_property_test", p->root);
-  return p;
-}
-
-JkPropertyList* jk_property_list_new(Window* w, int x, int y, int width, int height)
-{
-  /*
-  JkPropertyList* pl = property_list_new(w->win);
-  edje_object_part_swallow(w->edje, "part_property_test", pl->root);
-  return pl;
-  */
-
-    /*
-  Evas_Object* win = elm_win_add(w->win, "property", ELM_WIN_BASIC);
-  elm_win_title_set(win, "property");
-
-  Evas_Object* bg = elm_bg_add(win);
-  evas_object_show(bg);
-  evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, bg);
-
-  JkPropertyList* p = property_list_new(win);
-  evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, p->root);
-  evas_object_resize(win, 256, 256);
-  evas_object_show(win);
-
-  */
-
-  //Evas* e = evas_object_evas_get(w->win);
-  //Evas_Object* panel = smart_panel_add(e);
-  Evas_Object* panel = layout_panel_add(w->win, "property");
-  evas_object_move(panel, x, y);
-  evas_object_show(panel);
-
-  JkPropertyList* p = property_list_new(panel);
-  evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  evas_object_resize(panel, width, height);
-  //smart_panel_content_set(panel, p->root);
-  elm_object_part_content_set(panel, "content", p->root);
-  p->win = panel;
-
-  evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom, p);
-  evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom, p);
-
-  return p;
-
-}
-
 void window_button_new(Window* w)
 {
   printf("create button\n");
@@ -476,7 +410,7 @@ void tmp_func(
 }
 
 //TODO move to tree
-_on_panel_geom_tree(
+void _on_panel_geom_tree(
       void *data,
       Evas *evas,
       Evas_Object *o,
