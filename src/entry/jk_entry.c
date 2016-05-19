@@ -80,13 +80,25 @@ _jk_entry_eo_base_constructor(Eo *obj, Jk_Entry_Data *pd EINA_UNUSED)
 
 void _value_set(Jk_Entry_Data* pd, double val)
 {
+  int size = 24;
   if (!pd->value_str) {
-    pd->value_str = calloc(1, 1024);
+    printf("value is null so create %f \n \n", val);
+    pd->value_str = calloc(1, size);
   }
 
-  snprintf(pd->value_str, sizeof(pd->value_str), "%.3f", val);
+  //printf("value OK %f,,,,, %d \n \n", val, sizeof(*pd->value_str));
+  char test[size];
 
-  elm_object_text_set(pd->entry, pd->value_str);
+  //snprintf(pd->value_str, size, "%.3f", val);
+  //snprintf(pd->value_str, size, "%f", val);
+  snprintf(test, size, "%f", 15.0f );//val);
+
+  printf("value STRRRR %f,,,,, ...%s...., pointer : %p \n \n", val, test, pd->entry);
+
+  //elm_object_text_set(pd->entry, pd->value_str);
+  //elm_object_text_set(pd->entry, "dfd");
+  elm_object_text_set(pd->entry, test);
+  return;
   pd->value = val;
 }
 
@@ -445,6 +457,8 @@ _jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
   elm_entry_single_line_set(en, EINA_TRUE);
   elm_entry_editable_set(en, EINA_FALSE);
   pd->entry = en;
+
+  printf("dance ::::::::::::::: %p \n\n", pd->entry);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   //evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);

@@ -1302,7 +1302,7 @@ Eo* float_new(PropertyValue* val, Eo* obj)
   double d = (double) *f;
   //TODO
   //eo_do(en, jk_entry_value_set(*f));
-  eo_do(en, jk_entry_value_set(d));
+  eo_do(en, jk_entry_value_set(15.4f));
 
   evas_object_show(bx);
   return bx;
