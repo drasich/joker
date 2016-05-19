@@ -1117,6 +1117,7 @@ _spinner_changed_cb_list(
   }
 }
 
+
 Evas_Object*
 gl_content_float_get(
       void *data,
@@ -1227,6 +1228,85 @@ _jk_entry_changed_end_cb_list(
   if (pl->register_change_float) {
     pl->register_change_float(pl->data, val->path, &vs, &v, 1);
   }
+}
+
+Eo* float_new(PropertyValue* val, Eo* obj)
+{
+  Evas_Object *bx;
+
+  bx = elm_box_add(obj);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
+
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bx, 0, fh);
+
+  const char* name;
+
+  Evas_Object* label = elm_label_add(obj);
+   {
+    unsigned int num;
+    char** ss = eina_str_split_full(val->path, "/", 0, &num);
+    name = ss[num-1];
+
+    char s[256];
+    //sprintf(s, "<b> %s </b> : ", name);
+    sprintf(s, "%s : ", name);
+
+    elm_object_text_set(label, s);
+    evas_object_show(label);
+    elm_box_pack_end(bx, label);
+
+    free(ss[0]);
+    free(ss);
+   }
+
+  /*
+  Eo* l = elm_layout_add(obj);
+  elm_layout_file_set(l, "edc/entry.edj", "main");
+  evas_object_size_hint_weight_set(l, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(l, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  evas_object_show(l);
+   elm_box_pack_end(bx, l);
+   return bx;
+   */
+
+   //Evas_Object* en = smart_entry_add(evas_object_evas_get(obj));
+   //Evas_Object* en = smart_entry_add(obj);
+   //chris
+   Evas_Object *en = eo_add(JK_ENTRY_CLASS, obj);
+
+  //evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  //evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  evas_object_show(en);
+   elm_box_pack_end(bx, en);
+
+  /*
+     Eo* rect = evas_object_rectangle_add(evas_object_evas_get(obj));
+  evas_object_show(rect);
+  evas_object_color_set(rect, rand() % 255, rand() % 255, rand() % 255, 255/2);
+  evas_object_size_hint_weight_set(rect, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(rect, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+   elm_box_pack_end(bx, rect);
+   */
+  evas_object_smart_callback_add(en, "changed,end", _jk_entry_changed_end_cb_list, val);
+  evas_object_smart_callback_add(en, "changed", _jk_entry_changed_cb_list, val);
+
+  const float* f = val->data;
+  double d = (double) *f;
+  //TODO
+  //eo_do(en, jk_entry_value_set(*f));
+  eo_do(en, jk_entry_value_set(d));
+
+  evas_object_show(bx);
+  return bx;
+
 }
 
 
@@ -1552,6 +1632,9 @@ property_list_float_add(
   val->data = calloc(1, sizeof value);
   memcpy(val->data, &value, sizeof value);
 
+  val->create_child = float_new;
+
+  /*
   unsigned int num;
   //char** s = eina_str_split_full(path, "/", 0, &num);
 
@@ -1563,6 +1646,7 @@ property_list_float_add(
                            NULL);
 
   eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+  */
 
   return val;
 }
@@ -1587,8 +1671,8 @@ property_list_string_add(
     return NULL;
   }
 
-  unsigned int num;
-  char** s = eina_str_split_full(path, "/", 0, &num);
+  //unsigned int num;
+  //char** s = eina_str_split_full(path, "/", 0, &num);
 
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);//s[num-1];
@@ -1608,8 +1692,8 @@ property_list_string_add(
   eina_hash_add(node->leafs, eina_stringshare_add(path), val);
   */
 
-  free(s[0]);
-  free(s);
+  //free(s[0]);
+  //free(s);
 
   return val;
 }
