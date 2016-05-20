@@ -1299,14 +1299,10 @@ Eo* float_new(PropertyValue* val, Eo* obj)
   evas_object_smart_callback_add(en, "changed", _jk_entry_changed_cb_list, val);
 
   const float* f = val->data;
-  double d = (double) *f;
-  //TODO
-  //eo_do(en, jk_entry_value_set(*f));
-  eo_do(en, jk_entry_value_set(15.4f));
+  eo_do(en, jk_entry_value_set(*f));
 
   evas_object_show(bx);
   return bx;
-
 }
 
 
