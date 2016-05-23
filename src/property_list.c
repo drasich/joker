@@ -5,11 +5,10 @@
 //#include "entry.h"
 #include "entry/jk_entry.eo.h"
 
-static Elm_Genlist_Item_Class *class_entry,
+static Elm_Genlist_Item_Class 
                               *class_group,
                               *class_node,
                               *class_enum,
-                              *class_float,
                               *class_option,
                               *class_item,
                               *class_vec,
@@ -1630,20 +1629,6 @@ property_list_float_add(
 
   val->create_child = float_new;
 
-  /*
-  unsigned int num;
-  //char** s = eina_str_split_full(path, "/", 0, &num);
-
-  val->item = elm_genlist_item_append(pl->list, class_float,
-                           val,//strdup(s[num-1]),
-                           node->item,
-                           ELM_GENLIST_ITEM_NONE,
-                           NULL, //gl4_sel,
-                           NULL);
-
-  eina_hash_add(node->leafs, eina_stringshare_add(path), val);
-  */
-
   return val;
 }
 
@@ -1667,29 +1652,12 @@ property_list_string_add(
     return NULL;
   }
 
-  //unsigned int num;
-  //char** s = eina_str_split_full(path, "/", 0, &num);
-
   PropertyValue *val = calloc(1, sizeof *val);
-  val->path = strdup(path);//s[num-1];
+  val->path = strdup(path);
   val->list = pl;
   val->data = strdup(value);
 
   val->create_child = entry_new;
-
-  /*
-  val->item = elm_genlist_item_append(pl->list, class_entry,
-                           val,
-                           node->item,
-                           ELM_GENLIST_ITEM_NONE,
-                           NULL,
-                           NULL);
-
-  eina_hash_add(node->leafs, eina_stringshare_add(path), val);
-  */
-
-  //free(s[0]);
-  //free(s);
 
   return val;
 }
@@ -1884,14 +1852,6 @@ property_list_new(Evas_Object* win)
   //elm_config_focus_autoscroll_mode_set(ELM_FOCUS_AUTOSCROLL_MODE_SHOW);
   elm_config_focus_autoscroll_mode_set(ELM_FOCUS_AUTOSCROLL_MODE_BRING_IN);
 
-  //Elm_Genlist_Item_Class *class_entry, *class_group, *class_node;
-  class_entry = elm_genlist_item_class_new();
-  class_entry->item_style = "full";//"default";
-  class_entry->func.text_get = NULL;
-  class_entry->func.content_get = gl_content_string_get;
-  class_entry->func.state_get = gl_state_get;
-  class_entry->func.del = NULL;
-
   class_item = elm_genlist_item_class_new();
   class_item->item_style = "full";//"default";
   class_item->func.text_get = NULL;
@@ -1912,14 +1872,6 @@ property_list_new(Evas_Object* win)
   class_vec_node->func.content_get = gl_content_vec_node_get;// NULL;
   class_vec_node->func.state_get = gl_state_get;
   class_vec_node->func.del = NULL;
-
-  class_float = elm_genlist_item_class_new();
-  class_float->item_style = "full";//"default";
-  class_float->func.text_get = NULL;
-  //class_float->func.content_get = gl_content_float_get;
-  class_float->func.content_get = gl_content_float_get_test;
-  class_float->func.state_get = gl_state_get;
-  class_float->func.del = NULL;
 
   class_group = elm_genlist_item_class_new();
   class_group->item_style = "group_index";
@@ -1949,7 +1901,6 @@ property_list_new(Evas_Object* win)
   class_option->func.state_get = gl_state_get;
   class_option->func.del = NULL;
 
-  //elm_genlist_item_class_free(class_entry);
   //elm_genlist_item_class_free(class_group);
   //elm_genlist_item_class_free(class_node);
 
