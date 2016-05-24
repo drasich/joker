@@ -1675,17 +1675,6 @@ property_list_single_item_add(
     return NULL;
   }
 
-  /*
-  unsigned int num;
-  char** s = eina_str_split_full(path, "/", 0, &num);
-
-  PropertyValue *val = calloc(1, sizeof *val);
-  val->path = strdup(path);//s[num-1];
-  val->list = pl;
-  val->data = strdup(value);
-  val->pv = pv;
-  */
-
   val->item = elm_genlist_item_append(pl->list, class_item,
                            val,
                            node->item,
@@ -1694,9 +1683,6 @@ property_list_single_item_add(
                            NULL);
 
   eina_hash_add(node->leafs, eina_stringshare_add(path), val);
-
-  //free(s[0]);
-  //free(s);
 
   return val;
 
