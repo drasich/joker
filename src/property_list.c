@@ -1923,87 +1923,10 @@ PropertyValue* property_list_enum_add(
   val->user_data = strdup(possible_values);
   val->create_child = _enum_create;
 
-  eina_hash_add(node->leafs, eina_stringshare_add(path), val);
+  //eina_hash_add(node->leafs, eina_stringshare_add(path), val);
 
   return val;
 }
-
-PropertyValue* property_list_single_enum_add(
-      JkPropertyList* pl,
-      PropertyValue* val)
-{
-  const char* path = val->path;
-  PropertyNode* node = _property_list_node_find_parent(pl, path);
-  if (!node) {
-    printf("%s, could not find a root for %s\n", __FUNCTION__, path);
-    return NULL;
-  }
-
-  unsigned int num;
-  char** s = eina_str_split_full(path, "/", 0, &num);
-  PropertyNode* child = property_list_node_new();
-  eina_hash_add(node->nodes, strdup(s[num-1]), child);
-
-  child->item = elm_genlist_item_append(pl->list, class_node,//enum,
-                           val,
-                           node->item,
-                           ELM_GENLIST_ITEM_TREE,
-                           NULL,
-                           NULL);
-
-  val->item = child->item;
-
-  free(s[0]);
-  free(s);
-
-  return val;
-}
-
-/*
-PropertyValue*
-property_list_enum_add(
-      JkPropertyList* pl,
-      const char* path,
-      char* possible_values,
-      const char* value)
-{
-  PropertyNode* node = _property_list_node_find_parent(pl, path);
-  if (!node) {
-    printf("%s, could not find a root\n", __FUNCTION__);
-    return NULL;
-  }
-
-  unsigned int num;
-  char** s = eina_str_split_full(path, "/", 0, &num);
-
-  PropertyNode* child = property_list_node_new();
-  eina_hash_add(node->nodes, strdup(s[num-1]), child);
-
-  PropertyValue *val = calloc(1, sizeof *val);
-  val->path = strdup(path);//s[num-1];
-  val->list = pl;
-  val->data = strdup(value);
-  val->user_data = strdup(possible_values);
-
-  printf("value : %s \n", value);
-
-  val->item = elm_genlist_item_append(pl->list, class_enum,
-                           val,
-                           node->item,
-                           ELM_GENLIST_ITEM_TREE,
-                           NULL,
-                           NULL);
-
-  child ->item = val->item;
-
-  eina_hash_add(node->leafs, eina_stringshare_add(path), val);
-
-  free(s[0]);
-  free(s);
-
-  return val;
-}
-*/
 
 void property_list_enum_update(
       PropertyValue* val,
