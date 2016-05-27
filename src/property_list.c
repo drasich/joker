@@ -1473,19 +1473,11 @@ property_list_clear(JkPropertyList* pl)
 }
 
 PropertyValue* property_list_node_add(
-      JkPropertyList* pl,
       const char* path,
       const char* added_name)
 {
-  PropertyNode* node = _property_list_node_find_parent(pl, path);
-  if (!node) {
-    printf("%s, could not find a root for %s\n", __FUNCTION__, path);
-    return NULL;
-  }
-
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);//s[num-1];
-  val->list = pl;
   val->create_child = _node_create;
   if (added_name) {
     val->added_name = strdup(added_name);
@@ -1510,6 +1502,7 @@ PropertyValue* property_list_single_node_add(
   PropertyNode* child = property_list_node_new();
   eina_hash_add(node->nodes, strdup(s[num-1]), child);
 
+  val->list = pl;
   child->item = elm_genlist_item_append(pl->list, class_node,
                            val,
                            node->item,
@@ -1611,19 +1604,12 @@ void property_list_group_add(
 
 PropertyValue*
 property_list_float_add(
-      JkPropertyList* pl,
       const char* path,
       float value)
 {
-  PropertyNode* node = _property_list_node_find_parent(pl, path);
-  if (!node) {
-    printf("%s, could not find a root for %s\n", __FUNCTION__, path);
-    return NULL;
-  }
-
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);
-  val->list = pl;
+  //val->list = pl;
   val->data = calloc(1, sizeof value);
   memcpy(val->data, &value, sizeof value);
 
@@ -1642,19 +1628,11 @@ void property_list_float_update(
 
 PropertyValue*
 property_list_string_add(
-      JkPropertyList* pl,
       const char* path,
       const char* value)
 {
-  PropertyNode* node = _property_list_node_find_parent(pl, path);
-  if (!node) {
-    printf("%s, could not find a root\n", __FUNCTION__);
-    return NULL;
-  }
-
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);
-  val->list = pl;
   val->data = strdup(value);
 
   val->create_child = entry_new;
@@ -1675,6 +1653,7 @@ property_list_single_item_add(
     return NULL;
   }
 
+  val->list = pl;
   val->item = elm_genlist_item_append(pl->list, class_item,
                            val,
                            node->item,
@@ -1703,12 +1682,14 @@ property_list_single_vec_add(
     return NULL;
   }
 
+  val->list = pl;
   val->item = elm_genlist_item_append(pl->list, class_vec,
         val,
         node->item,
         is_node? ELM_GENLIST_ITEM_TREE : ELM_GENLIST_ITEM_NONE,
         NULL,
         NULL);
+
 
   if (is_node) {
     unsigned int num;
@@ -1903,22 +1884,14 @@ property_list_new(Evas_Object* win)
 }
 
 PropertyValue* property_list_enum_add(
-      JkPropertyList* pl,
       //const char* path,
       //const char* added_name)
       const char* path,
       char* possible_values,
       const char* value)
 {
-  PropertyNode* node = _property_list_node_find_parent(pl, path);
-  if (!node) {
-    printf("%s, could not find a root for %s\n", __FUNCTION__, path);
-    return NULL;
-  }
-
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);//s[num-1];
-  val->list = pl;
   val->data = strdup(value);
   val->user_data = strdup(possible_values);
   val->create_child = _enum_create;

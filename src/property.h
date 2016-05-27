@@ -206,7 +206,6 @@ void jk_property_list_register_vec_cb(
       property_register_change del_cb);
 
 PropertyValue* property_list_node_add(
-      JkPropertyList* pl,
       const char* path,
       const char* added_name);
 
@@ -215,12 +214,10 @@ void property_list_nodes_remove(
       const char* path);
 
 PropertyValue* property_list_float_add(
-      JkPropertyList* ps,
       const char* path,
       float value);
 
 PropertyValue* property_list_string_add(
-      JkPropertyList* ps,
       const char* path,
       const char* value);
 
@@ -241,7 +238,6 @@ void property_list_group_add(
 
 PropertyValue*
 property_list_enum_add(
-      JkPropertyList* pl,
       const char* path,
       char* possible_values,
       const char* value);
