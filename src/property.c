@@ -110,4 +110,27 @@ Eo* jk_property_panel_new(Window* w, int x, int y, int width, int height)
   return panel;
 }
 
+void jk_property_cb_register(
+      JkPropertyCb* cb,
+      property_changed2 changed_float,
+      property_changed2 changed_string,
+      property_changed2 changed_enum,
+      property_register_change register_change_string,
+      property_register_change register_change_float,
+      property_register_change register_change_enum,
+      property_register_change register_change_option,
+      property_tree_object_cb expand,
+      property_tree_object_cb contract
+      )
+{
+  cb->changed_float = changed_float;
+  cb->changed_string = changed_string;
+  cb->changed_enum = changed_enum;
+  cb->register_change_string = register_change_string;
+  cb->register_change_float = register_change_float;
+  cb->register_change_enum = register_change_enum;
+  cb->register_change_option = register_change_option;
+  cb->expand = expand;
+  cb->contract = contract;
+}
 

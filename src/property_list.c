@@ -135,9 +135,9 @@ _entry_changed_cb_list(
   //const char* name = evas_object_name_get(obj);
   const char* value = elm_object_text_get(obj);
 
-  if (pl->register_change_string) {
+  if (pl->cbs->register_change_string) {
     //pl->changed_string(pl->data, val->path, value);
-    pl->register_change_string(pl->data, val->path, NULL, value, 0);
+    pl->cbs->register_change_string(pl->data, val->path, NULL, value, 0);
   }
 }
 
@@ -220,8 +220,8 @@ _entry_register_change_cb(
 
   evas_object_data_set(obj, "saved_text", eina_stringshare_add(value));
 
-  if (pl->register_change_string) {
-    pl->register_change_string(pl->data, val->path, old, value, 1);
+  if (pl->cbs->register_change_string) {
+    pl->cbs->register_change_string(pl->data, val->path, old, value, 1);
   }
 }
 
@@ -261,8 +261,8 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
 
   double d = elm_spinner_value_get(obj);
 
-  if (pl->register_change_float) {
-    pl->register_change_float(pl->data, val->path, saved, &d, 1);
+  if (pl->cbs->register_change_float) {
+    pl->cbs->register_change_float(pl->data, val->path, saved, &d, 1);
   }
 
   free(saved);
@@ -539,7 +539,7 @@ gl_content_vec_get(
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
   struct _BtCb *btcb = calloc(1, sizeof *btcb);
-  btcb->cb = val->list->vec_add;
+  btcb->cb = val->list->cbs->vec_add;
   btcb->data = val;
   btn_cb_set(bt, _bt_cb, btcb);
 
@@ -548,7 +548,7 @@ gl_content_vec_get(
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
   btcb = calloc(1, sizeof *btcb);
-  btcb->cb = val->list->vec_del;
+  btcb->cb = val->list->cbs->vec_del;
   btcb->data = val;
   btn_cb_set(bt, _bt_cb, btcb);
 
@@ -603,7 +603,7 @@ gl_content_vec_node_get(
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
   struct _BtCb *btcb = calloc(1, sizeof *btcb);
-  btcb->cb = val->list->vec_add;
+  btcb->cb = val->list->cbs->vec_add;
   btcb->data = val;
   btn_cb_set(bt, _bt_cb, btcb);
 
@@ -632,9 +632,9 @@ _hoversel_selected_cb(
   val->data = (char*) strdup(txt);
 
   //TODO
-  if (pl->register_change_enum) {
+  if (pl->cbs->register_change_enum) {
     //pl->changed_string(pl->data, val->path, value);
-    pl->register_change_enum(pl->data, val->path, old, txt, 1);
+    pl->cbs->register_change_enum(pl->data, val->path, old, txt, 1);
   }
 
   if ( elm_genlist_item_type_get(val->item) == ELM_GENLIST_ITEM_TREE &&
@@ -682,8 +682,8 @@ _update_option_item(
 
   if (t == ELM_GENLIST_ITEM_NONE) {
     char* name = (char*) val->path;
-    if (pl->contract) {
-      pl->contract(pl->data, name, old_item);
+    if (pl->cbs->contract) {
+      pl->cbs->contract(pl->data, name, old_item);
     }
   }
 
@@ -734,8 +734,8 @@ _on_button_option_clicked(
     t = ELM_GENLIST_ITEM_NONE;
   }
 
-  if (pl->register_change_option) {
-    pl->register_change_option(pl->data, val->path, old, new, 1);
+  if (pl->cbs->register_change_option) {
+    pl->cbs->register_change_option(pl->data, val->path, old, new, 1);
     _update_option_item(val,t);
   }
 }
@@ -1111,8 +1111,8 @@ _spinner_changed_cb_list(
   float f = v;
   memcpy(val->data, &f, sizeof f);
 
-  if (pl->changed_float) {
-    pl->changed_float(pl->data, val->path, &v);
+  if (pl->cbs->changed_float) {
+    pl->cbs->changed_float(pl->data, val->path, &v);
   }
 }
 
@@ -1202,8 +1202,8 @@ _jk_entry_changed_cb_list(
   float f = v;
   memcpy(val->data, &f, sizeof f);
 
-  if (pl->changed_float) {
-    pl->changed_float(pl->data, val->path, &v);
+  if (pl->cbs->changed_float) {
+    pl->cbs->changed_float(pl->data, val->path, &v);
   }
 }
 
@@ -1224,8 +1224,8 @@ _jk_entry_changed_end_cb_list(
   double vs;
   eo_do(obj, vs = jk_entry_value_saved_get());
 
-  if (pl->register_change_float) {
-    pl->register_change_float(pl->data, val->path, &vs, &v, 1);
+  if (pl->cbs->register_change_float) {
+    pl->cbs->register_change_float(pl->data, val->path, &vs, &v, 1);
   }
 }
 
@@ -1411,8 +1411,8 @@ gl9_exp(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
   PropertyValue* val = elm_object_item_data_get(glit);
   JkPropertyList* pl = data;
 
-  if (pl->expand) {
-    pl->expand(pl->data, (void*) val->path, glit);
+  if (pl->cbs->expand) {
+    pl->cbs->expand(pl->data, (void*) val->path, glit);
   }
 
   elm_genlist_item_update(val->item);
@@ -1429,8 +1429,8 @@ gl9_con(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
    JkPropertyList* pl = data;
    //TODO clear the nodes
 
-   if (pl->contract) {
-     pl->contract(pl->data, name, glit);
+   if (pl->cbs->contract) {
+     pl->cbs->contract(pl->data, name, glit);
    }
 
    elm_genlist_item_update(val->item);
@@ -1772,15 +1772,18 @@ void jk_property_list_register_cb(
       )
 {
   pl->data = data;
-  pl->changed_float = changed_float;
-  pl->changed_string = changed_string;
-  pl->changed_enum = changed_enum;
-  pl->register_change_string = register_change_string;
-  pl->register_change_float = register_change_float;
-  pl->register_change_enum = register_change_enum;
-  pl->register_change_option = register_change_option;
-  pl->expand = expand;
-  pl->contract = contract;
+  jk_property_cb_register(
+        pl->cbs,
+        changed_float,
+        changed_string,
+        changed_enum,
+        register_change_string,
+        register_change_float,
+        register_change_enum,
+        register_change_option,
+        expand,
+        contract);
+
   pl->move = move;
 }
 
@@ -1789,14 +1792,15 @@ void jk_property_list_register_vec_cb(
       property_register_change add_cb,
       property_register_change del_cb)
 {
-  ps->vec_add = add_cb;
-  ps->vec_del = del_cb;
+  ps->cbs->vec_add = add_cb;
+  ps->cbs->vec_del = del_cb;
 }
 
 JkPropertyList*
 property_list_new(Evas_Object* win)
 {
   JkPropertyList* p = calloc(1, sizeof *p);
+  p->cbs = calloc(1, sizeof *p->cbs);
   p->win = win;
 
   Evas_Object *bx = elm_box_add(win);

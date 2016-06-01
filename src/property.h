@@ -5,6 +5,7 @@
 #include "common.h"
 #include "window.h"
 
+
 typedef struct _Property JkProperty;
 
 //typedef void (*property_object_set)(void* object, void* data);
@@ -134,6 +135,39 @@ typedef void (*property_tree_object_cb)(
       void* object,
       Elm_Object_Item* parent);
 
+typedef struct _PropertyCb JkPropertyCb;
+struct _PropertyCb
+{
+  property_changed2 changed_float;
+  property_changed2 changed_string;
+  property_changed2 changed_enum;
+  property_register_change register_change_string;
+  property_register_change register_change_float;
+  property_register_change register_change_enum;
+  property_register_change register_change_option;
+
+  property_tree_object_cb expand;
+  property_tree_object_cb contract;
+
+  property_register_change vec_add;
+  property_register_change vec_del;
+};
+
+void jk_property_cb_register(
+      JkPropertyCb* cbs,
+      property_changed2 changed_float,
+      property_changed2 changed_string,
+      property_changed2 changed_enum,
+      property_register_change register_change_string,
+      property_register_change register_change_float,
+      property_register_change register_change_enum,
+      property_register_change register_change_option,
+      property_tree_object_cb expand,
+      property_tree_object_cb contract
+      );
+
+
+
 typedef struct _PropertyList JkPropertyList;
 
 struct _PropertyList
@@ -147,23 +181,11 @@ struct _PropertyList
   PropertyNode* node;
   PropertyNode* node_first_group;
 
-  property_changed2 changed_float;
-  property_changed2 changed_string;
-  property_changed2 changed_enum;
-  property_register_change register_change_string;
-  property_register_change register_change_float;
-  property_register_change register_change_enum;
-  property_register_change register_change_option;
-  property_tree_object_cb expand;
-  property_tree_object_cb contract;
+  JkPropertyCb* cbs;
 
   panel_geom_cb move;
   panel_geom_cb resize;
-
-  property_register_change vec_add;
-  property_register_change vec_del;
 };
-
 
 typedef struct _PropertyValue PropertyValue;
 typedef Eo* (*item_create)(PropertyValue* val, Eo* obj);
@@ -282,6 +304,5 @@ Eo* jk_property_panel_new(Window* w, int x, int y, int width, int height);
 //JkPropertyBox* jk_window_property_box_new(Window* w);
 
 void _property_node_clear(void* data);
-
 
 #endif
