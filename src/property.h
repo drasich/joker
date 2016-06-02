@@ -210,15 +210,6 @@ void property_list_clear(JkPropertyList* pl);
 void jk_property_list_register_cb(
       JkPropertyList* ps,
       void * data,
-      property_changed2 changed_float,
-      property_changed2 changed_string,
-      property_changed2 changed_enum,
-      property_register_change register_change_string,
-      property_register_change register_change_float,
-      property_register_change register_change_enum,
-      property_register_change register_change_option,
-      property_tree_object_cb expand,
-      property_tree_object_cb contract,
       panel_geom_cb move
       );
 
@@ -304,5 +295,8 @@ Eo* jk_property_panel_new(Window* w, int x, int y, int width, int height);
 //JkPropertyBox* jk_window_property_box_new(Window* w);
 
 void _property_node_clear(void* data);
+
+JkPropertyCb* property_list_cb_get();
+JkPropertyCb* property_box_cb_get();
 
 #endif

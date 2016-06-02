@@ -1758,32 +1758,10 @@ void property_list_vec_update(
 void jk_property_list_register_cb(
       JkPropertyList* pl,
       void * data,
-      property_changed2 changed_float,
-      property_changed2 changed_string,
-      property_changed2 changed_enum,
-      property_register_change register_change_string,
-      property_register_change register_change_float,
-      property_register_change register_change_enum,
-      property_register_change register_change_option,
-      property_tree_object_cb expand,
-      property_tree_object_cb contract,
       panel_geom_cb move
-
       )
 {
   pl->data = data;
-  jk_property_cb_register(
-        pl->cbs,
-        changed_float,
-        changed_string,
-        changed_enum,
-        register_change_string,
-        register_change_float,
-        register_change_enum,
-        register_change_option,
-        expand,
-        contract);
-
   pl->move = move;
 }
 
@@ -2065,4 +2043,8 @@ JkPropertyList* jk_property_list_new(Window* w, int x, int y, int width, int hei
 
 }
 
+JkPropertyCb* property_list_cb_get(JkPropertyList* p)
+{
+  return p->cbs;
+}
 
