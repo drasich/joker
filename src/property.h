@@ -66,69 +66,6 @@ struct _PropertyNode
 ////////////////////////
 
 
-typedef struct _PropertyBox JkPropertyBox;
-
-struct _PropertyBox
-{
-  Evas_Object* win;
-  Evas_Object* root;
-  Evas_Object* box;
-
-  void* data;
-
-  PropertyNode* node;
-  PropertyNode* node_first_group;
-
-  property_changed2 changed_float;
-  property_changed2 changed_string;
-  property_changed2 changed_enum;
-  property_register_change register_change_string;
-  property_register_change register_change_float;
-  property_register_change register_change_enum;
-  property_register_change register_change_option;
-
-  panel_geom_cb move;
-  panel_geom_cb resize;
-
-  property_register_change vec_add;
-  property_register_change vec_del;
-};
-
-PropertyNode* property_box_node_new();
-
-JkPropertyBox* property_box_new(Evas_Object* win);
-void jk_property_box_register_cb(
-      JkPropertyBox* ps,
-      void * data,
-      property_changed2 changed_float,
-      property_changed2 changed_string
-      );
-void property_box_data_set(JkPropertyBox* set, void* data);
-
-void property_box_clear(JkPropertyBox* set);
-
-void property_box_string_add(
-      JkPropertyBox* ps,
-      const char* name,
-      const char* value
-      );
-
-void property_box_float_add(
-      JkPropertyBox* ps,
-      const char* name,
-      float value);
-
-void property_box_node_add(
-      JkPropertyBox* ps,
-      const char* path);
-
-//TODO TO BE TESTED
-void property_box_string_update(
-      JkPropertyBox* set,
-      const char* path,
-      const char* value);
-void property_box_float_update(JkPropertyBox* set, const char* path, float value);
-
 /////////////////
 typedef void (*property_tree_object_cb)(
       void* data,
@@ -163,7 +100,9 @@ void jk_property_cb_register(
       property_register_change register_change_enum,
       property_register_change register_change_option,
       property_tree_object_cb expand,
-      property_tree_object_cb contract
+      property_tree_object_cb contract,
+      property_register_change vec_add,
+      property_register_change vec_del
       );
 
 
@@ -212,11 +151,6 @@ void jk_property_list_register_cb(
       void * data,
       panel_geom_cb move
       );
-
-void jk_property_list_register_vec_cb(
-      JkPropertyList* ps,
-      property_register_change add_cb,
-      property_register_change del_cb);
 
 PropertyValue* property_list_node_add(
       const char* path,
@@ -298,5 +232,54 @@ void _property_node_clear(void* data);
 
 JkPropertyCb* property_list_cb_get();
 JkPropertyCb* property_box_cb_get();
+
+typedef struct _PropertyBox JkPropertyBox;
+
+struct _PropertyBox
+{
+  Evas_Object* win;
+  Evas_Object* root;
+  Evas_Object* box;
+
+  void* data;
+
+  PropertyNode* node;
+  PropertyNode* node_first_group;
+
+  JkPropertyCb* cbs;
+
+  panel_geom_cb move;
+  panel_geom_cb resize;
+};
+
+PropertyNode* property_box_node_new();
+
+JkPropertyBox* property_box_new(Evas_Object* win);
+void property_box_data_set(JkPropertyBox* set, void* data);
+
+void property_box_clear(JkPropertyBox* set);
+
+void property_box_string_add(
+      JkPropertyBox* ps,
+      const char* name,
+      const char* value
+      );
+
+void property_box_float_add(
+      JkPropertyBox* ps,
+      const char* name,
+      float value);
+
+void property_box_node_add(
+      JkPropertyBox* ps,
+      const char* path);
+
+//TODO TO BE TESTED
+void property_box_string_update(
+      JkPropertyBox* set,
+      const char* path,
+      const char* value);
+void property_box_float_update(JkPropertyBox* set, const char* path, float value);
+
 
 #endif

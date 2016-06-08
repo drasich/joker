@@ -1765,15 +1765,6 @@ void jk_property_list_register_cb(
   pl->move = move;
 }
 
-void jk_property_list_register_vec_cb(
-      JkPropertyList* ps,
-      property_register_change add_cb,
-      property_register_change del_cb)
-{
-  ps->cbs->vec_add = add_cb;
-  ps->cbs->vec_del = del_cb;
-}
-
 JkPropertyList*
 property_list_new(Evas_Object* win)
 {

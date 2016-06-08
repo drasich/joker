@@ -120,7 +120,9 @@ void jk_property_cb_register(
       property_register_change register_change_enum,
       property_register_change register_change_option,
       property_tree_object_cb expand,
-      property_tree_object_cb contract
+      property_tree_object_cb contract,
+      property_register_change vec_add,
+      property_register_change vec_del
       )
 {
   cb->changed_float = changed_float;
@@ -132,5 +134,8 @@ void jk_property_cb_register(
   cb->register_change_option = register_change_option;
   cb->expand = expand;
   cb->contract = contract;
+
+  cb->vec_add = vec_add;
+  cb->vec_del = vec_del;
 }
 

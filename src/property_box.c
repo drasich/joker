@@ -12,8 +12,8 @@ _spinner_changed_cb(void* data, Evas_Object *obj, void* event)
   JkPropertyBox* ps = data;
   const char* name = evas_object_name_get(obj);
   double v =  elm_spinner_value_get(obj);
-  if (ps->changed_float) {
-    ps->changed_float(ps->data, name, &v);
+  if (ps->cbs->changed_float) {
+    ps->cbs->changed_float(ps->data, name, &v);
   }
 }
 
@@ -25,8 +25,8 @@ _entry_changed_cb_ps(void *data, Evas_Object *obj, void *event)
   JkPropertyBox* ps = data;
 
   const char* name = evas_object_name_get(obj);
-  if (ps->changed_string) {
-    ps->changed_string(ps->data, name, s);
+  if (ps->cbs->changed_string) {
+    ps->cbs->changed_string(ps->data, name, s);
   }
 }
 
@@ -35,6 +35,7 @@ JkPropertyBox*
 property_box_new(Evas_Object* win)
 {
   JkPropertyBox* p = calloc(1, sizeof *p);
+  p->cbs = calloc(1, sizeof *p->cbs);
   Evas_Object *bx;
 
   bx = elm_box_add(win);
@@ -262,18 +263,6 @@ void property_box_float_update(JkPropertyBox* set, const char* path, float value
 
 }
 
-void jk_property_box_register_cb(
-      JkPropertyBox* ps,
-      void * data,
-      property_changed2 changed_float,
-      property_changed2 changed_string
-      )
-{
-  ps->data = data;
-  ps->changed_float = changed_float;
-  ps->changed_string = changed_string;
-}
-
 void property_box_node_add(
       JkPropertyBox* ps, 
       const char* path)
@@ -349,5 +338,20 @@ property_box_clear(JkPropertyBox* pl)
   elm_box_clear(pl->box);
   _property_node_clear(pl->node);
   pl->node_first_group = NULL;
+}
+
+void jk_property_box_register_cb(
+      JkPropertyBox* p,
+      void * data,
+      panel_geom_cb move
+      )
+{
+  p->data = data;
+  p->move = move;
+}
+
+JkPropertyCb* property_box_cb_get(JkPropertyBox* p)
+{
+  return p->cbs;
 }
 
