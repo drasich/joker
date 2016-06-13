@@ -355,3 +355,42 @@ JkPropertyCb* property_box_cb_get(JkPropertyBox* p)
   return p->cbs;
 }
 
+PropertyValue*
+property_box_single_item_add(
+      JkPropertyBox* pb,
+      PropertyValue* val)
+{
+  const char* path = val->path;
+
+  /*
+  PropertyNode* node = _property_list_node_find_parent(pl, path);
+  if (!node) {
+    printf("%s, could not find a root\n", __FUNCTION__);
+    return NULL;
+  }
+  */
+
+  PropertyNode* node = pb->node;
+
+  //val->list = pb;
+
+
+  Eo* bx = elm_box_add(pb->box);
+  evas_object_show(bx);
+  elm_box_horizontal_set(pb->box, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  //Evas_Coord fw = -1, fh = -1;
+  //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  //evas_object_size_hint_min_set(bx, 0, fh);
+
+  elm_box_pack_end(bx, val->create_child(val, bx));
+
+  elm_box_pack_end(pb->box, bx);
+
+  return val;
+
+}
+
