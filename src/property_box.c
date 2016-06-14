@@ -40,8 +40,13 @@ property_box_new(Evas_Object* win)
 
   bx = elm_box_add(win);
   elm_box_horizontal_set(bx, EINA_FALSE);
-  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+  //evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+  //evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  //evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, 0.0);
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx, 0, 0);
 
   evas_object_show(bx);
   p->root = bx;
@@ -319,7 +324,7 @@ JkPropertyBox* jk_property_box_new(Window* w, int x, int y, int width, int heigh
   evas_object_show(panel);
 
   JkPropertyBox* p = property_box_new(panel);
-  evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  //evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_resize(panel, width, height);
   //smart_panel_content_set(panel, p->root);
   elm_object_part_content_set(panel, "content", p->root);
@@ -392,5 +397,53 @@ property_box_single_item_add(
 
   return val;
 
+}
+
+PropertyValue* property_box_single_node_add(
+      JkPropertyBox* pb,
+      PropertyValue* val)
+{
+  const char* path = val->path;
+  /*
+  PropertyNode* node = _property_list_node_find_parent(pl, path);
+  if (!node) {
+    printf("%s, could not find a root for %s\n", __FUNCTION__, path);
+    return NULL;
+  }
+  */
+
+  PropertyNode *node = pb->node;
+
+  unsigned int num;
+  char** s = eina_str_split_full(path, "/", 0, &num);
+  PropertyNode* child = property_list_node_new();
+  eina_hash_add(node->nodes, strdup(s[num-1]), child);
+
+  //val->list = pl;
+  free(s[0]);
+  free(s);
+
+
+  Eo* bx = elm_box_add(pb->box);
+  evas_object_show(bx);
+  elm_box_horizontal_set(pb->box, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  elm_box_align_set(bx, 0, 0.5f);
+
+  if (val->create_child) {
+    elm_box_pack_end(bx, val->create_child(val, bx));
+  }
+  else {
+    Evas_Object* label = _node_create(val, bx);
+    evas_object_show(label);
+    elm_box_pack_end(bx, label);
+  }
+
+  elm_box_pack_end(pb->box, bx);
+
+  return val;
 }
 

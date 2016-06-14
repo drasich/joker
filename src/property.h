@@ -280,6 +280,7 @@ void property_box_string_update(
       const char* path,
       const char* value);
 void property_box_float_update(JkPropertyBox* set, const char* path, float value);
+Eo* _node_create(PropertyValue* val, Evas_Object* o);
 
 
 #endif

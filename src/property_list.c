@@ -786,7 +786,7 @@ gl_content_node_get(
    return bx;
 }
 
-static Eo* _node_create(PropertyValue* val, Evas_Object* o)
+Eo* _node_create(PropertyValue* val, Evas_Object* o)
 {
   Evas_Object* label = elm_label_add(o);
 
