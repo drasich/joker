@@ -131,13 +131,13 @@ _entry_changed_cb_list(
       void* event)
 {
   PropertyValue* val = data;
-  JkPropertyList* pl = val->list;
+  JkPropertyCb* cbs = val->cbs;
   //const char* name = evas_object_name_get(obj);
   const char* value = elm_object_text_get(obj);
 
-  if (pl->cbs->register_change_string) {
+  if (cbs->register_change_string) {
     //pl->changed_string(pl->data, val->path, value);
-    pl->cbs->register_change_string(pl->data, val->path, NULL, value, 0);
+    cbs->register_change_string(cbs->data, val->path, NULL, value, 0);
   }
 }
 
@@ -208,7 +208,7 @@ _entry_register_change_cb(
       void* event)
 {
   PropertyValue* val = data;
-  JkPropertyList* pl = val->list;
+  JkPropertyCb* cbs = val->cbs;
   //const char* name = evas_object_name_get(obj);
   const char* value = elm_object_text_get(obj);
   const char* old = evas_object_data_get(obj, "saved_text");
@@ -220,8 +220,8 @@ _entry_register_change_cb(
 
   evas_object_data_set(obj, "saved_text", eina_stringshare_add(value));
 
-  if (pl->cbs->register_change_string) {
-    pl->cbs->register_change_string(pl->data, val->path, old, value, 1);
+  if (cbs->register_change_string) {
+    cbs->register_change_string(cbs->data, val->path, old, value, 1);
   }
 }
 
@@ -257,12 +257,12 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
   double *saved = evas_object_data_get(obj,"saved");
 
   PropertyValue* val = data;
-  JkPropertyList* pl = val->list;
+  JkPropertyCb* cbs = val->cbs;
 
   double d = elm_spinner_value_get(obj);
 
-  if (pl->cbs->register_change_float) {
-    pl->cbs->register_change_float(pl->data, val->path, saved, &d, 1);
+  if (cbs->register_change_float) {
+    cbs->register_change_float(cbs->data, val->path, saved, &d, 1);
   }
 
   free(saved);
@@ -483,7 +483,7 @@ static void _bt_cb(void* data)
   struct _BtCb *btcb = data;
   PropertyValue* val = btcb->data;
   btcb->cb(
-        val->list->data,
+        val->cbs->data,
         val->path,
         NULL,
         NULL,
@@ -539,7 +539,7 @@ gl_content_vec_get(
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
   struct _BtCb *btcb = calloc(1, sizeof *btcb);
-  btcb->cb = val->list->cbs->vec_add;
+  btcb->cb = val->cbs->vec_add;
   btcb->data = val;
   btn_cb_set(bt, _bt_cb, btcb);
 
@@ -548,7 +548,7 @@ gl_content_vec_get(
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
   btcb = calloc(1, sizeof *btcb);
-  btcb->cb = val->list->cbs->vec_del;
+  btcb->cb = val->cbs->vec_del;
   btcb->data = val;
   btn_cb_set(bt, _bt_cb, btcb);
 
@@ -603,7 +603,7 @@ gl_content_vec_node_get(
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
   struct _BtCb *btcb = calloc(1, sizeof *btcb);
-  btcb->cb = val->list->cbs->vec_add;
+  btcb->cb = val->cbs->vec_add;
   btcb->data = val;
   btn_cb_set(bt, _bt_cb, btcb);
 
@@ -625,16 +625,16 @@ _hoversel_selected_cb(
   elm_object_text_set(obj, txt);
 
   PropertyValue* val = data;
-  JkPropertyList* pl = val->list;
+  JkPropertyCb* cbs = val->cbs;
   ////const char* name = evas_object_name_get(obj);
   //const char* value = elm_object_text_get(obj);
 
   val->data = (char*) strdup(txt);
 
   //TODO
-  if (pl->cbs->register_change_enum) {
+  if (cbs->register_change_enum) {
     //pl->changed_string(pl->data, val->path, value);
-    pl->cbs->register_change_enum(pl->data, val->path, old, txt, 1);
+    cbs->register_change_enum(cbs->data, val->path, old, txt, 1);
   }
 
   if ( elm_genlist_item_type_get(val->item) == ELM_GENLIST_ITEM_TREE &&
@@ -652,7 +652,7 @@ _update_option_item(
       Elm_Genlist_Item_Type t
       )
 {
-  JkPropertyList* pl = val->list;
+  JkPropertyCb* cbs = val->cbs;
 
   char* old;
   char* new;
@@ -667,6 +667,9 @@ _update_option_item(
   }
 
   Elm_Object_Item* old_item = val->item;
+
+  printf("TODOOOOOOOOOOOOO, put in comment for now \n\n");
+  /*
 
   PropertyNode* parent = _property_list_node_find_parent(pl, val->path);
   if (!parent) {
@@ -710,6 +713,7 @@ _update_option_item(
     //elm_genlist_item_expanded_set(val->item, EINA_FALSE);
     elm_genlist_item_expanded_set(val->item, EINA_TRUE);
   }
+  */
 
 }
 
@@ -720,7 +724,7 @@ _on_button_option_clicked(
       void *event_info)
 {
   PropertyValue* val = data;
-  JkPropertyList* pl = val->list;
+  JkPropertyCb* cbs = val->cbs;
 
   Elm_Genlist_Item_Type t;
   const char* old = val->data;
@@ -734,8 +738,8 @@ _on_button_option_clicked(
     t = ELM_GENLIST_ITEM_NONE;
   }
 
-  if (pl->cbs->register_change_option) {
-    pl->cbs->register_change_option(pl->data, val->path, old, new, 1);
+  if (cbs->register_change_option) {
+    cbs->register_change_option(cbs->data, val->path, old, new, 1);
     _update_option_item(val,t);
   }
 }
@@ -1105,14 +1109,14 @@ _spinner_changed_cb_list(
       void* event)
 {
   PropertyValue* val = data;
-  JkPropertyList* pl = val->list;
+  JkPropertyCb* cbs = val->cbs;
   const char* name = evas_object_name_get(obj);
   double v = elm_spinner_value_get(obj);
   float f = v;
   memcpy(val->data, &f, sizeof f);
 
-  if (pl->cbs->changed_float) {
-    pl->cbs->changed_float(pl->data, val->path, &v);
+  if (cbs->changed_float) {
+    cbs->changed_float(cbs->data, val->path, &v);
   }
 }
 
@@ -1195,15 +1199,15 @@ _jk_entry_changed_cb_list(
       void* event)
 {
   PropertyValue* val = data;
-  JkPropertyList* pl = val->list;
+  JkPropertyCb* cbs = val->cbs;
   const char* name = evas_object_name_get(obj);
   double v;
   eo_do(obj, v = jk_entry_value_get());
   float f = v;
   memcpy(val->data, &f, sizeof f);
 
-  if (pl->cbs->changed_float) {
-    pl->cbs->changed_float(pl->data, val->path, &v);
+  if (cbs->changed_float) {
+    cbs->changed_float(cbs->data, val->path, &v);
   }
 }
 
@@ -1214,7 +1218,7 @@ _jk_entry_changed_end_cb_list(
       void* event)
 {
   PropertyValue* val = data;
-  JkPropertyList* pl = val->list;
+  JkPropertyCb* cbs = val->cbs;
   const char* name = evas_object_name_get(obj);
   double v;
   eo_do(obj, v = jk_entry_value_get());
@@ -1224,8 +1228,8 @@ _jk_entry_changed_end_cb_list(
   double vs;
   eo_do(obj, vs = jk_entry_value_saved_get());
 
-  if (pl->cbs->register_change_float) {
-    pl->cbs->register_change_float(pl->data, val->path, &vs, &v, 1);
+  if (cbs->register_change_float) {
+    cbs->register_change_float(cbs->data, val->path, &vs, &v, 1);
   }
 }
 
@@ -1409,10 +1413,10 @@ gl9_exp(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
   //Evas_Object *gl = elm_object_item_widget_get(glit);
 
   PropertyValue* val = elm_object_item_data_get(glit);
-  JkPropertyList* pl = data;
+  JkPropertyCb* cbs = data;
 
-  if (pl->cbs->expand) {
-    pl->cbs->expand(pl->data, (void*) val->path, glit);
+  if (cbs->expand) {
+    cbs->expand(cbs->data, (void*) val->path, glit);
   }
 
   elm_genlist_item_update(val->item);
@@ -1426,11 +1430,11 @@ gl9_con(void *data, Evas_Object *obj EINA_UNUSED, void *event_info)
 
    PropertyValue* val = elm_object_item_data_get(glit);
    char* name = (char*) val->path;
-   JkPropertyList* pl = data;
+   JkPropertyCb* cbs = data;
    //TODO clear the nodes
 
-   if (pl->cbs->contract) {
-     pl->cbs->contract(pl->data, name, glit);
+   if (cbs->contract) {
+     cbs->contract(cbs->data, name, glit);
    }
 
    elm_genlist_item_update(val->item);
@@ -1502,7 +1506,7 @@ PropertyValue* property_list_single_node_add(
   PropertyNode* child = property_list_node_new();
   eina_hash_add(node->nodes, strdup(s[num-1]), child);
 
-  val->list = pl;
+  val->cbs = pl->cbs;
   child->item = elm_genlist_item_append(pl->list, class_node,
                            val,
                            node->item,
@@ -1538,7 +1542,7 @@ PropertyValue* property_list_vec_add(
 
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);//s[num-1];
-  val->list = pl;
+  val->cbs = pl->cbs;
   val->len = len;
   //val->data = strdup(value);
   //val->user_data = possible_values;
@@ -1653,7 +1657,7 @@ property_list_single_item_add(
     return NULL;
   }
 
-  val->list = pl;
+  val->cbs = pl->cbs;
   val->item = elm_genlist_item_append(pl->list, class_item,
                            val,
                            node->item,
@@ -1682,7 +1686,7 @@ property_list_single_vec_add(
     return NULL;
   }
 
-  val->list = pl;
+  val->cbs = pl->cbs;
   val->item = elm_genlist_item_append(pl->list, class_vec,
         val,
         node->item,
@@ -1761,7 +1765,7 @@ void jk_property_list_register_cb(
       panel_geom_cb move
       )
 {
-  pl->data = data;
+  pl->cbs->data = data;
   pl->move = move;
 }
 
@@ -1846,8 +1850,8 @@ property_list_new(Evas_Object* win)
 
   evas_object_smart_callback_add(gl, "expand,request", gl9_exp_req, NULL);
   evas_object_smart_callback_add(gl, "contract,request", gl9_con_req, NULL);
-  evas_object_smart_callback_add(gl, "expanded", gl9_exp, p);
-  evas_object_smart_callback_add(gl, "contracted", gl9_con, p);
+  evas_object_smart_callback_add(gl, "expanded", gl9_exp, p->cbs);
+  evas_object_smart_callback_add(gl, "contracted", gl9_con, p->cbs);
 
   p->list = gl;
 
@@ -1929,7 +1933,7 @@ property_list_option_add(
 
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);//s[num-1];
-  val->list = pl;
+  val->cbs = pl->cbs;
   val->data = strdup(value);
 
   val->item = elm_genlist_item_append(pl->list, class_option,
@@ -1988,7 +1992,7 @@ static void _on_panel_geom(
   if (p->move) {
     int x, y, w, h;
     evas_object_geometry_get(o, &x, &y, &w, &h);
-    p->move(p->data, x , y, w, h);
+    p->move(p->cbs->data, x , y, w, h);
   }
 }
 

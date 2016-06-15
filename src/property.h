@@ -88,6 +88,8 @@ struct _PropertyCb
 
   property_register_change vec_add;
   property_register_change vec_del;
+
+  void* data;
 };
 
 void jk_property_cb_register(
@@ -115,8 +117,6 @@ struct _PropertyList
   Evas_Object* root;
   Evas_Object* list;
 
-  void* data;
-
   PropertyNode* node;
   PropertyNode* node_first_group;
 
@@ -134,7 +134,7 @@ struct _PropertyValue
   const char* path;
   void* data;
   Elm_Object_Item* item;
-  JkPropertyList* list;
+  JkPropertyCb* cbs;
   void* user_data;
   int len;
   const char* added_name;
@@ -241,8 +241,6 @@ struct _PropertyBox
   Evas_Object* root;
   Evas_Object* box;
 
-  void* data;
-
   PropertyNode* node;
   PropertyNode* node_first_group;
 
@@ -255,7 +253,6 @@ struct _PropertyBox
 PropertyNode* property_box_node_new();
 
 JkPropertyBox* property_box_new(Evas_Object* win);
-void property_box_data_set(JkPropertyBox* set, void* data);
 
 void property_box_clear(JkPropertyBox* set);
 

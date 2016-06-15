@@ -9,11 +9,11 @@
 static void
 _spinner_changed_cb(void* data, Evas_Object *obj, void* event)
 {
-  JkPropertyBox* ps = data;
+  JkPropertyCb* cbs = data;
   const char* name = evas_object_name_get(obj);
   double v =  elm_spinner_value_get(obj);
-  if (ps->cbs->changed_float) {
-    ps->cbs->changed_float(ps->data, name, &v);
+  if (cbs->changed_float) {
+    cbs->changed_float(cbs->data, name, &v);
   }
 }
 
@@ -22,11 +22,11 @@ static void
 _entry_changed_cb_ps(void *data, Evas_Object *obj, void *event)
 {
   const char* s = elm_object_text_get(obj);
-  JkPropertyBox* ps = data;
+  JkPropertyCb* cbs = data;
 
   const char* name = evas_object_name_get(obj);
-  if (ps->cbs->changed_string) {
-    ps->cbs->changed_string(ps->data, name, s);
+  if (cbs->changed_string) {
+    cbs->changed_string(cbs->data, name, s);
   }
 }
 
@@ -39,15 +39,11 @@ property_box_new(Evas_Object* win)
   Evas_Object *bx;
 
   bx = elm_box_add(win);
-  elm_box_horizontal_set(bx, EINA_FALSE);
-  //evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
-  //evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
-
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  //evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, 0.0);
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  elm_box_align_set(bx, 0, 0);
-
+  elm_box_align_set(bx, 0.5, 0);
+  //elm_box_homogeneous_set(bx, EINA_TRUE);
+  elm_box_horizontal_set(bx, EINA_FALSE);
   evas_object_show(bx);
   p->root = bx;
   p->box = bx;
@@ -64,13 +60,6 @@ PropertyNode* property_box_node_new()
   node->nodes = eina_hash_string_superfast_new(NULL);
 
   return node;
-}
-
-
-void
-property_box_data_set(JkPropertyBox* set, void* data)
-{
-  set->data = data;
 }
 
 PropertyNode* _property_node_find(
@@ -312,7 +301,7 @@ static void _on_panel_geom(
   if (p->move) {
     int x, y, w, h;
     evas_object_geometry_get(o, &x, &y, &w, &h);
-    p->move(p->data, x , y, w, h);
+    p->move(p->cbs->data, x , y, w, h);
   }
 }
 
@@ -351,7 +340,7 @@ void jk_property_box_register_cb(
       panel_geom_cb move
       )
 {
-  p->data = data;
+  p->cbs->data = data;
   p->move = move;
 }
 
@@ -377,14 +366,13 @@ property_box_single_item_add(
 
   PropertyNode* node = pb->node;
 
-  //val->list = pb;
-
+  val->cbs = pb->cbs;
 
   Eo* bx = elm_box_add(pb->box);
   evas_object_show(bx);
-  elm_box_horizontal_set(pb->box, EINA_TRUE);
+  elm_box_horizontal_set(bx, EINA_TRUE);
   elm_box_padding_set(bx, 4, 0);
-  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
   //Evas_Coord fw = -1, fh = -1;
@@ -419,16 +407,16 @@ PropertyValue* property_box_single_node_add(
   PropertyNode* child = property_list_node_new();
   eina_hash_add(node->nodes, strdup(s[num-1]), child);
 
-  //val->list = pl;
+  val->cbs = pb->cbs;
   free(s[0]);
   free(s);
 
 
   Eo* bx = elm_box_add(pb->box);
   evas_object_show(bx);
-  elm_box_horizontal_set(pb->box, EINA_TRUE);
+  elm_box_horizontal_set(bx, EINA_TRUE);
   elm_box_padding_set(bx, 4, 0);
-  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
   elm_box_align_set(bx, 0, 0.5f);
