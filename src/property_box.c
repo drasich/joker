@@ -36,17 +36,28 @@ property_box_new(Evas_Object* win)
 {
   JkPropertyBox* p = calloc(1, sizeof *p);
   p->cbs = calloc(1, sizeof *p->cbs);
-  Evas_Object *bx;
 
-  bx = elm_box_add(win);
+  /*
+  Eo* bg = elm_bg_add(win);
+  evas_object_size_hint_weight_set(bg, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(bg, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  evas_object_show(bg);
+  */
+
+  Eo* bx = elm_box_add(win);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
   elm_box_align_set(bx, 0.5, 0);
   //elm_box_homogeneous_set(bx, EINA_TRUE);
   elm_box_horizontal_set(bx, EINA_FALSE);
   evas_object_show(bx);
-  p->root = bx;
   p->box = bx;
+
+  Eo* scroller = elm_scroller_add(win);
+  evas_object_size_hint_weight_set(scroller, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(scroller, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_object_content_set(scroller, bx);
+  p->root = scroller;
 
   p->node = property_box_node_new();
 
