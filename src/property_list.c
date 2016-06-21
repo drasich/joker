@@ -860,7 +860,7 @@ static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
   char** s = eina_str_split_full(val->user_data, "/", 0, &num);
   int i;
   for (i = 0; i < num; ++i) {
-    elm_hoversel_item_add(hoversel, s[i], NULL, ELM_ICON_NONE, NULL, NULL);
+    elm_hoversel_item_add(hoversel, strdup(s[i]), NULL, ELM_ICON_NONE, NULL, NULL);
   }
 
   free(s[0]);

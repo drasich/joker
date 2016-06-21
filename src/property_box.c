@@ -433,7 +433,7 @@ PropertyValue* property_box_single_node_add(
   elm_box_align_set(bx, 0, 0.5f);
 
   if (val->create_child) {
-    elm_box_pack_end(bx, val->create_child(val, bx));
+    elm_box_pack_end(bx, val->create_child(val, pb->root));
   }
   else {
     Evas_Object* label = _node_create(val, bx);
