@@ -446,3 +446,25 @@ PropertyValue* property_box_single_node_add(
   return val;
 }
 
+void property_box_enum_update(
+      JkPropertyBox* pb,
+      PropertyValue* val,
+      const char* value)
+{
+  if (!strcmp(value, val->data)) {
+    printf("value are same so return : %s = %s \n", value, val->data);
+    return;
+  }
+
+  if (val->data) free(val->data);
+
+  printf("CCCCCCCCCCCCCCCCCCCCc\n");
+  elm_box_clear(pb->box);
+
+  //TODO clear items
+
+  val->data = strdup(value);
+
+  //TODO add items
+}
+

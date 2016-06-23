@@ -629,7 +629,8 @@ _hoversel_selected_cb(
   ////const char* name = evas_object_name_get(obj);
   //const char* value = elm_object_text_get(obj);
 
-  val->data = (char*) strdup(txt);
+  //WARNING... done in update
+  //val->data = (char*) strdup(txt);
 
   //TODO
   if (cbs->register_change_enum) {
