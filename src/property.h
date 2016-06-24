@@ -134,6 +134,7 @@ struct _PropertyValue
   const char* path;
   void* data;
   Elm_Object_Item* item;
+  Evas_Object* eo;
   JkPropertyCb* cbs;
   void* user_data;
   int len;

@@ -392,6 +392,7 @@ property_box_single_item_add(
 
   elm_box_pack_end(bx, val->create_child(val, bx));
 
+  val->eo = bx;
   elm_box_pack_end(pb->box, bx);
 
   return val;
@@ -441,10 +442,25 @@ PropertyValue* property_box_single_node_add(
     elm_box_pack_end(bx, label);
   }
 
+  val->eo = bx;
   elm_box_pack_end(pb->box, bx);
 
   return val;
 }
+
+void property_box_remove(
+      JkPropertyBox* pb,
+      PropertyValue* val)
+{
+  elm_box_unpack(pb->box, val->eo);
+}
+
+void property_box_add(
+      JkPropertyBox* pb,
+      PropertyValue* val)
+{
+}
+
 
 void property_box_enum_update(
       JkPropertyBox* pb,
@@ -459,7 +475,7 @@ void property_box_enum_update(
   if (val->data) free(val->data);
 
   printf("CCCCCCCCCCCCCCCCCCCCc\n");
-  elm_box_clear(pb->box);
+  //elm_box_clear(pb->box);
 
   //TODO clear items
 
