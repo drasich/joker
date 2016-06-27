@@ -393,6 +393,7 @@ property_box_single_item_add(
   elm_box_pack_end(bx, val->create_child(val, bx));
 
   val->eo = bx;
+  printf("valeo box : %p\n", bx);
   elm_box_pack_end(pb->box, bx);
 
   return val;
@@ -452,7 +453,9 @@ void property_box_remove(
       JkPropertyBox* pb,
       PropertyValue* val)
 {
+  printf("dance !!!!!!!!!!!!!!! %p \n", val->eo);
   elm_box_unpack(pb->box, val->eo);
+  evas_object_del(val->eo);
 }
 
 void property_box_add(
