@@ -791,35 +791,6 @@ gl_content_node_get(
    return bx;
 }
 
-Eo* _node_create(PropertyValue* val, Evas_Object* o)
-{
-  Evas_Object* label = elm_label_add(o);
-
-  unsigned int num;
-  char** ss = eina_str_split_full(val->path, "/", 0, &num);
-  const char* name = ss[num-1];
-
-  char s[256];
-  if (val->added_name){
-    sprintf(s, "<b>%s</b> : %s", name, val->added_name);
-  }
-  else {
-    sprintf(s, "<b>%s</b>", name);
-  }
-  //if (val->item && elm_genlist_item_expanded_get(val->item))
-  //sprintf(s, "%s : ", name);
-  //else
-  //sprintf(s, "%s", name);
-
-  elm_object_text_set(label, s);
-  //elm_box_pack_end(bx, label);
-  evas_object_show(label);
-
-  free(ss[0]);
-  free(ss);
-  return label;
-}
-
 static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
 {
   Eo* bx = elm_box_add(obj);

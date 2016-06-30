@@ -139,3 +139,56 @@ void jk_property_cb_register(
   cb->vec_del = vec_del;
 }
 
+Eo* _node_create(PropertyValue* val, Evas_Object* o)
+{
+  Eo* bx = elm_box_add(o);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx, 0, 0.5);
+
+  Eo* bx_child = elm_box_add(o);
+  elm_box_horizontal_set(bx_child, EINA_TRUE);
+  evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx_child, 0, 0.5);
+
+  val->child = bx_child;
+
+  Evas_Object* label = elm_label_add(o);
+
+  unsigned int num;
+  char** ss = eina_str_split_full(val->path, "/", 0, &num);
+  const char* name = ss[num-1];
+
+  char s[256];
+  if (val->added_name){
+    sprintf(s, "<b>%s</b> : %s", name, val->added_name);
+  }
+  else {
+    sprintf(s, "<b>%s</b>", name);
+  }
+  //if (val->item && elm_genlist_item_expanded_get(val->item))
+  //sprintf(s, "%s : ", name);
+  //else
+  //sprintf(s, "%s", name);
+
+  elm_object_text_set(label, s);
+  elm_box_pack_end(bx, label);
+  evas_object_show(label);
+  evas_object_show(bx);
+
+  free(ss[0]);
+  free(ss);
+  return bx;
+}
+
+PropertyValue* property_node_add(const char* path)
+{
+  PropertyValue *val = calloc(1, sizeof *val);
+  val->path = strdup(path);
+  val->create_child = _node_create;
+
+  return val;
+}
+

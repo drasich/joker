@@ -135,6 +135,7 @@ struct _PropertyValue
   void* data;
   Elm_Object_Item* item;
   Evas_Object* eo;
+  Evas_Object* child;
   JkPropertyCb* cbs;
   void* user_data;
   int len;
@@ -279,6 +280,7 @@ void property_box_string_update(
       const char* value);
 void property_box_float_update(JkPropertyBox* set, const char* path, float value);
 Eo* _node_create(PropertyValue* val, Evas_Object* o);
+PropertyValue* property_node_add(const char* path);
 
 
 #endif
