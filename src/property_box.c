@@ -363,7 +363,9 @@ JkPropertyCb* property_box_cb_get(JkPropertyBox* p)
 PropertyValue*
 property_box_single_item_add(
       JkPropertyBox* pb,
-      PropertyValue* val)
+      PropertyValue* val,
+      PropertyValue* parent
+      )
 {
   const char* path = val->path;
 
@@ -375,26 +377,33 @@ property_box_single_item_add(
   }
   */
 
-  PropertyNode* node = pb->node;
+  //PropertyNode* node = pb->node;
 
   val->cbs = pb->cbs;
 
-  Eo* bx = elm_box_add(pb->box);
+  Eo* pbx = pb->box;
+  if (parent) {
+    printf("there is a parent, and child is : %p \n", parent->child);
+    pbx = parent->child;
+  }
+
+  Eo* bx = elm_box_add(pbx);
   evas_object_show(bx);
   elm_box_horizontal_set(bx, EINA_TRUE);
   elm_box_padding_set(bx, 4, 0);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx, 0, 0.5);
 
   //Evas_Coord fw = -1, fh = -1;
   //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   //evas_object_size_hint_min_set(bx, 0, fh);
 
-  elm_box_pack_end(bx, val->create_child(val, bx));
+  elm_box_pack_end(bx, val->create_child(val, pbx));
 
   val->eo = bx;
   printf("valeo box : %p\n", bx);
-  elm_box_pack_end(pb->box, bx);
+  elm_box_pack_end(pbx, bx);
 
   return val;
 
@@ -477,8 +486,9 @@ void property_box_enum_update(
 
   if (val->data) free(val->data);
 
-  printf("CCCCCCCCCCCCCCCCCCCCc\n");
-  //elm_box_clear(pb->box);
+  printf("CCCCCCCCCCCCCCCCCCCCc :: %p %s \n", val->item_eo, value);
+  elm_box_clear(val->child);
+  elm_object_text_set(val->item_eo, value);
 
   //TODO clear items
 

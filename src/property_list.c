@@ -793,13 +793,23 @@ gl_content_node_get(
 
 static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
 {
+  Eo* bx_root = elm_box_add(obj);
+  elm_box_horizontal_set(bx_root, EINA_FALSE);
+  evas_object_size_hint_weight_set(bx_root, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx_root, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx_root, 0, 0.5);
+  evas_object_show(bx_root);
+
+
   Eo* bx = elm_box_add(obj);
   evas_object_show(bx);
   elm_box_horizontal_set(bx, EINA_TRUE);
   Evas_Coord fw = -1, fh = -1;
   elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   evas_object_size_hint_min_set(bx, 0, fh);
-  elm_box_align_set(bx, 0, 1);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx, 0, 0.5);
   //elm_box_align_set(bx, 0, 0.5f);
   elm_box_padding_set(bx, 4, 0);
 
@@ -847,9 +857,23 @@ static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
   elm_box_pack_end(bx, hoversel);
 
   evas_object_show(hoversel);
+  val->item_eo = hoversel;
+  printf("setting hoverselllllllllllllllllllll : %p \n", hoversel);
    }
 
-   return bx;
+  elm_box_pack_end(bx_root, bx);
+
+  Eo* bx_child = elm_box_add(obj);
+  elm_box_horizontal_set(bx_child, EINA_FALSE);
+  evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx_child, 0, 0.5);
+  val->child = bx_child;
+  evas_object_show(bx_child);
+  elm_box_pack_end(bx_root, bx_child);
+
+
+   return bx_root;
 }
 
 

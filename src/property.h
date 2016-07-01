@@ -136,6 +136,7 @@ struct _PropertyValue
   Elm_Object_Item* item;
   Evas_Object* eo;
   Evas_Object* child;
+  Evas_Object* item_eo;
   JkPropertyCb* cbs;
   void* user_data;
   int len;
