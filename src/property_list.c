@@ -413,6 +413,7 @@ Eo* entry_new(PropertyValue* val, Eo* obj)
 
   struct _EntryState *es = calloc(1, sizeof *es);
   evas_object_data_set(en, "state", es);
+  val->item_eo = en;
 
   //evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
   //TODO
@@ -1744,6 +1745,7 @@ void property_list_string_update(
 
   val->data = strdup(value);
   elm_genlist_item_update(val->item);
+  elm_object_text_set(val->item_eo, value);
 }
 
 void property_list_vec_update(
