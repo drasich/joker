@@ -1300,6 +1300,7 @@ Eo* float_new(PropertyValue* val, Eo* obj)
 
   const float* f = val->data;
   eo_do(en, jk_entry_value_set(*f));
+  val->item_eo = en;
 
   evas_object_show(bx);
   return bx;
@@ -1625,6 +1626,7 @@ void property_list_float_update(
 {
   memcpy(val->data, &value, sizeof value);
   elm_genlist_item_update(val->item);
+  eo_do(val->item_eo, jk_entry_value_set(value));
 }
 
 PropertyValue*
