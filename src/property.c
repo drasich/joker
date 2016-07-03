@@ -202,3 +202,94 @@ PropertyValue* property_node_add(const char* path)
   return val;
 }
 
+void _bt_cb(void* data)
+{
+  struct _BtCb *btcb = data;
+  PropertyValue* val = btcb->data;
+  btcb->cb(
+        val->cbs->data,
+        val->path,
+        NULL,
+        NULL,
+        0);
+
+  elm_genlist_item_update(val->item);
+
+  Elm_Object_Item* parent = val->item;
+
+  if ( elm_genlist_item_type_get(val->item) != ELM_GENLIST_ITEM_TREE)
+  parent = elm_genlist_item_parent_get(val->item);
+
+  elm_genlist_item_update(parent);
+
+  if ( elm_genlist_item_type_get(parent) == ELM_GENLIST_ITEM_TREE &&
+        elm_genlist_item_expanded_get(parent)) {
+    //because tree anim takes time we have to do this
+    elm_genlist_item_subitems_clear(parent);
+    elm_genlist_item_expanded_set(parent, EINA_FALSE);
+    elm_genlist_item_expanded_set(parent, EINA_TRUE);
+  }
+  else {
+    printf("TODO remove and recreate....\n");
+    //TODO recreate none -> tree
+    // AND tree -> none
+  }
+}
+
+
+Eo* vec_new(PropertyValue* val, Eo* obj)
+{
+  Eo* bx = elm_box_add(obj);
+  evas_object_show(bx);
+  elm_box_horizontal_set(bx, EINA_FALSE);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx, 0, 0.5);
+
+  Eo* bx_child = elm_box_add(obj);
+  evas_object_show(bx_child);
+  elm_box_horizontal_set(bx_child, EINA_FALSE);
+  evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx_child, 0, 0.5);
+  val->child = bx_child;
+
+
+  Eo* bxh = elm_box_add(obj);
+  evas_object_show(bxh);
+  elm_box_horizontal_set(bxh, EINA_TRUE);
+  Evas_Coord fw = -1, fh = -1;
+  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  evas_object_size_hint_min_set(bxh, 0, fh);
+  elm_box_align_set(bxh, 0, 1);
+  //elm_box_align_set(bxh, 0, 0.5f);
+  elm_box_padding_set(bxh, 4, 0);
+
+  Evas_Object* label = elm_label_add(bxh);
+
+   {
+    unsigned int num;
+    char** ss = eina_str_split_full(val->path, "/", 0, &num);
+    const char* name = ss[num-1];
+
+    char s[256];
+    sprintf(s, "<b>%s</b>, len : %d", name, val->len);
+    //if (val->item && elm_genlist_item_expanded_get(val->item))
+    //sprintf(s, "%s : ", name);
+    //else
+    //sprintf(s, "%s", name);
+
+    elm_object_text_set(label, s);
+    elm_box_pack_end(bxh, label);
+    evas_object_show(label);
+
+    free(ss[0]);
+    free(ss);
+   }
+
+    elm_box_pack_end(bx, bxh);
+    elm_box_pack_end(bx, bx_child);
+
+  return bx;
+}
+

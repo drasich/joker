@@ -473,46 +473,6 @@ gl_content_item_get(
   return bx;
 }
 
-struct _BtCb
-{
-  property_register_change cb;
-  void* data;
-};
-
-static void _bt_cb(void* data)
-{
-  struct _BtCb *btcb = data;
-  PropertyValue* val = btcb->data;
-  btcb->cb(
-        val->cbs->data,
-        val->path,
-        NULL,
-        NULL,
-        0);
-
-  elm_genlist_item_update(val->item);
-
-  Elm_Object_Item* parent = val->item;
-
-  if ( elm_genlist_item_type_get(val->item) != ELM_GENLIST_ITEM_TREE)
-  parent = elm_genlist_item_parent_get(val->item);
-
-  elm_genlist_item_update(parent);
-
-  if ( elm_genlist_item_type_get(parent) == ELM_GENLIST_ITEM_TREE &&
-        elm_genlist_item_expanded_get(parent)) {
-    //because tree anim takes time we have to do this
-    elm_genlist_item_subitems_clear(parent);
-    elm_genlist_item_expanded_set(parent, EINA_FALSE);
-    elm_genlist_item_expanded_set(parent, EINA_TRUE);
-  }
-  else {
-    printf("TODO remove and recreate....\n");
-    //TODO recreate none -> tree
-    // AND tree -> none
-  }
-}
-
 Evas_Object*
 gl_content_vec_get(
       void *data,
@@ -556,48 +516,9 @@ gl_content_vec_get(
   return bx;
 }
 
-Evas_Object*
-gl_content_vec_node_get(
-      void *data,
-      Evas_Object *obj,
-      const char *part)
+Eo* vec_new_list(PropertyValue* val, Eo* obj)
 {
-  Evas_Object *bx, *ck;
-
-  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
-
-  bx = elm_box_add(obj);
-  elm_box_horizontal_set(bx, EINA_TRUE);
-  Evas_Coord fw = -1, fh = -1;
-  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
-  evas_object_size_hint_min_set(bx, 0, fh);
-  elm_box_align_set(bx, 0, 1);
-  //elm_box_align_set(bx, 0, 0.5f);
-  elm_box_padding_set(bx, 4, 0);
-
-  Evas_Object* label = elm_label_add(bx);
-
-  PropertyValue* val = data;
-
-   {
-    unsigned int num;
-    char** ss = eina_str_split_full(val->path, "/", 0, &num);
-    const char* name = ss[num-1];
-
-    char s[256];
-    sprintf(s, "<b>%s</b>, len : %d", name, val->len);
-    //if (val->item && elm_genlist_item_expanded_get(val->item))
-    //sprintf(s, "%s : ", name);
-    //else
-    //sprintf(s, "%s", name);
-
-    elm_object_text_set(label, s);
-    elm_box_pack_end(bx, label);
-    evas_object_show(label);
-
-    free(ss[0]);
-    free(ss);
-   }
+  Eo* bx = vec_new(val, obj);
 
   Eo* bt = elm_button_add(obj);
   elm_object_text_set(bt, "+");
@@ -608,11 +529,20 @@ gl_content_vec_node_get(
   btcb->data = val;
   btn_cb_set(bt, _bt_cb, btcb);
 
-   return bx;
+  return bx;
 }
 
+Evas_Object*
+gl_content_vec_node_get(
+      void *data,
+      Evas_Object *obj,
+      const char *part)
+{
+  if (strcmp(part, "elm.swallow.content") != 0) return NULL;
 
-
+  PropertyValue* val = data;
+  return vec_new_list(val, obj);
+}
 
 static void
 _hoversel_selected_cb(
@@ -1614,6 +1544,8 @@ property_list_float_add(
   //val->list = pl;
   val->data = calloc(1, sizeof value);
   memcpy(val->data, &value, sizeof value);
+
+  printf("adding float with %s \n", path);
 
   val->create_child = float_new;
 

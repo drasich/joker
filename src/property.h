@@ -283,5 +283,15 @@ void property_box_float_update(JkPropertyBox* set, const char* path, float value
 Eo* _node_create(PropertyValue* val, Evas_Object* o);
 PropertyValue* property_node_add(const char* path);
 
+Eo* vec_new(PropertyValue* val, Eo* obj);
+
+struct _BtCb
+{
+  property_register_change cb;
+  void* data;
+};
+
+void _bt_cb(void* data);
+
 
 #endif
