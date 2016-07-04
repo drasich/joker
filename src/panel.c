@@ -1,6 +1,7 @@
 #include "panel.h"
 #include "Evas.h"
 #include "stdbool.h"
+#include "window.h"
 
 static const Evas_Smart_Cb_Description _smart_callbacks[] =
 {
@@ -575,5 +576,59 @@ Eo* layout_panel_add(Evas_Object* parent, const char* name)
 
 	return ly;
 }
+
+static void _on_panel_geom(
+      void *data,
+      Evas *evas,
+      Evas_Object *o,
+      void *einfo)
+{
+  JkPanel* p = data;
+  if (p->move) {
+    int x, y, w, h;
+    evas_object_geometry_get(o, &x, &y, &w, &h);
+    p->move(p->data, x , y, w, h);
+  }
+}
+
+static void _on_panel_free(
+      void *data,
+      Evas *evas,
+      Evas_Object *o,
+      void *einfo)
+{
+  JkPanel* p = data;
+  free(p);
+}
+
+Eo* jk_panel_new(
+      Window* w,
+      int x,
+      int y,
+      int width,
+      int height,
+      panel_geom_cb move,
+      panel_geom_cb resize,
+      void* data
+      )
+{
+  Evas_Object* panel = layout_panel_add(w->win, "property");
+  evas_object_move(panel, x, y);
+  evas_object_show(panel);
+
+  evas_object_resize(panel, width, height);
+
+  JkPanel* jkp = calloc(1, sizeof *jkp);
+  jkp->data = data;
+  jkp->move = move;
+  jkp->resize = resize;
+
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom, jkp);
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom, jkp);
+  evas_object_event_callback_add(panel, EVAS_CALLBACK_FREE, _on_panel_free, jkp);
+
+  return panel;
+}
+
 
 

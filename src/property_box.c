@@ -60,6 +60,7 @@ property_box_new(Evas_Object* win)
   p->root = scroller;
 
   p->node = property_box_node_new();
+  p->win = win;
 
   return p;
 }
@@ -317,24 +318,12 @@ static void _on_panel_geom(
 }
 
 
-JkPropertyBox* jk_property_box_new(Window* w, int x, int y, int width, int height)
+JkPropertyBox* jk_property_box_new(Evas_Object* panel)
 {
-  Evas_Object* panel = layout_panel_add(w->win, "property");
-  evas_object_move(panel, x, y);
-  evas_object_show(panel);
-
   JkPropertyBox* p = property_box_new(panel);
-  //evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  evas_object_resize(panel, width, height);
-  //smart_panel_content_set(panel, p->root);
   elm_object_part_content_set(panel, "content", p->root);
-  p->win = panel;
-
-  evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom, p);
-  evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom, p);
 
   return p;
-
 }
 
 void
