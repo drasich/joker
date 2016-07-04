@@ -236,6 +236,20 @@ void _bt_cb(void* data)
   }
 }
 
+void _bt_cb_box(void* data)
+{
+  struct _BtCb *btcb = data;
+  PropertyValue* val = btcb->data;
+  btcb->cb(
+        val->cbs->data,
+       val->path,
+        NULL,
+        NULL,
+        0);
+
+  printf("TODO  update  VEC LEN\n");
+}
+
 
 Eo* vec_new(PropertyValue* val, Eo* obj)
 {
@@ -253,7 +267,6 @@ Eo* vec_new(PropertyValue* val, Eo* obj)
   evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
   //elm_box_align_set(bx_child, 0, 0.5);
   val->child = bx_child;
-
 
   Eo* bxh = elm_box_add(obj);
   evas_object_show(bxh);
@@ -287,8 +300,17 @@ Eo* vec_new(PropertyValue* val, Eo* obj)
     free(ss);
    }
 
-    elm_box_pack_end(bx, bxh);
-    elm_box_pack_end(bx, bx_child);
+  Eo* bt = elm_button_add(obj);
+  elm_object_text_set(bt, "+");
+  evas_object_show(bt);
+  elm_box_pack_end(bxh, bt);
+  struct _BtCb *btcb = calloc(1, sizeof *btcb);
+  btcb->cb = val->cbs->vec_add;
+  btcb->data = val;
+  btn_cb_set(bt, _bt_cb_box, btcb);
+
+  elm_box_pack_end(bx, bxh);
+  elm_box_pack_end(bx, bx_child);
 
   return bx;
 }

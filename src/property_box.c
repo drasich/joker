@@ -497,37 +497,6 @@ void property_box_enum_update(
   //TODO add items
 }
 
-void _bt_cb_box(void* data)
-{
-  struct _BtCb *btcb = data;
-  PropertyValue* val = btcb->data;
-  btcb->cb(
-        val->cbs->data,
-        val->path,
-        NULL,
-        NULL,
-        0);
-  
-  printf("TODO  update  VEC LEN\n");
-
-}
-
-Eo* vec_new_box(PropertyValue* val, Eo* obj)
-{
-  Eo* bx = vec_new(val, obj);
-
-  Eo* bt = elm_button_add(obj);
-  elm_object_text_set(bt, "+");
-  evas_object_show(bt);
-  elm_box_pack_end(bx, bt);
-  struct _BtCb *btcb = calloc(1, sizeof *btcb);
-  btcb->cb = val->cbs->vec_add;
-  btcb->data = val;
-  btn_cb_set(bt, _bt_cb_box, btcb);
-
-  return bx;
-}
-
 PropertyValue* property_vec_add(
       const char* path,
       int len
@@ -536,7 +505,7 @@ PropertyValue* property_vec_add(
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);
   val->len = len;
-  val->create_child = vec_new_box;
+  val->create_child = vec_new;
 
   return val;
 }

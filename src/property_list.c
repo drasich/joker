@@ -516,22 +516,6 @@ gl_content_vec_get(
   return bx;
 }
 
-Eo* vec_new_list(PropertyValue* val, Eo* obj)
-{
-  Eo* bx = vec_new(val, obj);
-
-  Eo* bt = elm_button_add(obj);
-  elm_object_text_set(bt, "+");
-  evas_object_show(bt);
-  elm_box_pack_end(bx, bt);
-  struct _BtCb *btcb = calloc(1, sizeof *btcb);
-  btcb->cb = val->cbs->vec_add;
-  btcb->data = val;
-  btn_cb_set(bt, _bt_cb, btcb);
-
-  return bx;
-}
-
 Evas_Object*
 gl_content_vec_node_get(
       void *data,
@@ -541,7 +525,10 @@ gl_content_vec_node_get(
   if (strcmp(part, "elm.swallow.content") != 0) return NULL;
 
   PropertyValue* val = data;
-  return vec_new_list(val, obj);
+  
+  //TODO use _bt_cb_box which is for box and not list.
+  printf("TODO use _bt_cb_box which is for box and not list.\n");
+  return vec_new(val, obj);
 }
 
 static void
