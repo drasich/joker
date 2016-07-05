@@ -277,6 +277,8 @@ Eo* vec_new(PropertyValue* val, Eo* obj)
   elm_box_align_set(bxh, 0, 1);
   //elm_box_align_set(bxh, 0, 0.5f);
   elm_box_padding_set(bxh, 4, 0);
+  evas_object_size_hint_weight_set(bxh, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bxh, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
   Evas_Object* label = elm_label_add(bxh);
 

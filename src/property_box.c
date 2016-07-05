@@ -499,3 +499,63 @@ PropertyValue* property_vec_add(
   return val;
 }
 
+PropertyValue*
+property_box_vec_item_add(
+      JkPropertyBox* pb,
+      PropertyValue* val,
+      PropertyValue* parent
+      )
+{
+  const char* path = val->path;
+
+  val->cbs = pb->cbs;
+
+  Eo* pbx = pb->box;
+  if (parent) {
+    printf("vec item add : there is a parent, and child is : %p \n", parent->child);
+    pbx = parent->child;
+  }
+
+  Eo* bx = elm_box_add(pbx);
+  evas_object_show(bx);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx, 0, 0.5);
+
+  //Evas_Coord fw = -1, fh = -1;
+  //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  //evas_object_size_hint_min_set(bx, 0, fh);
+
+  elm_box_pack_end(bx, val->create_child(val, pbx));
+
+  val->eo = bx;
+  printf("valeo box : %p\n", bx);
+  elm_box_pack_end(pbx, bx);
+
+
+  Eo* bt = elm_button_add(pbx);
+  elm_object_text_set(bt, "+");
+  evas_object_show(bt);
+  elm_box_pack_end(bx, bt);
+  struct _BtCb *btcb = calloc(1, sizeof *btcb);
+  btcb->cb = val->cbs->vec_add;
+  btcb->data = val;
+  btn_cb_set(bt, _bt_cb, btcb);
+
+  bt = elm_button_add(pbx);
+  elm_object_text_set(bt, "-");
+  evas_object_show(bt);
+  elm_box_pack_end(bx, bt);
+  btcb = calloc(1, sizeof *btcb);
+  btcb->cb = val->cbs->vec_del;
+  btcb->data = val;
+  btn_cb_set(bt, _bt_cb, btcb);
+
+
+
+  return val;
+
+}
+
