@@ -553,7 +553,15 @@ property_box_vec_item_add(
   btcb->data = val;
   btn_cb_set(bt, _bt_cb, btcb);
 
+  Eo* bx_child = elm_box_add(pbx);
+  evas_object_show(bx_child);
+  elm_box_horizontal_set(bx_child, EINA_FALSE);
+  evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx_child, 0, 0.5);
+  val->child = bx_child;
 
+  elm_box_pack_end(pbx, bx_child);
 
   return val;
 
