@@ -567,3 +567,7 @@ property_box_vec_item_add(
 
 }
 
+void property_box_children_clear(PropertyValue* val)
+{
+  elm_box_clear(val->child);
+}
