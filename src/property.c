@@ -112,6 +112,7 @@ Eo* jk_property_panel_new(Window* w, int x, int y, int width, int height)
 
 void jk_property_cb_register(
       JkPropertyCb* cb,
+      void* data,
       property_changed2 changed_float,
       property_changed2 changed_string,
       property_changed2 changed_enum,
@@ -125,6 +126,8 @@ void jk_property_cb_register(
       property_register_change vec_del
       )
 {
+  cb->data = data;
+
   cb->changed_float = changed_float;
   cb->changed_string = changed_string;
   cb->changed_enum = changed_enum;
@@ -240,6 +243,9 @@ void _bt_cb_box(void* data)
 {
   struct _BtCb *btcb = data;
   PropertyValue* val = btcb->data;
+  printf("val  :%p \n", val);
+  printf("val cbs :%p \n", val->cbs);
+  printf("val cbs data :%p \n", val->cbs->data);
   btcb->cb(
         val->cbs->data,
        val->path,

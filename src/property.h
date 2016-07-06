@@ -94,6 +94,7 @@ struct _PropertyCb
 
 void jk_property_cb_register(
       JkPropertyCb* cbs,
+      void* data,
       property_changed2 changed_float,
       property_changed2 changed_string,
       property_changed2 changed_enum,
