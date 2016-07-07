@@ -569,5 +569,6 @@ property_box_vec_item_add(
 
 void property_box_children_clear(PropertyValue* val)
 {
+  printf("TODO clear the PropertyValue\n");
   elm_box_clear(val->child);
 }
