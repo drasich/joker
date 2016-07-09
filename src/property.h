@@ -94,6 +94,7 @@ struct _PropertyCb
 
 void jk_property_cb_register(
       JkPropertyCb* cbs,
+      void* data,
       property_changed2 changed_float,
       property_changed2 changed_string,
       property_changed2 changed_enum,
@@ -134,6 +135,9 @@ struct _PropertyValue
   const char* path;
   void* data;
   Elm_Object_Item* item;
+  Evas_Object* eo;
+  Evas_Object* child;
+  Evas_Object* item_eo;
   JkPropertyCb* cbs;
   void* user_data;
   int len;
@@ -278,6 +282,17 @@ void property_box_string_update(
       const char* value);
 void property_box_float_update(JkPropertyBox* set, const char* path, float value);
 Eo* _node_create(PropertyValue* val, Evas_Object* o);
+PropertyValue* property_node_add(const char* path);
+
+Eo* vec_new(PropertyValue* val, Eo* obj);
+
+struct _BtCb
+{
+  property_register_change cb;
+  void* data;
+};
+
+void _bt_cb(void* data);
 
 
 #endif

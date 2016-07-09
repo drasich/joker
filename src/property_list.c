@@ -413,6 +413,7 @@ Eo* entry_new(PropertyValue* val, Eo* obj)
 
   struct _EntryState *es = calloc(1, sizeof *es);
   evas_object_data_set(en, "state", es);
+  val->item_eo = en;
 
   //evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
   //TODO
@@ -472,46 +473,6 @@ gl_content_item_get(
   return bx;
 }
 
-struct _BtCb
-{
-  property_register_change cb;
-  void* data;
-};
-
-static void _bt_cb(void* data)
-{
-  struct _BtCb *btcb = data;
-  PropertyValue* val = btcb->data;
-  btcb->cb(
-        val->cbs->data,
-        val->path,
-        NULL,
-        NULL,
-        0);
-
-  elm_genlist_item_update(val->item);
-
-  Elm_Object_Item* parent = val->item;
-
-  if ( elm_genlist_item_type_get(val->item) != ELM_GENLIST_ITEM_TREE)
-  parent = elm_genlist_item_parent_get(val->item);
-
-  elm_genlist_item_update(parent);
-
-  if ( elm_genlist_item_type_get(parent) == ELM_GENLIST_ITEM_TREE &&
-        elm_genlist_item_expanded_get(parent)) {
-    //because tree anim takes time we have to do this
-    elm_genlist_item_subitems_clear(parent);
-    elm_genlist_item_expanded_set(parent, EINA_FALSE);
-    elm_genlist_item_expanded_set(parent, EINA_TRUE);
-  }
-  else {
-    printf("TODO remove and recreate....\n");
-    //TODO recreate none -> tree
-    // AND tree -> none
-  }
-}
-
 Evas_Object*
 gl_content_vec_get(
       void *data,
@@ -561,57 +522,14 @@ gl_content_vec_node_get(
       Evas_Object *obj,
       const char *part)
 {
-  Evas_Object *bx, *ck;
-
   if (strcmp(part, "elm.swallow.content") != 0) return NULL;
 
-  bx = elm_box_add(obj);
-  elm_box_horizontal_set(bx, EINA_TRUE);
-  Evas_Coord fw = -1, fh = -1;
-  elm_coords_finger_size_adjust(1, &fw, 1, &fh);
-  evas_object_size_hint_min_set(bx, 0, fh);
-  elm_box_align_set(bx, 0, 1);
-  //elm_box_align_set(bx, 0, 0.5f);
-  elm_box_padding_set(bx, 4, 0);
-
-  Evas_Object* label = elm_label_add(bx);
-
   PropertyValue* val = data;
-
-   {
-    unsigned int num;
-    char** ss = eina_str_split_full(val->path, "/", 0, &num);
-    const char* name = ss[num-1];
-
-    char s[256];
-    sprintf(s, "<b>%s</b>, len : %d", name, val->len);
-    //if (val->item && elm_genlist_item_expanded_get(val->item))
-    //sprintf(s, "%s : ", name);
-    //else
-    //sprintf(s, "%s", name);
-
-    elm_object_text_set(label, s);
-    elm_box_pack_end(bx, label);
-    evas_object_show(label);
-
-    free(ss[0]);
-    free(ss);
-   }
-
-  Eo* bt = elm_button_add(obj);
-  elm_object_text_set(bt, "+");
-  evas_object_show(bt);
-  elm_box_pack_end(bx, bt);
-  struct _BtCb *btcb = calloc(1, sizeof *btcb);
-  btcb->cb = val->cbs->vec_add;
-  btcb->data = val;
-  btn_cb_set(bt, _bt_cb, btcb);
-
-   return bx;
+  
+  //TODO use _bt_cb_box which is for box and not list.
+  printf("TODO use _bt_cb_box which is for box and not list.\n");
+  return vec_new(val, obj);
 }
-
-
-
 
 static void
 _hoversel_selected_cb(
@@ -629,7 +547,8 @@ _hoversel_selected_cb(
   ////const char* name = evas_object_name_get(obj);
   //const char* value = elm_object_text_get(obj);
 
-  val->data = (char*) strdup(txt);
+  //WARNING... done in update
+  //val->data = (char*) strdup(txt);
 
   //TODO
   if (cbs->register_change_enum) {
@@ -790,44 +709,25 @@ gl_content_node_get(
    return bx;
 }
 
-Eo* _node_create(PropertyValue* val, Evas_Object* o)
-{
-  Evas_Object* label = elm_label_add(o);
-
-  unsigned int num;
-  char** ss = eina_str_split_full(val->path, "/", 0, &num);
-  const char* name = ss[num-1];
-
-  char s[256];
-  if (val->added_name){
-    sprintf(s, "<b>%s</b> : %s", name, val->added_name);
-  }
-  else {
-    sprintf(s, "<b>%s</b>", name);
-  }
-  //if (val->item && elm_genlist_item_expanded_get(val->item))
-  //sprintf(s, "%s : ", name);
-  //else
-  //sprintf(s, "%s", name);
-
-  elm_object_text_set(label, s);
-  //elm_box_pack_end(bx, label);
-  evas_object_show(label);
-
-  free(ss[0]);
-  free(ss);
-  return label;
-}
-
 static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
 {
+  Eo* bx_root = elm_box_add(obj);
+  elm_box_horizontal_set(bx_root, EINA_FALSE);
+  evas_object_size_hint_weight_set(bx_root, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx_root, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx_root, 0, 0.5);
+  evas_object_show(bx_root);
+
+
   Eo* bx = elm_box_add(obj);
   evas_object_show(bx);
   elm_box_horizontal_set(bx, EINA_TRUE);
   Evas_Coord fw = -1, fh = -1;
   elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   evas_object_size_hint_min_set(bx, 0, fh);
-  elm_box_align_set(bx, 0, 1);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx, 0, 0.5);
   //elm_box_align_set(bx, 0, 0.5f);
   elm_box_padding_set(bx, 4, 0);
 
@@ -875,9 +775,25 @@ static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
   elm_box_pack_end(bx, hoversel);
 
   evas_object_show(hoversel);
+  val->item_eo = hoversel;
+  printf("setting hoverselllllllllllllllllllll : %p \n", hoversel);
    }
 
-   return bx;
+  elm_box_pack_end(bx_root, bx);
+
+  /*
+  Eo* bx_child = elm_box_add(obj);
+  elm_box_horizontal_set(bx_child, EINA_FALSE);
+  evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx_child, 0, 0.5);
+  val->child = bx_child;
+  evas_object_show(bx_child);
+  elm_box_pack_end(bx_root, bx_child);
+  */
+
+
+   return bx_root;
 }
 
 
@@ -1303,6 +1219,7 @@ Eo* float_new(PropertyValue* val, Eo* obj)
 
   const float* f = val->data;
   eo_do(en, jk_entry_value_set(*f));
+  val->item_eo = en;
 
   evas_object_show(bx);
   return bx;
@@ -1617,6 +1534,8 @@ property_list_float_add(
   val->data = calloc(1, sizeof value);
   memcpy(val->data, &value, sizeof value);
 
+  printf("adding float with %s \n", path);
+
   val->create_child = float_new;
 
   return val;
@@ -1628,6 +1547,7 @@ void property_list_float_update(
 {
   memcpy(val->data, &value, sizeof value);
   elm_genlist_item_update(val->item);
+  eo_do(val->item_eo, jk_entry_value_set(value));
 }
 
 PropertyValue*
@@ -1748,6 +1668,7 @@ void property_list_string_update(
 
   val->data = strdup(value);
   elm_genlist_item_update(val->item);
+  elm_object_text_set(val->item_eo, value);
 }
 
 void property_list_vec_update(

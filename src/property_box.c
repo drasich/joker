@@ -60,6 +60,7 @@ property_box_new(Evas_Object* win)
   p->root = scroller;
 
   p->node = property_box_node_new();
+  p->win = win;
 
   return p;
 }
@@ -317,24 +318,12 @@ static void _on_panel_geom(
 }
 
 
-JkPropertyBox* jk_property_box_new(Window* w, int x, int y, int width, int height)
+JkPropertyBox* jk_property_box_new(Evas_Object* panel)
 {
-  Evas_Object* panel = layout_panel_add(w->win, "property");
-  evas_object_move(panel, x, y);
-  evas_object_show(panel);
-
   JkPropertyBox* p = property_box_new(panel);
-  //evas_object_size_hint_weight_set(p->root, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  evas_object_resize(panel, width, height);
-  //smart_panel_content_set(panel, p->root);
   elm_object_part_content_set(panel, "content", p->root);
-  p->win = panel;
-
-  evas_object_event_callback_add(panel, EVAS_CALLBACK_MOVE, _on_panel_geom, p);
-  evas_object_event_callback_add(panel, EVAS_CALLBACK_RESIZE, _on_panel_geom, p);
 
   return p;
-
 }
 
 void
@@ -363,7 +352,9 @@ JkPropertyCb* property_box_cb_get(JkPropertyBox* p)
 PropertyValue*
 property_box_single_item_add(
       JkPropertyBox* pb,
-      PropertyValue* val)
+      PropertyValue* val,
+      PropertyValue* parent
+      )
 {
   const char* path = val->path;
 
@@ -375,24 +366,94 @@ property_box_single_item_add(
   }
   */
 
-  PropertyNode* node = pb->node;
+  //PropertyNode* node = pb->node;
 
   val->cbs = pb->cbs;
 
-  Eo* bx = elm_box_add(pb->box);
+  printf("    **** single item ****** : '%s', with parent %p \n", path, parent);
+
+  Eo* pbx = pb->box;
+  if (parent) {
+    printf("there is a parent, and child is : %p \n", parent->child);
+    if (!parent->child) {
+
+      pbx = parent->eo;
+
+      Eo* bx_child_container = elm_box_add(pbx);
+      elm_box_horizontal_set(bx_child_container, EINA_TRUE);
+      evas_object_size_hint_weight_set(bx_child_container, EVAS_HINT_EXPAND, 0.0);
+      evas_object_size_hint_align_set(bx_child_container, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      //elm_box_align_set(bx_child, 0, 0.5);
+      evas_object_show(bx_child_container);
+      elm_box_pack_end(pbx, bx_child_container);
+
+      Eo* empty = elm_label_add(pbx);
+      evas_object_show(empty);
+      elm_object_text_set(empty, "    ");
+      elm_box_pack_end(bx_child_container, empty);
+
+      Eo* bx_child = elm_box_add(pbx);
+      elm_box_horizontal_set(bx_child, EINA_FALSE);
+      evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+      evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      //elm_box_align_set(bx_child, 0, 0.5);
+      evas_object_show(bx_child);
+      //elm_box_pack_end(pbx, bx_child);
+      elm_box_pack_end(bx_child_container, bx_child);
+
+      parent->child = bx_child;
+      printf("Single: I created a child for '%s', it is %p \n", parent->path, parent->child);
+    }
+
+      pbx = parent->child;
+  }
+
+  Eo* bxeo = elm_box_add(pbx);
+  evas_object_show(bxeo);
+  elm_box_horizontal_set(bxeo, EINA_FALSE);
+  evas_object_size_hint_weight_set(bxeo, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bxeo, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx, 0, 0.5);
+  elm_box_pack_end(pbx,bxeo);
+
+
+  Eo* bx = elm_box_add(pbx);
   evas_object_show(bx);
   elm_box_horizontal_set(bx, EINA_TRUE);
   elm_box_padding_set(bx, 4, 0);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx, 0, 0.5);
+
+  /*
+  if (parent) {
+    Eo* empty = elm_label_add(pbx);
+    evas_object_show(empty);
+    elm_object_text_set(empty, "    ");
+    elm_box_pack_end(bx, empty);
+  }
+  */
 
   //Evas_Coord fw = -1, fh = -1;
   //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   //evas_object_size_hint_min_set(bx, 0, fh);
 
-  elm_box_pack_end(bx, val->create_child(val, bx));
+  elm_box_pack_end(bx, val->create_child(val, pb->box));
 
-  elm_box_pack_end(pb->box, bx);
+  val->eo = bxeo;
+  printf("valeo box : %p\n", bx);
+  elm_box_pack_end(bxeo, bx);
+
+  /*
+  Eo* bx_child = elm_box_add(pbx);
+  elm_box_horizontal_set(bx_child, EINA_FALSE);
+  evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx_child, 0, 0.5);
+  val->child = bx_child;
+  evas_object_show(bx_child);
+  elm_box_pack_end(pbx, bx_child);
+  */
 
   return val;
 
@@ -441,8 +502,186 @@ PropertyValue* property_box_single_node_add(
     elm_box_pack_end(bx, label);
   }
 
+  val->eo = bx;
   elm_box_pack_end(pb->box, bx);
 
   return val;
 }
 
+void property_box_remove(
+      JkPropertyBox* pb,
+      PropertyValue* val)
+{
+  printf("dance !!!!!!!!!!!!!!! %p \n", val->eo);
+  elm_box_unpack(pb->box, val->eo);
+  evas_object_del(val->eo);
+}
+
+void property_box_add(
+      JkPropertyBox* pb,
+      PropertyValue* val)
+{
+}
+
+
+void property_box_enum_update(
+      JkPropertyBox* pb,
+      PropertyValue* val,
+      const char* value)
+{
+  if (!strcmp(value, val->data)) {
+    printf("value are same so return : %s = %s \n", value, val->data);
+    return;
+  }
+
+  if (val->data) free(val->data);
+
+  printf("CCCCCCCCCCCCCCCCCCCCc :: %p %s \n", val->item_eo, value);
+  elm_box_clear(val->child);
+  elm_object_text_set(val->item_eo, value);
+
+  //TODO clear items
+
+  val->data = strdup(value);
+
+  //TODO add items
+}
+
+PropertyValue* property_vec_add(
+      const char* path,
+      int len
+      )
+{
+  PropertyValue *val = calloc(1, sizeof *val);
+  val->path = strdup(path);
+  val->len = len;
+  val->create_child = vec_new;
+
+  return val;
+}
+
+PropertyValue*
+property_box_vec_item_add(
+      JkPropertyBox* pb,
+      PropertyValue* val,
+      PropertyValue* parent
+      )
+{
+  const char* path = val->path;
+
+  val->cbs = pb->cbs;
+
+  printf("    **** VEC item ****** : '%s', with parent %p \n", path, parent);
+  Eo* pbx = pb->box;
+  if (parent) {
+    printf("VEC PATH :::: %s,,,,,,,,,,,there is a parent, and child is : %p \n", path, parent->child);
+    if (!parent->child) {
+
+      pbx = parent->eo;
+
+      Eo* bx_child_container = elm_box_add(pbx);
+      elm_box_horizontal_set(bx_child_container, EINA_TRUE);
+      evas_object_size_hint_weight_set(bx_child_container, EVAS_HINT_EXPAND, 0.0);
+      evas_object_size_hint_align_set(bx_child_container, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      //elm_box_align_set(bx_child, 0, 0.5);
+      evas_object_show(bx_child_container);
+      elm_box_pack_end(pbx, bx_child_container);
+
+      Eo* empty = elm_label_add(pbx);
+      evas_object_show(empty);
+      elm_object_text_set(empty, "    ");
+      elm_box_pack_end(bx_child_container, empty);
+
+      Eo* bx_child = elm_box_add(pbx);
+      elm_box_horizontal_set(bx_child, EINA_FALSE);
+      evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+      evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      //elm_box_align_set(bx_child, 0, 0.5);
+      evas_object_show(bx_child);
+      //elm_box_pack_end(pbx, bx_child);
+      elm_box_pack_end(bx_child_container, bx_child);
+
+      parent->child = bx_child;
+
+      printf("Vec: I created a child for '%s', it is %p \n", parent->path, parent->child);
+    }
+
+      pbx = parent->child;
+  }
+
+  Eo* bxeo = elm_box_add(pbx);
+  evas_object_show(bxeo);
+  elm_box_horizontal_set(bxeo, EINA_FALSE);
+  evas_object_size_hint_weight_set(bxeo, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bxeo, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx, 0, 0.5);
+  elm_box_pack_end(pbx,bxeo);
+
+
+  Eo* bx = elm_box_add(bxeo);
+  evas_object_show(bx);
+  elm_box_horizontal_set(bx, EINA_TRUE);
+  elm_box_padding_set(bx, 4, 0);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx, 0, 0.5);
+
+  /*
+  if (parent) {
+    Eo* empty = elm_label_add(pbx);
+    evas_object_show(empty);
+    elm_object_text_set(empty, "    ");
+    elm_box_pack_end(bx, empty);
+  }
+  */
+
+
+  //Evas_Coord fw = -1, fh = -1;
+  //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
+  //evas_object_size_hint_min_set(bx, 0, fh);
+
+  elm_box_pack_end(bx, val->create_child(val, pb->box));
+
+  val->eo = bxeo;
+  printf("valeo box : %p\n", bx);
+  elm_box_pack_end(bxeo, bx);
+
+
+  Eo* bt = elm_button_add(bx);
+  elm_object_text_set(bt, "+");
+  evas_object_show(bt);
+  elm_box_pack_end(bx, bt);
+  struct _BtCb *btcb = calloc(1, sizeof *btcb);
+  btcb->cb = val->cbs->vec_add;
+  btcb->data = val;
+  btn_cb_set(bt, _bt_cb, btcb);
+
+  bt = elm_button_add(bx);
+  elm_object_text_set(bt, "-");
+  evas_object_show(bt);
+  elm_box_pack_end(bx, bt);
+  btcb = calloc(1, sizeof *btcb);
+  btcb->cb = val->cbs->vec_del;
+  btcb->data = val;
+  btn_cb_set(bt, _bt_cb, btcb);
+
+  /*
+  Eo* bx_child = elm_box_add(pbx);
+  evas_object_show(bx_child);
+  elm_box_horizontal_set(bx_child, EINA_FALSE);
+  evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx_child, 0, 0.5);
+  val->child = bx_child;
+  elm_box_pack_end(pbx, bx_child);
+  */
+
+  return val;
+
+}
+
+void property_box_children_clear(PropertyValue* val)
+{
+  printf("TODO clear the PropertyValue\n");
+  elm_box_clear(val->child);
+}
