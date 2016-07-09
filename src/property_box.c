@@ -438,7 +438,7 @@ property_box_single_item_add(
   //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   //evas_object_size_hint_min_set(bx, 0, fh);
 
-  elm_box_pack_end(bx, val->create_child(val, bxeo));
+  elm_box_pack_end(bx, val->create_child(val, pb->box));
 
   val->eo = bxeo;
   printf("valeo box : %p\n", bx);
@@ -640,7 +640,7 @@ property_box_vec_item_add(
   //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   //evas_object_size_hint_min_set(bx, 0, fh);
 
-  elm_box_pack_end(bx, val->create_child(val, bxeo));
+  elm_box_pack_end(bx, val->create_child(val, pb->box));
 
   val->eo = bxeo;
   printf("valeo box : %p\n", bx);
