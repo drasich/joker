@@ -781,6 +781,7 @@ static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
 
   elm_box_pack_end(bx_root, bx);
 
+  /*
   Eo* bx_child = elm_box_add(obj);
   elm_box_horizontal_set(bx_child, EINA_FALSE);
   evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
@@ -789,6 +790,7 @@ static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
   val->child = bx_child;
   evas_object_show(bx_child);
   elm_box_pack_end(bx_root, bx_child);
+  */
 
 
    return bx_root;

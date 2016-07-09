@@ -150,13 +150,6 @@ Eo* _node_create(PropertyValue* val, Evas_Object* o)
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
   //elm_box_align_set(bx, 0, 0.5);
 
-  Eo* bx_child = elm_box_add(o);
-  elm_box_horizontal_set(bx_child, EINA_FALSE);
-  evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  //elm_box_align_set(bx_child, 0, 0.5);
-  val->child = bx_child;
-
   Eo* bx_label = elm_box_add(o);
   elm_box_horizontal_set(bx_label, EINA_TRUE);
   evas_object_size_hint_weight_set(bx_label, EVAS_HINT_EXPAND, 0.0);
@@ -187,8 +180,6 @@ Eo* _node_create(PropertyValue* val, Evas_Object* o)
   elm_box_pack_end(bx_label, label);
   evas_object_show(label);
   evas_object_show(bx);
-  elm_box_pack_end(bx, bx_child);
-  evas_object_show(bx_child);
   evas_object_show(bx_label);
 
   free(ss[0]);
@@ -266,14 +257,6 @@ Eo* vec_new(PropertyValue* val, Eo* obj)
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
   //elm_box_align_set(bx, 0, 0.5);
 
-  Eo* bx_child = elm_box_add(obj);
-  evas_object_show(bx_child);
-  elm_box_horizontal_set(bx_child, EINA_FALSE);
-  evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  //elm_box_align_set(bx_child, 0, 0.5);
-  val->child = bx_child;
-
   Eo* bxh = elm_box_add(obj);
   evas_object_show(bxh);
   elm_box_horizontal_set(bxh, EINA_TRUE);
@@ -318,7 +301,6 @@ Eo* vec_new(PropertyValue* val, Eo* obj)
   btn_cb_set(bt, _bt_cb_box, btcb);
 
   elm_box_pack_end(bx, bxh);
-  elm_box_pack_end(bx, bx_child);
 
   return bx;
 }

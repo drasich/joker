@@ -370,11 +370,52 @@ property_box_single_item_add(
 
   val->cbs = pb->cbs;
 
+  printf("    **** single item ****** : '%s', with parent %p \n", path, parent);
+
   Eo* pbx = pb->box;
   if (parent) {
     printf("there is a parent, and child is : %p \n", parent->child);
-    pbx = parent->child;
+    if (!parent->child) {
+
+      pbx = parent->eo;
+
+      Eo* bx_child_container = elm_box_add(pbx);
+      elm_box_horizontal_set(bx_child_container, EINA_TRUE);
+      evas_object_size_hint_weight_set(bx_child_container, EVAS_HINT_EXPAND, 0.0);
+      evas_object_size_hint_align_set(bx_child_container, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      //elm_box_align_set(bx_child, 0, 0.5);
+      evas_object_show(bx_child_container);
+      elm_box_pack_end(pbx, bx_child_container);
+
+      Eo* empty = elm_label_add(pbx);
+      evas_object_show(empty);
+      elm_object_text_set(empty, "    ");
+      elm_box_pack_end(bx_child_container, empty);
+
+      Eo* bx_child = elm_box_add(pbx);
+      elm_box_horizontal_set(bx_child, EINA_FALSE);
+      evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+      evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      //elm_box_align_set(bx_child, 0, 0.5);
+      evas_object_show(bx_child);
+      //elm_box_pack_end(pbx, bx_child);
+      elm_box_pack_end(bx_child_container, bx_child);
+
+      parent->child = bx_child;
+      printf("Single: I created a child for '%s', it is %p \n", parent->path, parent->child);
+    }
+
+      pbx = parent->child;
   }
+
+  Eo* bxeo = elm_box_add(pbx);
+  evas_object_show(bxeo);
+  elm_box_horizontal_set(bxeo, EINA_FALSE);
+  evas_object_size_hint_weight_set(bxeo, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bxeo, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx, 0, 0.5);
+  elm_box_pack_end(pbx,bxeo);
+
 
   Eo* bx = elm_box_add(pbx);
   evas_object_show(bx);
@@ -384,15 +425,35 @@ property_box_single_item_add(
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
   elm_box_align_set(bx, 0, 0.5);
 
+  /*
+  if (parent) {
+    Eo* empty = elm_label_add(pbx);
+    evas_object_show(empty);
+    elm_object_text_set(empty, "    ");
+    elm_box_pack_end(bx, empty);
+  }
+  */
+
   //Evas_Coord fw = -1, fh = -1;
   //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   //evas_object_size_hint_min_set(bx, 0, fh);
 
-  elm_box_pack_end(bx, val->create_child(val, pbx));
+  elm_box_pack_end(bx, val->create_child(val, bxeo));
 
-  val->eo = bx;
+  val->eo = bxeo;
   printf("valeo box : %p\n", bx);
-  elm_box_pack_end(pbx, bx);
+  elm_box_pack_end(bxeo, bx);
+
+  /*
+  Eo* bx_child = elm_box_add(pbx);
+  elm_box_horizontal_set(bx_child, EINA_FALSE);
+  evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx_child, 0, 0.5);
+  val->child = bx_child;
+  evas_object_show(bx_child);
+  elm_box_pack_end(pbx, bx_child);
+  */
 
   return val;
 
@@ -510,13 +571,54 @@ property_box_vec_item_add(
 
   val->cbs = pb->cbs;
 
+  printf("    **** VEC item ****** : '%s', with parent %p \n", path, parent);
   Eo* pbx = pb->box;
   if (parent) {
-    printf("vec item add : there is a parent, and child is : %p \n", parent->child);
-    pbx = parent->child;
+    printf("VEC PATH :::: %s,,,,,,,,,,,there is a parent, and child is : %p \n", path, parent->child);
+    if (!parent->child) {
+
+      pbx = parent->eo;
+
+      Eo* bx_child_container = elm_box_add(pbx);
+      elm_box_horizontal_set(bx_child_container, EINA_TRUE);
+      evas_object_size_hint_weight_set(bx_child_container, EVAS_HINT_EXPAND, 0.0);
+      evas_object_size_hint_align_set(bx_child_container, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      //elm_box_align_set(bx_child, 0, 0.5);
+      evas_object_show(bx_child_container);
+      elm_box_pack_end(pbx, bx_child_container);
+
+      Eo* empty = elm_label_add(pbx);
+      evas_object_show(empty);
+      elm_object_text_set(empty, "    ");
+      elm_box_pack_end(bx_child_container, empty);
+
+      Eo* bx_child = elm_box_add(pbx);
+      elm_box_horizontal_set(bx_child, EINA_FALSE);
+      evas_object_size_hint_weight_set(bx_child, EVAS_HINT_EXPAND, 0.0);
+      evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      //elm_box_align_set(bx_child, 0, 0.5);
+      evas_object_show(bx_child);
+      //elm_box_pack_end(pbx, bx_child);
+      elm_box_pack_end(bx_child_container, bx_child);
+
+      parent->child = bx_child;
+
+      printf("Vec: I created a child for '%s', it is %p \n", parent->path, parent->child);
+    }
+
+      pbx = parent->child;
   }
 
-  Eo* bx = elm_box_add(pbx);
+  Eo* bxeo = elm_box_add(pbx);
+  evas_object_show(bxeo);
+  elm_box_horizontal_set(bxeo, EINA_FALSE);
+  evas_object_size_hint_weight_set(bxeo, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bxeo, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx, 0, 0.5);
+  elm_box_pack_end(pbx,bxeo);
+
+
+  Eo* bx = elm_box_add(bxeo);
   evas_object_show(bx);
   elm_box_horizontal_set(bx, EINA_TRUE);
   elm_box_padding_set(bx, 4, 0);
@@ -524,18 +626,28 @@ property_box_vec_item_add(
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
   elm_box_align_set(bx, 0, 0.5);
 
+  /*
+  if (parent) {
+    Eo* empty = elm_label_add(pbx);
+    evas_object_show(empty);
+    elm_object_text_set(empty, "    ");
+    elm_box_pack_end(bx, empty);
+  }
+  */
+
+
   //Evas_Coord fw = -1, fh = -1;
   //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   //evas_object_size_hint_min_set(bx, 0, fh);
 
-  elm_box_pack_end(bx, val->create_child(val, pbx));
+  elm_box_pack_end(bx, val->create_child(val, bxeo));
 
-  val->eo = bx;
+  val->eo = bxeo;
   printf("valeo box : %p\n", bx);
-  elm_box_pack_end(pbx, bx);
+  elm_box_pack_end(bxeo, bx);
 
 
-  Eo* bt = elm_button_add(pbx);
+  Eo* bt = elm_button_add(bx);
   elm_object_text_set(bt, "+");
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
@@ -544,7 +656,7 @@ property_box_vec_item_add(
   btcb->data = val;
   btn_cb_set(bt, _bt_cb, btcb);
 
-  bt = elm_button_add(pbx);
+  bt = elm_button_add(bx);
   elm_object_text_set(bt, "-");
   evas_object_show(bt);
   elm_box_pack_end(bx, bt);
@@ -553,6 +665,7 @@ property_box_vec_item_add(
   btcb->data = val;
   btn_cb_set(bt, _bt_cb, btcb);
 
+  /*
   Eo* bx_child = elm_box_add(pbx);
   evas_object_show(bx_child);
   elm_box_horizontal_set(bx_child, EINA_FALSE);
@@ -560,8 +673,8 @@ property_box_vec_item_add(
   evas_object_size_hint_align_set(bx_child, EVAS_HINT_FILL, EVAS_HINT_FILL);
   //elm_box_align_set(bx_child, 0, 0.5);
   val->child = bx_child;
-
   elm_box_pack_end(pbx, bx_child);
+  */
 
   return val;
 
