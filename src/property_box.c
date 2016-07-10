@@ -560,6 +560,20 @@ PropertyValue* property_vec_add(
   return val;
 }
 
+void property_box_vec_update(
+      PropertyValue* val,
+      int len)
+{
+  if (val->len == len) {
+    printf("value are same so return : %d = %d \n", len, val->len);
+    return;
+  }
+
+  val->len = len;
+  vec_update_len(val);
+}
+
+
 PropertyValue*
 property_box_vec_item_add(
       JkPropertyBox* pb,

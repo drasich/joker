@@ -248,6 +248,26 @@ void _bt_cb_box(void* data)
 }
 
 
+void vec_update_len(PropertyValue* val)
+{
+  Eo* label = val->item_eo;
+  unsigned int num;
+  char** ss = eina_str_split_full(val->path, "/", 0, &num);
+  const char* name = ss[num-1];
+
+  char s[256];
+  sprintf(s, "<b>%s</b>, len : %d", name, val->len);
+  //if (val->item && elm_genlist_item_expanded_get(val->item))
+  //sprintf(s, "%s : ", name);
+  //else
+  //sprintf(s, "%s", name);
+
+  elm_object_text_set(label, s);
+
+  free(ss[0]);
+  free(ss);
+}
+
 Eo* vec_new(PropertyValue* val, Eo* obj)
 {
   Eo* bx = elm_box_add(obj);
@@ -270,26 +290,10 @@ Eo* vec_new(PropertyValue* val, Eo* obj)
   evas_object_size_hint_align_set(bxh, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
   Evas_Object* label = elm_label_add(bxh);
-
-   {
-    unsigned int num;
-    char** ss = eina_str_split_full(val->path, "/", 0, &num);
-    const char* name = ss[num-1];
-
-    char s[256];
-    sprintf(s, "<b>%s</b>, len : %d", name, val->len);
-    //if (val->item && elm_genlist_item_expanded_get(val->item))
-    //sprintf(s, "%s : ", name);
-    //else
-    //sprintf(s, "%s", name);
-
-    elm_object_text_set(label, s);
-    elm_box_pack_end(bxh, label);
-    evas_object_show(label);
-
-    free(ss[0]);
-    free(ss);
-   }
+  elm_box_pack_end(bxh, label);
+  evas_object_show(label);
+  val->item_eo = label;
+  vec_update_len(val);
 
   Eo* bt = elm_button_add(obj);
   elm_object_text_set(bt, "+");

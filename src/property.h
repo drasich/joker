@@ -285,6 +285,7 @@ Eo* _node_create(PropertyValue* val, Evas_Object* o);
 PropertyValue* property_node_add(const char* path);
 
 Eo* vec_new(PropertyValue* val, Eo* obj);
+void vec_update_len(PropertyValue* val);
 
 struct _BtCb
 {
