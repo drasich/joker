@@ -175,10 +175,10 @@ _cmd_list(JkCommand* cmd, Evas_Object* win, Evas_Object* bx)
   //elm_box_pack_end(bx, gli);
 }
 
-
-JkCommand* widget_command_new(Evas_Object* win)
+void
+command_create_popup(JkCommand *c)
 {
-  JkCommand *c = calloc(1, sizeof *c);
+  Evas_Object* win = c->win;
 
   Evas_Object* popup = elm_popup_add(win);
   elm_object_style_set(popup, "transparent");
@@ -221,6 +221,14 @@ JkCommand* widget_command_new(Evas_Object* win)
 
   elm_object_part_content_set(popup, "default", bx);
 
+}
+
+
+JkCommand* widget_command_new(Evas_Object* win)
+{
+  JkCommand *c = calloc(1, sizeof *c);
+
+  c->win = win;
   c->visible = NULL;
   c->hidden = NULL;
 
@@ -279,16 +287,20 @@ command_show(JkCommand* command)
   Eina_List *l_next;
   CommandCallbackData *ccd;
 
-  if (evas_object_visible_get(command->root)) {
-    evas_object_hide(command->root);
+  if (command->root) {
 
     EINA_LIST_FOREACH_SAFE(command->visible, l, l_next, ccd) {
       command->visible = eina_list_remove_list(command->visible, l);
       _item_del(command, ccd);
       command->hidden = eina_list_append(command->hidden, ccd);
     }
+
+    evas_object_del(command->root);
+    command->root = NULL;
   }
   else {
+    command_create_popup(command);
+
     EINA_LIST_FOREACH_SAFE(command->hidden, l, l_next, ccd) {
       command->hidden = eina_list_remove_list(command->hidden, l);
       _item_add(command, ccd);

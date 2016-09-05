@@ -16,6 +16,8 @@ struct _Command
 
   Eina_List* visible;
   Eina_List* hidden;
+
+  Evas_Object* win;
 };
 
 JkCommand* widget_command_new(Evas_Object* win);
