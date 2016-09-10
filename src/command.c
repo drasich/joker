@@ -252,8 +252,8 @@ command_new(
       void* data,
       command_callback fn)
 {
-  Evas_Object* win = command->root;
-  Evas_Object* box = command->box;
+  //Evas_Object* win = command->root;
+  //Evas_Object* box = command->box;
 
   CommandCallbackData* ccd = calloc(1, sizeof *ccd);
   ccd->name = strdup(name);
@@ -273,10 +273,12 @@ command_clean(JkCommand* command)
   EINA_LIST_FREE(command->hidden, ccd)
    free(ccd);
 
+  command->hidden = NULL;
+
   EINA_LIST_FREE(command->visible, ccd)
    free(ccd);
 
-
+  command->visible = NULL;
 }
 
 

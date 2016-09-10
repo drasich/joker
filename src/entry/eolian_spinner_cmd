@@ -1,0 +1,18 @@
+#!/bin/sh
+
+#prpath="/home/chris/code/efl-git/share/eolian/include/"
+prpath="/usr/share/eolian/include/"
+#prpath="/home/chris/code/eflgit/share/eolian/include/"
+include="-I $prpath/evas-1 -I $prpath/elementary-1 -I $prpath/eo-1 -I $prpath/efl-1 -I $prpath/edje-1"
+prefix=jk_spinner
+eo_file=${prefix}.eo
+
+eolian_gen ${include} --gc --legacy -o ${prefix}.eo.c ${eo_file}
+eolian_gen ${include} --gh -o ${prefix}.eo.h ${eo_file}
+eolian_gen ${include} --gi -o ${prefix}.c ${eo_file}
+
+#eolian_gen ${include} --gc --legacy -o ${prefix}.eo.legacy.c ${eo_file}
+#eolian_gen ${include} --gs --legacy -o ${prefix}.stubs.c ${eo_file}
+eolian_gen ${include} --gh --legacy -o ${prefix}.eo.legacy.h ${eo_file}
+#eolian_gen ${include} --gi --legacy -o ${prefix}.legacy.c ${eo_file}
+

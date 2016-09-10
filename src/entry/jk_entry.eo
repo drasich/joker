@@ -1,6 +1,8 @@
-class Jk.Entry (Elm.Layout)
+class Jk.Entry (Elm.Layout, Elm.Widget)
 {
-   eo_prefix: jk_entry;
+   legacy_prefix: jk_entry;
+   eo_prefix: jk_obj_entry;
+   event_prefix: jk_entry;
    methods {
       @property min_max {
          set {
@@ -100,11 +102,10 @@ class Jk.Entry (Elm.Layout)
    }
    implements {
       class.constructor;
+      //Efl.Object.constructor;
       Eo.Base.constructor;
-      Evas.Object_Smart.add;
-      Evas.Object_Smart.del;
-      Evas.Object_Smart.move;
-      Evas.Object_Smart.resize;
+      Efl.Canvas.Group.group_add;
+      Efl.Canvas.Group.group_del;
       Elm.Widget.focus_next_manager_is;
       Elm.Widget.focus_direction_manager_is;
       Elm.Widget.focus_next;

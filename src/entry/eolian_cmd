@@ -1,10 +1,17 @@
 #!/bin/sh
 
-prpath="/home/chris/code/efl-git/share/eolian/include/"
-include="-I $prpath/evas-1 -I $prpath/elementary-1 -I $prpath/eo-1 -I $prpath/efl-1"
+#prpath="/home/chris/code/efl-git/share/eolian/include/"
+prpath="/usr/share/eolian/include/"
+#prpath="/home/chris/code/eflgit/share/eolian/include/"
+include="-I $prpath/evas-1 -I $prpath/elementary-1 -I $prpath/eo-1 -I $prpath/efl-1 -I $prpath/edje-1"
 prefix=jk_entry
 
-eolian_gen ${include} --gc --eo -o ${prefix}.eo.c jk_entry.eo
-eolian_gen ${include} --gh --eo -o ${prefix}.eo.h jk_entry.eo
-eolian_gen ${include} --gi --eo -o ${prefix}.c jk_entry.eo
+eolian_gen ${include} --gc --legacy -o ${prefix}.eo.c jk_entry.eo
+eolian_gen ${include} --gh -o ${prefix}.eo.h jk_entry.eo
+eolian_gen ${include} --gi -o ${prefix}.c jk_entry.eo
+
+#eolian_gen ${include} --gc --legacy -o ${prefix}.eo.legacy.c jk_entry.eo
+#eolian_gen ${include} --gs --legacy -o ${prefix}.stubs.c jk_entry.eo
+eolian_gen ${include} --gh --legacy -o ${prefix}.eo.legacy.h jk_entry.eo
+#eolian_gen ${include} --gi --legacy -o ${prefix}.legacy.c jk_entry.eo
 

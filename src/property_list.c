@@ -1118,7 +1118,8 @@ _jk_entry_changed_cb_list(
   JkPropertyCb* cbs = val->cbs;
   const char* name = evas_object_name_get(obj);
   double v;
-  eo_do(obj, v = jk_entry_value_get());
+  //eo_do(obj, v = jk_entry_value_get());
+  v = jk_entry_value_get(obj);
   float f = v;
   memcpy(val->data, &f, sizeof f);
 
@@ -1137,12 +1138,14 @@ _jk_entry_changed_end_cb_list(
   JkPropertyCb* cbs = val->cbs;
   const char* name = evas_object_name_get(obj);
   double v;
-  eo_do(obj, v = jk_entry_value_get());
+  //eo_do(obj, v = jk_entry_value_get());
+  v = jk_entry_value_get(obj);
   float f = v;
   memcpy(val->data, &f, sizeof f);
 
   double vs;
-  eo_do(obj, vs = jk_entry_value_saved_get());
+  //eo_do(obj, vs = jk_entry_value_saved_get());
+  vs = jk_entry_value_saved_get(obj);
 
   if (cbs->register_change_float) {
     cbs->register_change_float(cbs->data, val->path, &vs, &v, 1);
@@ -1196,7 +1199,10 @@ Eo* float_new(PropertyValue* val, Eo* obj)
    //Evas_Object* en = smart_entry_add(evas_object_evas_get(obj));
    //Evas_Object* en = smart_entry_add(obj);
    //chris
-   Evas_Object *en = eo_add(JK_ENTRY_CLASS, obj);
+   printf("parent obj : %p \n", obj);
+   //Evas_Object *en = eo_add(JK_ENTRY_CLASS, obj);
+   /*
+   Evas_Object *en = jk_entry_add(obj);
 
   //evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -1205,21 +1211,34 @@ Eo* float_new(PropertyValue* val, Eo* obj)
   evas_object_show(en);
    elm_box_pack_end(bx, en);
 
-  /*
-     Eo* rect = evas_object_rectangle_add(evas_object_evas_get(obj));
-  evas_object_show(rect);
-  evas_object_color_set(rect, rand() % 255, rand() % 255, rand() % 255, 255/2);
-  evas_object_size_hint_weight_set(rect, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  evas_object_size_hint_align_set(rect, EVAS_HINT_FILL, EVAS_HINT_FILL);
+     //Eo* rect = evas_object_rectangle_add(evas_object_evas_get(obj));
+  //evas_object_show(rect);
+  //evas_object_color_set(rect, rand() % 255, rand() % 255, rand() % 255, 255/2);
+  //evas_object_size_hint_weight_set(rect, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  //evas_object_size_hint_align_set(rect, EVAS_HINT_FILL, EVAS_HINT_FILL);
+//
+   //elm_box_pack_end(bx, rect);
 
-   elm_box_pack_end(bx, rect);
-   */
-  evas_object_smart_callback_add(en, "changed,end", _jk_entry_changed_end_cb_list, val);
-  evas_object_smart_callback_add(en, "changed", _jk_entry_changed_cb_list, val);
+   printf("en : %p \n", en);
+  //evas_object_smart_callback_add(en, "changed,end", _jk_entry_changed_end_cb_list, val);
+  //evas_object_smart_callback_add(en, "changed", _jk_entry_changed_cb_list, val);
 
   const float* f = val->data;
-  eo_do(en, jk_entry_value_set(*f));
+  //eo_do(en, jk_entry_value_set(*f));
+  jk_entry_value_set(en, *f);
   val->item_eo = en;
+  */
+
+    {
+     //Eo* sp = elm_spinner_add(obj);
+     //Eo* sp = jk_spinner_add(obj);
+     Eo* sp = jk_spinner_add(bx);
+    // evas_object_size_hint_weight_set(sp, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+     //evas_object_size_hint_align_set(sp, EVAS_HINT_FILL, EVAS_HINT_FILL);
+     printf("jk_spinner_add, sp : %p \n", sp);
+    evas_object_show(sp);
+   elm_box_pack_end(bx, sp);
+    }
 
   evas_object_show(bx);
   return bx;
@@ -1303,7 +1322,8 @@ gl_content_float_get_test(
   evas_object_smart_callback_add(en, "changed", _jk_entry_changed_cb_list, val);
 
   const float* f = val->data;
-  eo_do(en, jk_entry_value_set(*f));
+  //eo_do(en, jk_entry_value_set(*f));
+  jk_entry_value_set(en, *f);
 
   return bx;
 }
@@ -1547,7 +1567,8 @@ void property_list_float_update(
 {
   memcpy(val->data, &value, sizeof value);
   elm_genlist_item_update(val->item);
-  eo_do(val->item_eo, jk_entry_value_set(value));
+  //eo_do(val->item_eo, jk_entry_value_set(value));
+  jk_entry_value_set(val->item_eo, value);
 }
 
 PropertyValue*

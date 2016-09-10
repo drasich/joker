@@ -15,47 +15,47 @@ typedef Eo Jk_Entry;
 #endif
 #define JK_ENTRY_CLASS jk_entry_class_get()
 
-EAPI const Eo_Class *jk_entry_class_get(void) EINA_CONST;
+EWAPI const Eo_Class *jk_entry_class_get(void);
 
-EOAPI void  jk_entry_min_max_set(double min, double max);
+EOAPI void jk_obj_entry_min_max_set(Eo *obj, double min, double max);
 
-EOAPI void  jk_entry_min_max_get(double *min, double *max);
+EOAPI void jk_obj_entry_min_max_get(const Eo *obj, double *min, double *max);
 
-EOAPI void  jk_entry_step_set(double step);
+EOAPI void jk_obj_entry_step_set(Eo *obj, double step);
 
-EOAPI double  jk_entry_step_get(void);
+EOAPI double jk_obj_entry_step_get(const Eo *obj);
 
-EOAPI void  jk_entry_wrap_set(Eina_Bool wrap);
+EOAPI void jk_obj_entry_wrap_set(Eo *obj, Eina_Bool wrap);
 
-EOAPI Eina_Bool  jk_entry_wrap_get(void);
+EOAPI Eina_Bool jk_obj_entry_wrap_get(const Eo *obj);
 
-EOAPI void  jk_entry_interval_set(double interval);
+EOAPI void jk_obj_entry_interval_set(Eo *obj, double interval);
 
-EOAPI double  jk_entry_interval_get(void);
+EOAPI double jk_obj_entry_interval_get(const Eo *obj);
 
-EOAPI void  jk_entry_round_set(int rnd);
+EOAPI void jk_obj_entry_round_set(Eo *obj, int rnd);
 
-EOAPI int  jk_entry_round_get(void);
+EOAPI int jk_obj_entry_round_get(const Eo *obj);
 
-EOAPI void  jk_entry_editable_set(Eina_Bool editable);
+EOAPI void jk_obj_entry_editable_set(Eo *obj, Eina_Bool editable);
 
-EOAPI Eina_Bool  jk_entry_editable_get(void);
+EOAPI Eina_Bool jk_obj_entry_editable_get(const Eo *obj);
 
-EOAPI void  jk_entry_base_set(double base);
+EOAPI void jk_obj_entry_base_set(Eo *obj, double base);
 
-EOAPI double  jk_entry_base_get(void);
+EOAPI double jk_obj_entry_base_get(const Eo *obj);
 
-EOAPI void  jk_entry_value_set(double val);
+EOAPI void jk_obj_entry_value_set(Eo *obj, double val);
 
-EOAPI double  jk_entry_value_get(void);
+EOAPI double jk_obj_entry_value_get(const Eo *obj);
 
-EOAPI double  jk_entry_value_saved_get(void);
+EOAPI double jk_obj_entry_value_saved_get(const Eo *obj);
 
-EOAPI void  jk_entry_label_format_set(const char *fmt);
+EOAPI void jk_obj_entry_label_format_set(Eo *obj, const char *fmt);
 
-EOAPI const char * jk_entry_label_format_get(void);
+EOAPI const char *jk_obj_entry_label_format_get(const Eo *obj);
 
-EOAPI void  jk_entry_special_value_add(double value, const char *label);
+EOAPI void jk_obj_entry_special_value_add(Eo *obj, double value, const char *label);
 
 EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_CHANGED;
 EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_CHANGED_END;
