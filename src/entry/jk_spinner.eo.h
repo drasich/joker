@@ -4,6 +4,8 @@
 #ifndef _JK_SPINNER_EO_CLASS_TYPE
 #define _JK_SPINNER_EO_CLASS_TYPE
 
+#include "Eo.h"
+
 typedef Eo Jk_Spinner;
 
 #endif
@@ -15,7 +17,7 @@ typedef Eo Jk_Spinner;
 #endif
 #define JK_SPINNER_CLASS jk_spinner_class_get()
 
-EWAPI const Eo_Class *jk_spinner_class_get(void);
+EWAPI const Efl_Class *jk_spinner_class_get(void);
 
 /**
  * @brief Control whether the spinner should wrap when it reaches its minimum
@@ -230,10 +232,10 @@ EOAPI const char *jk_obj_spinner_label_format_get(const Eo *obj);
  */
 EOAPI void jk_obj_spinner_special_value_add(Eo *obj, double value, const char *label);
 
-EOAPI extern const Eo_Event_Description _JK_SPINNER_EVENT_CHANGED;
-EOAPI extern const Eo_Event_Description _JK_SPINNER_EVENT_DELAY_CHANGED;
-EOAPI extern const Eo_Event_Description _JK_SPINNER_EVENT_SPINNER_DRAG_START;
-EOAPI extern const Eo_Event_Description _JK_SPINNER_EVENT_SPINNER_DRAG_STOP;
+EOAPI extern const Efl_Event_Description _JK_SPINNER_EVENT_CHANGED;
+EOAPI extern const Efl_Event_Description _JK_SPINNER_EVENT_DELAY_CHANGED;
+EOAPI extern const Efl_Event_Description _JK_SPINNER_EVENT_SPINNER_DRAG_START;
+EOAPI extern const Efl_Event_Description _JK_SPINNER_EVENT_SPINNER_DRAG_STOP;
 
 /**
  * No description

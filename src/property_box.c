@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "common.h"
 //#include "entry.h"
-#include "entry/jk_entry.eo.h"
+//#include "entry/jk_entry.eo.h"
 #include "panel.h"
 
 static void

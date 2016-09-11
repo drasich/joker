@@ -3,7 +3,8 @@
 #include <stdbool.h>
 #include "common.h"
 //#include "entry.h"
-#include "entry/jk_entry.eo.h"
+//#include "entry/jk_entry.eo.h"
+#include "entry/jk_spinner.eo.h"
 
 static Elm_Genlist_Item_Class 
                               *class_group,
@@ -1119,7 +1120,7 @@ _jk_entry_changed_cb_list(
   const char* name = evas_object_name_get(obj);
   double v;
   //eo_do(obj, v = jk_entry_value_get());
-  v = jk_entry_value_get(obj);
+  //v = jk_entry_value_get(obj);
   float f = v;
   memcpy(val->data, &f, sizeof f);
 
@@ -1139,13 +1140,13 @@ _jk_entry_changed_end_cb_list(
   const char* name = evas_object_name_get(obj);
   double v;
   //eo_do(obj, v = jk_entry_value_get());
-  v = jk_entry_value_get(obj);
+  //v = jk_entry_value_get(obj);
   float f = v;
   memcpy(val->data, &f, sizeof f);
 
   double vs;
   //eo_do(obj, vs = jk_entry_value_saved_get());
-  vs = jk_entry_value_saved_get(obj);
+  //vs = jk_entry_value_saved_get(obj);
 
   if (cbs->register_change_float) {
     cbs->register_change_float(cbs->data, val->path, &vs, &v, 1);
@@ -1300,7 +1301,9 @@ gl_content_float_get_test(
    //Evas_Object* en = smart_entry_add(evas_object_evas_get(obj));
    //Evas_Object* en = smart_entry_add(obj);
    //chris
-   Evas_Object *en = eo_add(JK_ENTRY_CLASS, obj);
+   //Evas_Object *en = eo_add(JK_ENTRY_CLASS, obj);
+   //Evas_Object *en = jk_spinner_add(obj);
+   Evas_Object *en = jk_spinner_add(bx);
 
   //evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -1323,7 +1326,7 @@ gl_content_float_get_test(
 
   const float* f = val->data;
   //eo_do(en, jk_entry_value_set(*f));
-  jk_entry_value_set(en, *f);
+  //jk_entry_value_set(en, *f);
 
   return bx;
 }
@@ -1568,7 +1571,7 @@ void property_list_float_update(
   memcpy(val->data, &value, sizeof value);
   elm_genlist_item_update(val->item);
   //eo_do(val->item_eo, jk_entry_value_set(value));
-  jk_entry_value_set(val->item_eo, value);
+  //jk_entry_value_set(val->item_eo, value);
 }
 
 PropertyValue*

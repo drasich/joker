@@ -34,7 +34,7 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
     config.file("src/action.c")
         .file("src/command.c")
         .file("src/common.c")
-        .file("src/entry/jk_entry.c")
+        //.file("src/entry/jk_entry.c")
         .file("src/entry/jk_spinner.c")
         .file("src/glview.c")
         .file("src/input.c")

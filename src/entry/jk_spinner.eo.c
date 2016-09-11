@@ -1,57 +1,58 @@
-EOAPI const Eo_Event_Description _JK_SPINNER_EVENT_CHANGED =
-   EO_EVENT_DESCRIPTION("changed");
-EOAPI const Eo_Event_Description _JK_SPINNER_EVENT_DELAY_CHANGED =
-   EO_EVENT_DESCRIPTION("delay,changed");
-EOAPI const Eo_Event_Description _JK_SPINNER_EVENT_SPINNER_DRAG_START =
-   EO_EVENT_DESCRIPTION("spinner,drag,start");
-EOAPI const Eo_Event_Description _JK_SPINNER_EVENT_SPINNER_DRAG_STOP =
-   EO_EVENT_DESCRIPTION("spinner,drag,stop");
+#include "Eo.h"
+EOAPI const Efl_Event_Description _JK_SPINNER_EVENT_CHANGED =
+   EFL_EVENT_DESCRIPTION("changed");
+EOAPI const Efl_Event_Description _JK_SPINNER_EVENT_DELAY_CHANGED =
+   EFL_EVENT_DESCRIPTION("delay,changed");
+EOAPI const Efl_Event_Description _JK_SPINNER_EVENT_SPINNER_DRAG_START =
+   EFL_EVENT_DESCRIPTION("spinner,drag,start");
+EOAPI const Efl_Event_Description _JK_SPINNER_EVENT_SPINNER_DRAG_STOP =
+   EFL_EVENT_DESCRIPTION("spinner,drag,stop");
 
 void _jk_spinner_wrap_set(Eo *obj, Jk_Spinner_Data *pd, Eina_Bool wrap);
 
-EOAPI EO_VOID_FUNC_BODYV(jk_obj_spinner_wrap_set, EO_FUNC_CALL(wrap), Eina_Bool wrap);
+EOAPI EFL_VOID_FUNC_BODYV(jk_obj_spinner_wrap_set, EFL_FUNC_CALL(wrap), Eina_Bool wrap);
 
 Eina_Bool _jk_spinner_wrap_get(Eo *obj, Jk_Spinner_Data *pd);
 
-EOAPI EO_FUNC_BODY_CONST(jk_obj_spinner_wrap_get, Eina_Bool, 0);
+EOAPI EFL_FUNC_BODY_CONST(jk_obj_spinner_wrap_get, Eina_Bool, 0);
 
 void _jk_spinner_round_set(Eo *obj, Jk_Spinner_Data *pd, int rnd);
 
-EOAPI EO_VOID_FUNC_BODYV(jk_obj_spinner_round_set, EO_FUNC_CALL(rnd), int rnd);
+EOAPI EFL_VOID_FUNC_BODYV(jk_obj_spinner_round_set, EFL_FUNC_CALL(rnd), int rnd);
 
 int _jk_spinner_round_get(Eo *obj, Jk_Spinner_Data *pd);
 
-EOAPI EO_FUNC_BODY_CONST(jk_obj_spinner_round_get, int, 0);
+EOAPI EFL_FUNC_BODY_CONST(jk_obj_spinner_round_get, int, 0);
 
 void _jk_spinner_editable_set(Eo *obj, Jk_Spinner_Data *pd, Eina_Bool editable);
 
-EOAPI EO_VOID_FUNC_BODYV(jk_obj_spinner_editable_set, EO_FUNC_CALL(editable), Eina_Bool editable);
+EOAPI EFL_VOID_FUNC_BODYV(jk_obj_spinner_editable_set, EFL_FUNC_CALL(editable), Eina_Bool editable);
 
 Eina_Bool _jk_spinner_editable_get(Eo *obj, Jk_Spinner_Data *pd);
 
-EOAPI EO_FUNC_BODY_CONST(jk_obj_spinner_editable_get, Eina_Bool, 0);
+EOAPI EFL_FUNC_BODY_CONST(jk_obj_spinner_editable_get, Eina_Bool, 0);
 
 void _jk_spinner_base_set(Eo *obj, Jk_Spinner_Data *pd, double base);
 
-EOAPI EO_VOID_FUNC_BODYV(jk_obj_spinner_base_set, EO_FUNC_CALL(base), double base);
+EOAPI EFL_VOID_FUNC_BODYV(jk_obj_spinner_base_set, EFL_FUNC_CALL(base), double base);
 
 double _jk_spinner_base_get(Eo *obj, Jk_Spinner_Data *pd);
 
-EOAPI EO_FUNC_BODY_CONST(jk_obj_spinner_base_get, double, 0);
+EOAPI EFL_FUNC_BODY_CONST(jk_obj_spinner_base_get, double, 0);
 
 void _jk_spinner_label_format_set(Eo *obj, Jk_Spinner_Data *pd, const char *fmt);
 
-EOAPI EO_VOID_FUNC_BODYV(jk_obj_spinner_label_format_set, EO_FUNC_CALL(fmt), const char *fmt);
+EOAPI EFL_VOID_FUNC_BODYV(jk_obj_spinner_label_format_set, EFL_FUNC_CALL(fmt), const char *fmt);
 
 const char * _jk_spinner_label_format_get(Eo *obj, Jk_Spinner_Data *pd);
 
-EOAPI EO_FUNC_BODY_CONST(jk_obj_spinner_label_format_get, const char *, 0);
+EOAPI EFL_FUNC_BODY_CONST(jk_obj_spinner_label_format_get, const char *, 0);
 
 void _jk_spinner_special_value_add(Eo *obj, Jk_Spinner_Data *pd, double value, const char *label);
 
-EOAPI EO_VOID_FUNC_BODYV(jk_obj_spinner_special_value_add, EO_FUNC_CALL(value, label), double value, const char *label);
+EOAPI EFL_VOID_FUNC_BODYV(jk_obj_spinner_special_value_add, EFL_FUNC_CALL(value, label), double value, const char *label);
 
-Eo_Base * _jk_spinner_eo_base_constructor(Eo *obj, Jk_Spinner_Data *pd);
+Efl_Object * _jk_spinner_efl_object_constructor(Eo *obj, Jk_Spinner_Data *pd);
 
 
 void _jk_spinner_efl_canvas_group_group_add(Eo *obj, Jk_Spinner_Data *pd);
@@ -129,106 +130,88 @@ double _jk_spinner_elm_interface_atspi_value_increment_get(Eo *obj, Jk_Spinner_D
 const Elm_Atspi_Action * _jk_spinner_elm_interface_atspi_widget_action_elm_actions_get(Eo *obj, Jk_Spinner_Data *pd);
 
 
-static const Eo_Op_Description _jk_spinner_op_desc[] = {
-     EO_OP_FUNC_OVERRIDE(eo_constructor, _jk_spinner_eo_base_constructor),
-     EO_OP_FUNC_OVERRIDE(efl_canvas_group_add, _jk_spinner_efl_canvas_group_group_add),
-     EO_OP_FUNC_OVERRIDE(efl_canvas_group_del, _jk_spinner_efl_canvas_group_group_del),
-     EO_OP_FUNC_OVERRIDE(elm_obj_widget_theme_apply, _jk_spinner_elm_widget_theme_apply),
-     EO_OP_FUNC_OVERRIDE(elm_obj_widget_focus_next_manager_is, _jk_spinner_elm_widget_focus_next_manager_is),
-     EO_OP_FUNC_OVERRIDE(elm_obj_widget_focus_direction_manager_is, _jk_spinner_elm_widget_focus_direction_manager_is),
-     EO_OP_FUNC_OVERRIDE(elm_obj_widget_access, _jk_spinner_elm_widget_access),
-     EO_OP_FUNC_OVERRIDE(elm_obj_widget_focus_next, _jk_spinner_elm_widget_focus_next),
-     EO_OP_FUNC_OVERRIDE(elm_obj_widget_focus_direction, _jk_spinner_elm_widget_focus_direction),
-     EO_OP_FUNC_OVERRIDE(elm_obj_widget_on_focus, _jk_spinner_elm_widget_on_focus),
-     EO_OP_FUNC_OVERRIDE(elm_obj_widget_event, _jk_spinner_elm_widget_event),
-     EO_OP_FUNC_OVERRIDE(elm_obj_layout_sizing_eval, _jk_spinner_elm_layout_sizing_eval),
-     EO_OP_FUNC_OVERRIDE(efl_ui_spin_min_max_set, _jk_spinner_efl_ui_spin_min_max_set),
-     EO_OP_FUNC_OVERRIDE(efl_ui_spin_min_max_get, _jk_spinner_efl_ui_spin_min_max_get),
-     EO_OP_FUNC_OVERRIDE(efl_ui_spin_step_set, _jk_spinner_efl_ui_spin_step_set),
-     EO_OP_FUNC_OVERRIDE(efl_ui_spin_step_get, _jk_spinner_efl_ui_spin_step_get),
-     EO_OP_FUNC_OVERRIDE(efl_ui_spin_value_set, _jk_spinner_efl_ui_spin_value_set),
-     EO_OP_FUNC_OVERRIDE(efl_ui_spin_value_get, _jk_spinner_efl_ui_spin_value_get),
-     EO_OP_FUNC_OVERRIDE(efl_ui_spin_interval_set, _jk_spinner_efl_ui_spin_interval_set),
-     EO_OP_FUNC_OVERRIDE(efl_ui_spin_interval_get, _jk_spinner_efl_ui_spin_interval_get),
-     EO_OP_FUNC_OVERRIDE(elm_interface_atspi_accessible_name_get, _jk_spinner_elm_interface_atspi_accessible_name_get),
-     EO_OP_FUNC_OVERRIDE(elm_interface_atspi_value_and_text_get, _jk_spinner_elm_interface_atspi_value_value_and_text_get),
-     EO_OP_FUNC_OVERRIDE(elm_interface_atspi_value_and_text_set, _jk_spinner_elm_interface_atspi_value_value_and_text_set),
-     EO_OP_FUNC_OVERRIDE(elm_interface_atspi_value_range_get, _jk_spinner_elm_interface_atspi_value_range_get),
-     EO_OP_FUNC_OVERRIDE(elm_interface_atspi_value_increment_get, _jk_spinner_elm_interface_atspi_value_increment_get),
-     EO_OP_FUNC_OVERRIDE(elm_interface_atspi_widget_action_elm_actions_get, _jk_spinner_elm_interface_atspi_widget_action_elm_actions_get),
-     EO_OP_FUNC(jk_obj_spinner_wrap_set, _jk_spinner_wrap_set),
-     EO_OP_FUNC(jk_obj_spinner_wrap_get, _jk_spinner_wrap_get),
-     EO_OP_FUNC(jk_obj_spinner_round_set, _jk_spinner_round_set),
-     EO_OP_FUNC(jk_obj_spinner_round_get, _jk_spinner_round_get),
-     EO_OP_FUNC(jk_obj_spinner_editable_set, _jk_spinner_editable_set),
-     EO_OP_FUNC(jk_obj_spinner_editable_get, _jk_spinner_editable_get),
-     EO_OP_FUNC(jk_obj_spinner_base_set, _jk_spinner_base_set),
-     EO_OP_FUNC(jk_obj_spinner_base_get, _jk_spinner_base_get),
-     EO_OP_FUNC(jk_obj_spinner_label_format_set, _jk_spinner_label_format_set),
-     EO_OP_FUNC(jk_obj_spinner_label_format_get, _jk_spinner_label_format_get),
-     EO_OP_FUNC(jk_obj_spinner_special_value_add, _jk_spinner_special_value_add),
-};
+static Eina_Bool
+_jk_spinner_class_initializer(Efl_Class *klass)
+{
+   EFL_OPS_DEFINE(ops,
+      EFL_OBJECT_OP_FUNC(efl_constructor, _jk_spinner_efl_object_constructor),
+      EFL_OBJECT_OP_FUNC(efl_canvas_group_add, _jk_spinner_efl_canvas_group_group_add),
+      EFL_OBJECT_OP_FUNC(efl_canvas_group_del, _jk_spinner_efl_canvas_group_group_del),
+      EFL_OBJECT_OP_FUNC(elm_obj_widget_theme_apply, _jk_spinner_elm_widget_theme_apply),
+      EFL_OBJECT_OP_FUNC(elm_obj_widget_focus_next_manager_is, _jk_spinner_elm_widget_focus_next_manager_is),
+      EFL_OBJECT_OP_FUNC(elm_obj_widget_focus_direction_manager_is, _jk_spinner_elm_widget_focus_direction_manager_is),
+      EFL_OBJECT_OP_FUNC(elm_obj_widget_access, _jk_spinner_elm_widget_access),
+      EFL_OBJECT_OP_FUNC(elm_obj_widget_focus_next, _jk_spinner_elm_widget_focus_next),
+      EFL_OBJECT_OP_FUNC(elm_obj_widget_focus_direction, _jk_spinner_elm_widget_focus_direction),
+      EFL_OBJECT_OP_FUNC(elm_obj_widget_on_focus, _jk_spinner_elm_widget_on_focus),
+      EFL_OBJECT_OP_FUNC(elm_obj_widget_event, _jk_spinner_elm_widget_event),
+      EFL_OBJECT_OP_FUNC(elm_obj_layout_sizing_eval, _jk_spinner_elm_layout_sizing_eval),
+      EFL_OBJECT_OP_FUNC(efl_ui_spin_min_max_set, _jk_spinner_efl_ui_spin_min_max_set),
+      EFL_OBJECT_OP_FUNC(efl_ui_spin_min_max_get, _jk_spinner_efl_ui_spin_min_max_get),
+      EFL_OBJECT_OP_FUNC(efl_ui_spin_step_set, _jk_spinner_efl_ui_spin_step_set),
+      EFL_OBJECT_OP_FUNC(efl_ui_spin_step_get, _jk_spinner_efl_ui_spin_step_get),
+      EFL_OBJECT_OP_FUNC(efl_ui_spin_value_set, _jk_spinner_efl_ui_spin_value_set),
+      EFL_OBJECT_OP_FUNC(efl_ui_spin_value_get, _jk_spinner_efl_ui_spin_value_get),
+      EFL_OBJECT_OP_FUNC(efl_ui_spin_interval_set, _jk_spinner_efl_ui_spin_interval_set),
+      EFL_OBJECT_OP_FUNC(efl_ui_spin_interval_get, _jk_spinner_efl_ui_spin_interval_get),
+      EFL_OBJECT_OP_FUNC(elm_interface_atspi_accessible_name_get, _jk_spinner_elm_interface_atspi_accessible_name_get),
+      EFL_OBJECT_OP_FUNC(elm_interface_atspi_value_and_text_get, _jk_spinner_elm_interface_atspi_value_value_and_text_get),
+      EFL_OBJECT_OP_FUNC(elm_interface_atspi_value_and_text_set, _jk_spinner_elm_interface_atspi_value_value_and_text_set),
+      EFL_OBJECT_OP_FUNC(elm_interface_atspi_value_range_get, _jk_spinner_elm_interface_atspi_value_range_get),
+      EFL_OBJECT_OP_FUNC(elm_interface_atspi_value_increment_get, _jk_spinner_elm_interface_atspi_value_increment_get),
+      EFL_OBJECT_OP_FUNC(elm_interface_atspi_widget_action_elm_actions_get, _jk_spinner_elm_interface_atspi_widget_action_elm_actions_get),
+      EFL_OBJECT_OP_FUNC(jk_obj_spinner_wrap_set, _jk_spinner_wrap_set),
+      EFL_OBJECT_OP_FUNC(jk_obj_spinner_wrap_get, _jk_spinner_wrap_get),
+      EFL_OBJECT_OP_FUNC(jk_obj_spinner_round_set, _jk_spinner_round_set),
+      EFL_OBJECT_OP_FUNC(jk_obj_spinner_round_get, _jk_spinner_round_get),
+      EFL_OBJECT_OP_FUNC(jk_obj_spinner_editable_set, _jk_spinner_editable_set),
+      EFL_OBJECT_OP_FUNC(jk_obj_spinner_editable_get, _jk_spinner_editable_get),
+      EFL_OBJECT_OP_FUNC(jk_obj_spinner_base_set, _jk_spinner_base_set),
+      EFL_OBJECT_OP_FUNC(jk_obj_spinner_base_get, _jk_spinner_base_get),
+      EFL_OBJECT_OP_FUNC(jk_obj_spinner_label_format_set, _jk_spinner_label_format_set),
+      EFL_OBJECT_OP_FUNC(jk_obj_spinner_label_format_get, _jk_spinner_label_format_get),
+      EFL_OBJECT_OP_FUNC(jk_obj_spinner_special_value_add, _jk_spinner_special_value_add)
+   );
 
-static const Eo_Event_Description *_jk_spinner_event_desc[] = {
-     JK_SPINNER_EVENT_CHANGED,
-     JK_SPINNER_EVENT_DELAY_CHANGED,
-     JK_SPINNER_EVENT_SPINNER_DRAG_START,
-     JK_SPINNER_EVENT_SPINNER_DRAG_STOP,
-     NULL
-};
+   return efl_class_functions_set(klass, &ops, NULL);
+}
 
-static const Eo_Class_Description _jk_spinner_class_desc = {
+static const Efl_Class_Description _jk_spinner_class_desc = {
      EO_VERSION,
      "Jk_Spinner",
-     EO_CLASS_TYPE_REGULAR,
-     EO_CLASS_DESCRIPTION_OPS(_jk_spinner_op_desc),
-     _jk_spinner_event_desc,
+     EFL_CLASS_TYPE_REGULAR,
      sizeof(Jk_Spinner_Data),
+     _jk_spinner_class_initializer,
      _jk_spinner_class_constructor,
      NULL
 };
 
-//EO_DEFINE_CLASS(jk_spinner_class_get, &_jk_spinner_class_desc, ELM_LAYOUT_CLASS, EFL_UI_SPIN_INTERFACE, ELM_INTERFACE_ATSPI_VALUE_INTERFACE, ELM_INTERFACE_ATSPI_WIDGET_ACTION_MIXIN, NULL);
+//EFL_DEFINE_CLASS(jk_spinner_class_get, &_jk_spinner_class_desc, ELM_LAYOUT_CLASS, EFL_UI_SPIN_INTERFACE, ELM_INTERFACE_ATSPI_VALUE_INTERFACE, ELM_INTERFACE_ATSPI_WIDGET_ACTION_MIXIN, NULL);
 
-
-const Eo_Class *
-       jk_spinner_class_get(void)
-{
-  const Eo_Class *_tmp_parent_class;
-  static volatile unsigned char lk_init = 0;
-  static Eina_Spinlock _my_lock;
-  static const Eo_Class * volatile _my_class = NULL;
-  static unsigned int _my_init_generation = 1;
-  if (EINA_UNLIKELY(_eo_init_generation != _my_init_generation))
-   {
-    _my_class = NULL; /* It's freed in eo_shutdown(). */
-    lk_init = 0;
-   }
-  if (EINA_LIKELY(!!_my_class)) return _my_class;
-
-  eina_spinlock_take(&_eo_class_creation_lock);
-  if (!lk_init)
-  eina_spinlock_new(&_my_lock);
-  if (lk_init < 2) eina_spinlock_take(&_my_lock);
-  if (!lk_init)
-  lk_init = 1;
-  else
-   {
-    if (lk_init < 2) eina_spinlock_release(&_my_lock);
-    eina_spinlock_release(&_eo_class_creation_lock);
-    return _my_class;
-   }
-  eina_spinlock_release(&_eo_class_creation_lock);
-  _tmp_parent_class = ELM_LAYOUT_CLASS;
-  _my_class = eo_class_new(&_jk_spinner_class_desc, _tmp_parent_class, EFL_UI_SPIN_INTERFACE, ELM_INTERFACE_ATSPI_VALUE_INTERFACE, ELM_INTERFACE_ATSPI_WIDGET_ACTION_MIXIN, NULL);
-  _my_init_generation = _eo_init_generation;
-  eina_spinlock_release(&_my_lock);
-
-  eina_spinlock_take(&_eo_class_creation_lock);
-  eina_spinlock_free(&_my_lock);
-  lk_init = 2;
-  eina_spinlock_release(&_eo_class_creation_lock);
-  return _my_class;
+const Efl_Class * 
+jk_spinner_class_get(void) 
+{ 
+   const Efl_Class *_tmp_parent_class; 
+   static const Efl_Class * volatile _my_class = NULL; 
+   static unsigned int _my_init_generation = 1; 
+   if (EINA_UNLIKELY(_efl_object_init_generation != _my_init_generation)) 
+     { 
+        _my_class = NULL; /* It's freed in efl_object_shutdown(). */ 
+     } 
+   if (EINA_LIKELY(!!_my_class)) return _my_class; 
+   
+   eina_lock_take(&_efl_class_creation_lock); 
+   if (!!_my_class) 
+     { 
+        eina_lock_release(&_efl_class_creation_lock); 
+        return _my_class; 
+     } 
+   _tmp_parent_class = ELM_LAYOUT_CLASS;; 
+   _my_class = efl_class_new(&_jk_spinner_class_desc, _tmp_parent_class, EFL_UI_SPIN_INTERFACE, ELM_INTERFACE_ATSPI_VALUE_INTERFACE, ELM_INTERFACE_ATSPI_WIDGET_ACTION_MIXIN, NULL);
+   _my_init_generation = _efl_object_init_generation; 
+   eina_lock_release(&_efl_class_creation_lock); 
+   
+   return _my_class; 
 }
 
 

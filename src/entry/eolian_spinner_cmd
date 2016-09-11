@@ -1,7 +1,8 @@
 #!/bin/sh
 
 #prpath="/home/chris/code/efl-git/share/eolian/include/"
-prpath="/usr/share/eolian/include/"
+#prpath="/usr/share/eolian/include/"
+prpath="/home/chris/code/eflgit/share/eolian/include/"
 #prpath="/home/chris/code/eflgit/share/eolian/include/"
 include="-I $prpath/evas-1 -I $prpath/elementary-1 -I $prpath/eo-1 -I $prpath/efl-1 -I $prpath/edje-1"
 prefix=jk_spinner
