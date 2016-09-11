@@ -3,8 +3,7 @@
 #include <stdbool.h>
 #include "common.h"
 //#include "entry.h"
-//#include "entry/jk_entry.eo.h"
-#include "entry/jk_spinner.eo.h"
+#include "entry/jk_spinner.h"
 
 static Elm_Genlist_Item_Class 
                               *class_group,
@@ -1231,7 +1230,7 @@ Eo* float_new(PropertyValue* val, Eo* obj)
   */
 
     {
-     //Eo* sp = elm_spinner_add(obj);
+     //Eo* sp = elm_spinner_add(bx);
      //Eo* sp = jk_spinner_add(obj);
      Eo* sp = jk_spinner_add(bx);
     // evas_object_size_hint_weight_set(sp, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);

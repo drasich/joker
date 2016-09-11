@@ -1,6 +1,4 @@
 //#define EFL_BETA_API_SUPPORT
-#include "jk_spinner.eo.h"
-
 #define ELM_INTERFACE_ATSPI_ACCESSIBLE_PROTECTED
 #define ELM_INTERFACE_ATSPI_VALUE_PROTECTED
 #define ELM_INTERFACE_ATSPI_WIDGET_ACTION_PROTECTED
@@ -9,15 +7,15 @@
 #define CRI(...) EINA_LOG_DOM_CRIT(1, __VA_ARGS__)
 #endif
 
-
 #include <Elementary.h>
 #include <elm_widget.h>
 #include <Eo.h>
 
+#include "jk_spinner.eo.h"
+
 #define MY_CLASS JK_SPINNER_CLASS
 #define MY_CLASS_NAME "Jk_Spinner"
 #define MY_CLASS_NAME_LEGACY "jk_spinner"
-
 
 typedef struct
 {
@@ -75,7 +73,6 @@ _jk_spinner_efl_canvas_group_group_add(Eo *obj, Jk_Spinner_Data *priv)
   ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd);
   JK_SPINNER_DATA_GET(obj, sd);
 
-  return;
 
   efl_canvas_group_add(efl_super(obj, JK_SPINNER_CLASS));
   elm_widget_sub_object_parent_add(obj);
@@ -408,10 +405,12 @@ _jk_spinner_class_constructor(Efl_Class *klass)
 }
 
 EAPI Evas_Object *
+//Evas_Object *
 jk_spinner_add(Evas_Object *parent)
 {
    EINA_SAFETY_ON_NULL_RETURN_VAL(parent, NULL);
    Evas_Object *obj = efl_add(MY_CLASS, parent);
+   printf("jk_spinner_add ::::::::::::::::::::: :obj : %p \n", obj);
    return obj;
 }
 
