@@ -3,7 +3,9 @@
 #include <stdbool.h>
 #include "common.h"
 //#include "entry.h"
-#include "entry/jk_spinner.h"
+//#include "entry/jk_spinner.h"
+#include "entry/jk_entry.h"
+#include "entry/jk_entry.eo.legacy.h"
 
 static Elm_Genlist_Item_Class 
                               *class_group,
@@ -1119,7 +1121,7 @@ _jk_entry_changed_cb_list(
   const char* name = evas_object_name_get(obj);
   double v;
   //eo_do(obj, v = jk_entry_value_get());
-  //v = jk_entry_value_get(obj);
+  v = jk_entry_value_get(obj);
   float f = v;
   memcpy(val->data, &f, sizeof f);
 
@@ -1139,13 +1141,13 @@ _jk_entry_changed_end_cb_list(
   const char* name = evas_object_name_get(obj);
   double v;
   //eo_do(obj, v = jk_entry_value_get());
-  //v = jk_entry_value_get(obj);
+  v = jk_entry_value_get(obj);
   float f = v;
   memcpy(val->data, &f, sizeof f);
 
   double vs;
   //eo_do(obj, vs = jk_entry_value_saved_get());
-  //vs = jk_entry_value_saved_get(obj);
+  vs = jk_entry_value_saved_get(obj);
 
   if (cbs->register_change_float) {
     cbs->register_change_float(cbs->data, val->path, &vs, &v, 1);
@@ -1201,7 +1203,6 @@ Eo* float_new(PropertyValue* val, Eo* obj)
    //chris
    printf("parent obj : %p \n", obj);
    //Evas_Object *en = eo_add(JK_ENTRY_CLASS, obj);
-   /*
    Evas_Object *en = jk_entry_add(obj);
 
   //evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
@@ -1220,25 +1221,27 @@ Eo* float_new(PropertyValue* val, Eo* obj)
    //elm_box_pack_end(bx, rect);
 
    printf("en : %p \n", en);
-  //evas_object_smart_callback_add(en, "changed,end", _jk_entry_changed_end_cb_list, val);
-  //evas_object_smart_callback_add(en, "changed", _jk_entry_changed_cb_list, val);
+  evas_object_smart_callback_add(en, "changed,end", _jk_entry_changed_end_cb_list, val);
+  evas_object_smart_callback_add(en, "changed", _jk_entry_changed_cb_list, val);
 
   const float* f = val->data;
   //eo_do(en, jk_entry_value_set(*f));
   jk_entry_value_set(en, *f);
   val->item_eo = en;
-  */
 
+   /*test can be removed
     {
      //Eo* sp = elm_spinner_add(bx);
      //Eo* sp = jk_spinner_add(obj);
-     Eo* sp = jk_spinner_add(bx);
-    // evas_object_size_hint_weight_set(sp, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-     //evas_object_size_hint_align_set(sp, EVAS_HINT_FILL, EVAS_HINT_FILL);
+     //Eo* sp = jk_spinner_add(bx);
+     Eo* sp = jk_entry_add(bx);
+     evas_object_size_hint_weight_set(sp, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+     evas_object_size_hint_align_set(sp, EVAS_HINT_FILL, EVAS_HINT_FILL);
      printf("jk_spinner_add, sp : %p \n", sp);
     evas_object_show(sp);
    elm_box_pack_end(bx, sp);
     }
+    */
 
   evas_object_show(bx);
   return bx;
@@ -1325,7 +1328,7 @@ gl_content_float_get_test(
 
   const float* f = val->data;
   //eo_do(en, jk_entry_value_set(*f));
-  //jk_entry_value_set(en, *f);
+  jk_entry_value_set(en, *f);
 
   return bx;
 }
@@ -1570,7 +1573,7 @@ void property_list_float_update(
   memcpy(val->data, &value, sizeof value);
   elm_genlist_item_update(val->item);
   //eo_do(val->item_eo, jk_entry_value_set(value));
-  //jk_entry_value_set(val->item_eo, value);
+  jk_entry_value_set(val->item_eo, value);
 }
 
 PropertyValue*
