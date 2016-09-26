@@ -561,6 +561,7 @@ PropertyValue* property_vec_add(
 }
 
 void property_box_vec_update(
+		JkPropertyBox* box,
       PropertyValue* val,
       int len)
 {
@@ -572,7 +573,6 @@ void property_box_vec_update(
   val->len = len;
   vec_update_len(val);
 }
-
 
 PropertyValue*
 property_box_vec_item_add(
@@ -694,8 +694,22 @@ property_box_vec_item_add(
 
 }
 
+PropertyValue*
+property_box_vec_item_del(
+      JkPropertyBox* pb,
+      PropertyValue* val,
+      PropertyValue* parent,
+      int index
+      )
+{
+  printf("!TODODODODODOTODOTODO\n");
+  elm_box_unpack(parent->child, val);
+  return val;
+}
+
 void property_box_children_clear(PropertyValue* val)
 {
   printf("TODO clear the PropertyValue\n");
   elm_box_clear(val->child);
 }
+
