@@ -576,10 +576,10 @@ void property_box_vec_update(
 
 static Eo* _box_child_get(Eo* box, int index)
 {
-	Eina_List* list = elm_box_children_get(box);
-	Eo* obj = eina_list_nth(list, index);
-	eina_list_free(list);
-	return obj;
+  Eina_List* list = elm_box_children_get(box);
+  Eo* obj = eina_list_nth(list, index);
+  eina_list_free(list);
+  return obj;
 }
 
 PropertyValue*
@@ -638,6 +638,12 @@ property_box_vec_item_add(
   evas_object_size_hint_weight_set(bxeo, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(bxeo, EVAS_HINT_FILL, EVAS_HINT_FILL);
   //elm_box_align_set(bx, 0, 0.5);
+
+  Eo* afterthis = _box_child_get(pbx, index);
+  printf("000000000000000000000000 after this : %p \n", afterthis);
+  if (afterthis) 
+  elm_box_pack_after(pbx, bxeo, afterthis);
+  else
   elm_box_pack_end(pbx,bxeo);
 
 
@@ -663,9 +669,8 @@ property_box_vec_item_add(
   //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   //evas_object_size_hint_min_set(bx, 0, fh);
 
-  Eo* afterthis = _box_child_get(bx, index);
-  //elm_box_pack_end(bx, val->create_child(val, pb->box));
-  elm_box_pack_after(bx, val->create_child(val, pb->box), afterthis);
+  elm_box_pack_end(bx, val->create_child(val, pb->box));
+  
 
   val->eo = bxeo;
   printf("valeo box : %p\n", bx);
