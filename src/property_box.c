@@ -574,11 +574,20 @@ void property_box_vec_update(
   vec_update_len(val);
 }
 
+static Eo* _box_child_get(Eo* box, int index)
+{
+	Eina_List* list = elm_box_children_get(box);
+	Eo* obj = eina_list_nth(list, index);
+	eina_list_free(list);
+	return obj;
+}
+
 PropertyValue*
 property_box_vec_item_add(
       JkPropertyBox* pb,
       PropertyValue* val,
-      PropertyValue* parent
+      PropertyValue* parent,
+      int index
       )
 {
   const char* path = val->path;
@@ -654,7 +663,9 @@ property_box_vec_item_add(
   //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   //evas_object_size_hint_min_set(bx, 0, fh);
 
-  elm_box_pack_end(bx, val->create_child(val, pb->box));
+  Eo* afterthis = _box_child_get(bx, index);
+  //elm_box_pack_end(bx, val->create_child(val, pb->box));
+  elm_box_pack_after(bx, val->create_child(val, pb->box), afterthis);
 
   val->eo = bxeo;
   printf("valeo box : %p\n", bx);
