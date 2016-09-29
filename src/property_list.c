@@ -741,7 +741,12 @@ static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
     const char* name = ss[num-1];
 
     char s[256];
-    sprintf(s, "<b>%s</b> : ", name);
+    if (val->style == VALUE)
+    sprintf(s, "value <b>%s</b> : ", name);
+    else if (val->style == NODE)
+    sprintf(s, "node <b>%s</b> : ", name);
+    else if (val->style == VEC)
+    sprintf(s, "vec <b>%s</b> : ", name);
 
     elm_object_text_set(label, s);
     evas_object_show(label);
@@ -1170,24 +1175,6 @@ Eo* float_new(PropertyValue* val, Eo* obj)
 
   const char* name;
 
-  Evas_Object* label = elm_label_add(obj);
-   {
-    unsigned int num;
-    char** ss = eina_str_split_full(val->path, "/", 0, &num);
-    name = ss[num-1];
-
-    char s[256];
-    //sprintf(s, "<b> %s </b> : ", name);
-    sprintf(s, "%s : ", name);
-
-    elm_object_text_set(label, s);
-    evas_object_show(label);
-    elm_box_pack_end(bx, label);
-
-    free(ss[0]);
-    free(ss);
-   }
-
   /*
   Eo* l = elm_layout_add(obj);
   elm_layout_file_set(l, "edc/entry.edj", "main");
@@ -1228,20 +1215,6 @@ Eo* float_new(PropertyValue* val, Eo* obj)
   //eo_do(en, jk_entry_value_set(*f));
   jk_entry_value_set(en, *f);
   val->item_eo = en;
-
-   /*test can be removed
-    {
-     //Eo* sp = elm_spinner_add(bx);
-     //Eo* sp = jk_spinner_add(obj);
-     //Eo* sp = jk_spinner_add(bx);
-     Eo* sp = jk_entry_add(bx);
-     evas_object_size_hint_weight_set(sp, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-     evas_object_size_hint_align_set(sp, EVAS_HINT_FILL, EVAS_HINT_FILL);
-     printf("jk_spinner_add, sp : %p \n", sp);
-    evas_object_show(sp);
-   elm_box_pack_end(bx, sp);
-    }
-    */
 
   evas_object_show(bx);
   return bx;
@@ -1562,6 +1535,7 @@ property_list_float_add(
   printf("adding float with %s \n", path);
 
   val->create_child = float_new;
+  val->style = VALUE;
 
   return val;
 }
@@ -1586,6 +1560,7 @@ property_list_string_add(
   val->data = strdup(value);
 
   val->create_child = entry_new;
+  val->style = VALUE;
 
   return val;
 }
@@ -1819,6 +1794,7 @@ PropertyValue* property_list_enum_add(
   val->data = strdup(value);
   val->user_data = strdup(possible_values);
   val->create_child = _enum_create;
+  val->style = NODE;
 
   //eina_hash_add(node->leafs, eina_stringshare_add(path), val);
 

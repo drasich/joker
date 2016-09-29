@@ -192,6 +192,7 @@ PropertyValue* property_node_add(const char* path)
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);
   val->create_child = _node_create;
+  val->style = NODE;
 
   return val;
 }

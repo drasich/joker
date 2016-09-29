@@ -127,120 +127,6 @@ Evas_Object* _property_leaf_find(
   return NULL;
 }
 
-void
-property_box_string_add(
-      JkPropertyBox* ps,
-      const char* name,
-      const char* value
-      )
-{
-  Evas_Object* bx = elm_box_add(ps->box);
-  elm_box_horizontal_set(bx, EINA_TRUE);
-  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  evas_object_show(bx);
-
-  unsigned int num;
-  char** ss = eina_str_split_full(name, "/", 0, &num);
-
-  Evas_Object* label = elm_label_add(ps->box);
-  char s[256];
-  sprintf(s, "<b> %s </b> : ", ss[num-1]);//name);
-
-  elm_object_text_set(label, s);
-  evas_object_show(label);
-  elm_box_pack_end(bx, label);
-  evas_object_show(label);
-
-  Evas_Object* en = elm_entry_add(ps->box);
-  elm_entry_scrollable_set(en, EINA_TRUE);
-  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
-  elm_object_text_set(en, value);
-  //elm_entry_scrollbar_policy_set(en, 
-  //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
-  elm_entry_single_line_set(en, EINA_TRUE);
-  //elm_entry_select_all(en);
-  evas_object_show(en);
-  elm_box_pack_end(bx, en);
-
-  evas_object_name_set(en, name);
-
-  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb_ps, ps);
-  /*
-  evas_object_smart_callback_add(en, "activated", _entry_activated_cb, cp);
-  evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
-  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
-  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
-  evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, cp);
-  */
-
-  elm_entry_context_menu_disabled_set(en, EINA_TRUE);
-
-  elm_box_pack_end(ps->box, bx);
-
-  PropertyNode* node = _property_box_node_find(ps, name);
-  eina_hash_add(node->leafs, eina_stringshare_add(name), en);
-}
-
-void
-property_box_float_add(
-      JkPropertyBox* ps, 
-      const char* name,
-      float value)
-{
-  //TODO
-  Evas_Object* bx = elm_box_add(ps->box);
-  elm_box_horizontal_set(bx, EINA_TRUE);
-  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  evas_object_show(bx);
-
-  Evas_Object* label = elm_label_add(ps->box);
-   {
-    unsigned int num;
-    char** ss = eina_str_split_full(name, "/", 0, &num);
-
-  char s[256];
-  sprintf(s, "<b> %s </b> : ", ss[num-1]);//name);
-
-  elm_object_text_set(label, s);
-  evas_object_show(label);
-  elm_box_pack_end(bx, label);
-  evas_object_show(label);
-   }
-
-  Evas_Object* sp = elm_spinner_add(ps->box);
-  evas_object_name_set(sp, name);
-
-  evas_object_size_hint_weight_set(sp, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(sp, EVAS_HINT_FILL, 0.5);
-  evas_object_size_hint_min_set(sp,1,1);
-  //elm_spinner_value_set(en, atof(value));
-  evas_object_show(sp);
-  //elm_box_pack_end(cp->box, en);
-  elm_box_pack_end(bx, sp);
-
-  elm_spinner_step_set(sp, 0.1);
-  elm_spinner_min_max_set(sp, -DBL_MAX, DBL_MAX);
-  //elm_object_style_set (en, "vertical");
-  elm_spinner_editable_set(sp, EINA_TRUE);
-
-  char ff[50];
-    //sprintf(ff, "%s : %s", name, "%.3f");
-    sprintf(ff, "%s", "%.3f");
-
-  elm_spinner_label_format_set(sp, ff);
-  elm_spinner_value_set(sp,value);
-
-  elm_box_pack_end(ps->box, bx);
-
-  PropertyNode* node = _property_box_node_find(ps, name);
-  eina_hash_add(node->leafs, eina_stringshare_add(name), sp);
-
-  evas_object_smart_callback_add(sp, "changed", _spinner_changed_cb, ps );
-}
-
 void property_box_string_update(
       JkPropertyBox* set,
       const char* path,
@@ -440,7 +326,19 @@ property_box_single_item_add(
   
   //TODO
   Eo* name = elm_label_add(bx);
-  elm_object_text_set(name, val->path);
+
+  unsigned int num;
+  char** ss = eina_str_split_full(val->path, "/", 0, &num);
+  char s[256];
+
+  if (val->style == NODE || val->style == VEC) {
+  sprintf(s, "<b> %s </b> : ", ss[num-1]);
+  }
+  else if (val->style == VEC) {
+    sprintf(s, " %s  : ", ss[num-1]);
+  }
+
+    elm_object_text_set(name, s);
   elm_box_pack_end(bx, name);
   evas_object_show(name);
 
@@ -562,6 +460,7 @@ PropertyValue* property_vec_add(
   val->path = strdup(path);
   val->len = len;
   val->create_child = vec_new;
+  val->style = VEC;
 
   return val;
 }
@@ -674,6 +573,19 @@ property_box_vec_item_add(
   //Evas_Coord fw = -1, fh = -1;
   //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   //evas_object_size_hint_min_set(bx, 0, fh);
+  
+  Eo* name = elm_label_add(bx);
+  if (val->style == NODE) {
+  elm_object_text_set(name, "vec node");
+  }
+  else if (val->style == VEC) {
+  elm_object_text_set(name, "vec vec");
+  }
+  else {
+  elm_object_text_set(name, "vec value");//val->path);
+  }
+  elm_box_pack_end(bx, name);
+  evas_object_show(name);
 
   elm_box_pack_end(bx, val->create_child(val, pb->box));
   

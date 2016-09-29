@@ -127,6 +127,13 @@ struct _PropertyList
   panel_geom_cb resize;
 };
 
+enum _Style
+{
+  VALUE,
+  NODE,
+  VEC
+};
+
 typedef struct _PropertyValue PropertyValue;
 typedef Eo* (*item_create)(PropertyValue* val, Eo* obj);
 
@@ -142,6 +149,7 @@ struct _PropertyValue
   void* user_data;
   int len;
   const char* added_name;
+  int style;
 
   item_create create_child;
 };
@@ -259,17 +267,6 @@ PropertyNode* property_box_node_new();
 JkPropertyBox* property_box_new(Evas_Object* win);
 
 void property_box_clear(JkPropertyBox* set);
-
-void property_box_string_add(
-      JkPropertyBox* ps,
-      const char* name,
-      const char* value
-      );
-
-void property_box_float_add(
-      JkPropertyBox* ps,
-      const char* name,
-      float value);
 
 void property_box_node_add(
       JkPropertyBox* ps,
