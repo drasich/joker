@@ -437,6 +437,12 @@ property_box_single_item_add(
   //Evas_Coord fw = -1, fh = -1;
   //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   //evas_object_size_hint_min_set(bx, 0, fh);
+  
+  //TODO
+  Eo* name = elm_label_add(bx);
+  elm_object_text_set(name, val->path);
+  elm_box_pack_end(bx, name);
+  evas_object_show(name);
 
   elm_box_pack_end(bx, val->create_child(val, pb->box));
 
