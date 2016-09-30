@@ -150,6 +150,7 @@ Eo* _node_create(PropertyValue* val, Evas_Object* o)
   evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
   //elm_box_align_set(bx, 0, 0.5);
 
+  /*
   Eo* bx_label = elm_box_add(o);
   elm_box_horizontal_set(bx_label, EINA_TRUE);
   evas_object_size_hint_weight_set(bx_label, EVAS_HINT_EXPAND, 0.0);
@@ -178,12 +179,13 @@ Eo* _node_create(PropertyValue* val, Evas_Object* o)
   elm_object_text_set(label, s);
   elm_box_pack_end(bx, bx_label);
   elm_box_pack_end(bx_label, label);
-  evas_object_show(label);
+  */
+  //evas_object_show(label);
   evas_object_show(bx);
-  evas_object_show(bx_label);
+  //evas_object_show(bx_label);
 
-  free(ss[0]);
-  free(ss);
+  //free(ss[0]);
+  //free(ss);
   return bx;
 }
 

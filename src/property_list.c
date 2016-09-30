@@ -373,25 +373,6 @@ Eo* entry_new(PropertyValue* val, Eo* obj)
   elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   evas_object_size_hint_min_set(bx, 0, fh);
 
-  Evas_Object* label = elm_label_add(bx);
-
-   {
-    unsigned int num;
-    char** ss = eina_str_split_full(val->path, "/", 0, &num);
-    const char* name = ss[num-1];
-
-    char s[256];
-    //sprintf(s, "<b> %s </b> : ", name);
-    sprintf(s, "%s : ", name);
-
-    elm_object_text_set(label, s);
-    evas_object_show(label);
-    elm_box_pack_end(bx, label);
-
-    free(ss[0]);
-    free(ss);
-   }
-
   Evas_Object* en = elm_entry_add(obj);
   elm_entry_scrollable_set(en, EINA_TRUE);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -735,40 +716,18 @@ static Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
 
   Evas_Object* label = elm_label_add(bx);
 
-   {
+  {
+    const char* value = val->data;
+    Evas_Object* hoversel = elm_hoversel_add(obj);
+    elm_hoversel_hover_parent_set(hoversel, obj);
+    elm_object_text_set(hoversel, value);
+
     unsigned int num;
-    char** ss = eina_str_split_full(val->path, "/", 0, &num);
-    const char* name = ss[num-1];
-
-    char s[256];
-    if (val->style == VALUE)
-    sprintf(s, "value <b>%s</b> : ", name);
-    else if (val->style == NODE)
-    sprintf(s, "node <b>%s</b> : ", name);
-    else if (val->style == VEC)
-    sprintf(s, "vec <b>%s</b> : ", name);
-
-    elm_object_text_set(label, s);
-    evas_object_show(label);
-    elm_box_pack_end(bx, label);
-
-    free(ss[0]);
-    free(ss);
-   }
-
-   {
-
-  const char* value = val->data;
-  Evas_Object* hoversel = elm_hoversel_add(obj);
-  elm_hoversel_hover_parent_set(hoversel, obj);
-  elm_object_text_set(hoversel, value);
-
-  unsigned int num;
-  char** s = eina_str_split_full(val->user_data, "/", 0, &num);
-  int i;
-  for (i = 0; i < num; ++i) {
-    elm_hoversel_item_add(hoversel, strdup(s[i]), NULL, ELM_ICON_NONE, NULL, NULL);
-  }
+    char** s = eina_str_split_full(val->user_data, "/", 0, &num);
+    int i;
+    for (i = 0; i < num; ++i) {
+      elm_hoversel_item_add(hoversel, strdup(s[i]), NULL, ELM_ICON_NONE, NULL, NULL);
+    }
 
   free(s[0]);
   free(s);

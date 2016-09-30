@@ -332,13 +332,13 @@ property_box_single_item_add(
   char s[256];
 
   if (val->style == NODE || val->style == VEC) {
-  sprintf(s, "<b> %s </b> : ", ss[num-1]);
+  sprintf(s, "<b> %s </b>  ", ss[num-1]);
   }
-  else if (val->style == VEC) {
-    sprintf(s, " %s  : ", ss[num-1]);
+  else {
+    sprintf(s, " %s   ", ss[num-1]);
   }
 
-    elm_object_text_set(name, s);
+  elm_object_text_set(name, s);
   elm_box_pack_end(bx, name);
   evas_object_show(name);
 
@@ -574,22 +574,16 @@ property_box_vec_item_add(
   //elm_coords_finger_size_adjust(1, &fw, 1, &fh);
   //evas_object_size_hint_min_set(bx, 0, fh);
   
+  char index_str[256];
+  sprintf(index_str, "%d  ", index);
+
   Eo* name = elm_label_add(bx);
-  if (val->style == NODE) {
-  elm_object_text_set(name, "vec node");
-  }
-  else if (val->style == VEC) {
-  elm_object_text_set(name, "vec vec");
-  }
-  else {
-  elm_object_text_set(name, "vec value");//val->path);
-  }
+  elm_object_text_set(name, index_str);
   elm_box_pack_end(bx, name);
   evas_object_show(name);
 
   elm_box_pack_end(bx, val->create_child(val, pb->box));
   
-
   val->eo = bxeo;
   printf("valeo box : %p\n", bx);
   elm_box_pack_end(bxeo, bx);
