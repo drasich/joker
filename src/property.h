@@ -155,6 +155,10 @@ struct _PropertyValue
   int style;
 
   item_create create_child;
+
+  //for vec
+  Evas_Object* name;
+  Eina_List* children;
 };
 
 

@@ -502,7 +502,12 @@ property_box_vec_item_add(
   printf("    **** VEC item ****** : '%s', with parent %p \n", path, parent);
   Eo* pbx = pb->box;
   if (parent) {
-    printf("VEC PATH :::: %s,,,,,,,,,,,there is a parent, and child is : %p \n", path, parent->child);
+    if (index > 0)
+    parent->children = eina_list_append_relative_list(parent->children, val, eina_list_nth_list(parent->children, index -1));
+    else
+    parent->children = eina_list_prepend(parent->children, val);
+
+    printf("VEC PATH :::: %s,,,,,,,,,,,there is a parent, and child is : %p, children count : %d \n", path, parent->child, eina_list_count(parent->children));
     if (!parent->child) {
 
       pbx = parent->eo;
@@ -578,6 +583,7 @@ property_box_vec_item_add(
   sprintf(index_str, "%d  ", index);
 
   Eo* name = elm_label_add(bx);
+  val->name = name;
   elm_object_text_set(name, index_str);
   elm_box_pack_end(bx, name);
   evas_object_show(name);
@@ -617,6 +623,31 @@ property_box_vec_item_add(
   val->child = bx_child;
   elm_box_pack_end(pbx, bx_child);
   */
+
+
+
+  Eina_List* list;
+  PropertyValue* child_val;
+
+  EINA_LIST_FOREACH(parent->children, list, child_val)
+  {
+  	const char* t = elm_object_text_get(child_val->name);
+	printf("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOO_____ NAME %s \n", t);
+  }
+
+
+  int i = index + 1;
+  Eina_List* start = eina_list_nth_list(parent->children, i);
+  printf("start len : %d, children len : %d \n", eina_list_count(start),
+		  eina_list_count(parent->children));
+  //EINA_LIST_FOREACH(start, list, child_val)
+  for(list = start; list; list = eina_list_next(list))
+  {
+	  printf("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOO %d \n", i);
+  	sprintf(index_str, "%d  ", i++);
+	child_val = eina_list_data_get(list);
+  	elm_object_text_set(child_val->name, index_str);
+  }
 
   return val;
 
