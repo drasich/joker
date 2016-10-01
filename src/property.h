@@ -141,7 +141,10 @@ struct _PropertyValue
 {
   const char* path;
   void* data;
+
+  //for list, can be removed
   Elm_Object_Item* item;
+
   Evas_Object* eo;
   Evas_Object* child;
   Evas_Object* item_eo;

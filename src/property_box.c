@@ -544,10 +544,10 @@ property_box_vec_item_add(
   evas_object_size_hint_align_set(bxeo, EVAS_HINT_FILL, EVAS_HINT_FILL);
   //elm_box_align_set(bx, 0, 0.5);
 
-  Eo* afterthis = _box_child_get(pbx, index);
-  printf("000000000000000000000000 after this : %p \n", afterthis);
-  if (afterthis) 
-  elm_box_pack_after(pbx, bxeo, afterthis);
+  Eo* beforethis = _box_child_get(pbx, index);
+  printf("000000000000000000000000 after this : %p \n", beforethis);
+  if (beforethis) 
+  elm_box_pack_before(pbx, bxeo, beforethis);
   else
   elm_box_pack_end(pbx,bxeo);
 

@@ -254,12 +254,13 @@ void _bt_cb_box(void* data)
 void vec_update_len(PropertyValue* val)
 {
   Eo* label = val->item_eo;
-  unsigned int num;
-  char** ss = eina_str_split_full(val->path, "/", 0, &num);
-  const char* name = ss[num-1];
+  //unsigned int num;
+  //char** ss = eina_str_split_full(val->path, "/", 0, &num);
+  //const char* name = ss[num-1];
 
   char s[256];
-  sprintf(s, "<b>%s</b>, len : %d", name, val->len);
+  //sprintf(s, "<b>%s</b>, len : %d", name, val->len);
+  sprintf(s, "| len : %d", val->len);
   //if (val->item && elm_genlist_item_expanded_get(val->item))
   //sprintf(s, "%s : ", name);
   //else
@@ -267,8 +268,8 @@ void vec_update_len(PropertyValue* val)
 
   elm_object_text_set(label, s);
 
-  free(ss[0]);
-  free(ss);
+  //free(ss[0]);
+  //free(ss);
 }
 
 Eo* vec_new(PropertyValue* val, Eo* obj)
