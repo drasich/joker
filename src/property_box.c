@@ -653,17 +653,37 @@ property_box_vec_item_add(
 
 }
 
-PropertyValue*
+void
 property_box_vec_item_del(
       JkPropertyBox* pb,
-      PropertyValue* val,
       PropertyValue* parent,
       int index
       )
 {
-  printf("!TODODODODODOTODOTODO\n");
-  elm_box_unpack(parent->child, val);
-  return val;
+  Eina_List* children = elm_box_children_get(parent->child);
+  Eo* item = eina_list_nth(children, index);
+  eina_list_free(children);
+  printf("!TODODODODODOTODOTODO :::: %d \n", index);
+  elm_box_unpack(parent->child, item);
+
+  evas_object_del(item);
+
+  parent->children = eina_list_remove(parent->children,
+      eina_list_nth(parent->children, index));
+
+  Eina_List* list;
+  PropertyValue* child_val;
+  int i = index;
+  Eina_List* start = eina_list_nth_list(parent->children, i);
+  //EINA_LIST_FOREACH(start, list, child_val)
+  char index_str[256];
+  for(list = start; list; list = eina_list_next(list))
+  {
+	  printf("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOO %d \n", i);
+  	sprintf(index_str, "%d  ", i++);
+	child_val = eina_list_data_get(list);
+  	elm_object_text_set(child_val->name, index_str);
+  }
 }
 
 void property_box_children_clear(PropertyValue* val)
