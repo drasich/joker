@@ -159,8 +159,12 @@ struct _PropertyValue
   //for vec
   Evas_Object* name;
   Eina_List* children;
+
+  //for path
+  PropertyValue* parent;
 };
 
+const char* property_value_path_get(PropertyValue* value);
 
 JkPropertyList* property_list_new(Evas_Object* win);
 void property_list_clear(JkPropertyList* pl);
@@ -298,6 +302,7 @@ struct _BtCb
 };
 
 void _bt_cb(void* data);
+void _bt_cb_box(void* data);
 
 
 #endif

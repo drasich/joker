@@ -602,7 +602,7 @@ property_box_vec_item_add(
   struct _BtCb *btcb = calloc(1, sizeof *btcb);
   btcb->cb = val->cbs->vec_add;
   btcb->data = val;
-  btn_cb_set(bt, _bt_cb, btcb);
+  btn_cb_set(bt, _bt_cb_box, btcb);
 
   bt = elm_button_add(bx);
   elm_object_text_set(bt, "-");
@@ -611,7 +611,7 @@ property_box_vec_item_add(
   btcb = calloc(1, sizeof *btcb);
   btcb->cb = val->cbs->vec_del;
   btcb->data = val;
-  btn_cb_set(bt, _bt_cb, btcb);
+  btn_cb_set(bt, _bt_cb_box, btcb);
 
   /*
   Eo* bx_child = elm_box_add(pbx);
