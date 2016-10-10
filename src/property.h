@@ -299,6 +299,7 @@ struct _BtCb
 {
   property_register_change cb;
   void* data;
+  void* data2;
 };
 
 void _bt_cb(void* data);

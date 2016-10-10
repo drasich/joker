@@ -490,6 +490,7 @@ static Eo* _box_child_get(Eo* box, int index)
 PropertyValue*
 property_box_vec_item_add(
       JkPropertyBox* pb,
+      void* cb_data,
       PropertyValue* val,
       PropertyValue* parent,
       int index
@@ -602,6 +603,7 @@ property_box_vec_item_add(
   struct _BtCb *btcb = calloc(1, sizeof *btcb);
   btcb->cb = val->cbs->vec_add;
   btcb->data = val;
+  btcb->data2 = cb_data;
   btn_cb_set(bt, _bt_cb_box, btcb);
 
   bt = elm_button_add(bx);
@@ -611,6 +613,7 @@ property_box_vec_item_add(
   btcb = calloc(1, sizeof *btcb);
   btcb->cb = val->cbs->vec_del;
   btcb->data = val;
+  btcb->data2 = cb_data;
   btn_cb_set(bt, _bt_cb_box, btcb);
 
   /*
