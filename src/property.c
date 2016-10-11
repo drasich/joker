@@ -242,8 +242,8 @@ void _bt_cb_box(void* data)
   printf("val cbs data :%p \n", val->cbs->data);
   btcb->cb(
        val->cbs->data,
-       val->path,
         btcb->data2,
+        NULL,
         NULL,
         0);
 

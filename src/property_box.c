@@ -7,18 +7,6 @@
 #include "panel.h"
 
 static void
-_spinner_changed_cb(void* data, Evas_Object *obj, void* event)
-{
-  JkPropertyCb* cbs = data;
-  const char* name = evas_object_name_get(obj);
-  double v =  elm_spinner_value_get(obj);
-  if (cbs->changed_float) {
-    cbs->changed_float(cbs->data, name, &v);
-  }
-}
-
-
-static void
 _entry_changed_cb_ps(void *data, Evas_Object *obj, void *event)
 {
   const char* s = elm_object_text_get(obj);
@@ -238,6 +226,7 @@ JkPropertyCb* property_box_cb_get(JkPropertyBox* p)
 PropertyValue*
 property_box_single_item_add(
       JkPropertyBox* pb,
+      void* node,
       PropertyValue* val,
       PropertyValue* parent
       )
@@ -255,6 +244,7 @@ property_box_single_item_add(
   //PropertyNode* node = pb->node;
 
   val->cbs = pb->cbs;
+  val->node = node;
 
   printf("    **** single item ****** : '%s', with parent %p \n", path, parent);
 

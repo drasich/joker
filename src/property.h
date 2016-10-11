@@ -160,8 +160,7 @@ struct _PropertyValue
   Evas_Object* name;
   Eina_List* children;
 
-  //for path
-  PropertyValue* parent;
+  void* node;
 };
 
 const char* property_value_path_get(PropertyValue* value);

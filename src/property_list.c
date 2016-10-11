@@ -998,7 +998,7 @@ _spinner_changed_cb_list(
   memcpy(val->data, &f, sizeof f);
 
   if (cbs->changed_float) {
-    cbs->changed_float(cbs->data, val->path, &v);
+    cbs->changed_float(cbs->data, val->node, &v);
   }
 }
 
