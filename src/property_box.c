@@ -660,10 +660,11 @@ property_box_vec_item_del(
   printf("!TODODODODODOTODOTODO :::: %d \n", index);
   elm_box_unpack(parent->child, item);
 
-  evas_object_del(item);
 
   parent->children = eina_list_remove(parent->children,
       eina_list_nth(parent->children, index));
+
+  evas_object_del(item);
 
   Eina_List* list;
   PropertyValue* child_val;

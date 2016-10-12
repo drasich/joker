@@ -223,7 +223,7 @@ _entry_register_change_cb(
   evas_object_data_set(obj, "saved_text", eina_stringshare_add(value));
 
   if (cbs->register_change_string) {
-    cbs->register_change_string(cbs->data, val->path, old, value, 1);
+    cbs->register_change_string(cbs->data, val->node, old, value, 1);
   }
 }
 
@@ -536,7 +536,7 @@ _hoversel_selected_cb(
   //TODO
   if (cbs->register_change_enum) {
     //pl->changed_string(pl->data, val->path, value);
-    cbs->register_change_enum(cbs->data, val->path, old, txt, 1);
+    cbs->register_change_enum(cbs->data, val->node, old, txt, 1);
   }
 
   if ( elm_genlist_item_type_get(val->item) == ELM_GENLIST_ITEM_TREE &&
@@ -1115,7 +1115,7 @@ _jk_entry_changed_end_cb_list(
   vs = jk_entry_value_saved_get(obj);
 
   if (cbs->register_change_float) {
-    cbs->register_change_float(cbs->data, val->path, &vs, &v, 1);
+    cbs->register_change_float(cbs->data, val->node, &vs, &v, 1);
   }
 }
 
