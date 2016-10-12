@@ -246,7 +246,7 @@ property_box_single_item_add(
   val->cbs = pb->cbs;
   val->node = node;
 
-  printf("    **** single item ****** : '%s', with parent %p \n", path, parent);
+  printf("    **** single item ****** : '%s', with parent %p, and node : %p \n", path, parent, node);
 
   Eo* pbx = pb->box;
   if (parent) {
@@ -489,8 +489,9 @@ property_box_vec_item_add(
   const char* path = val->path;
 
   val->cbs = pb->cbs;
+  val->node = cb_data;
 
-  printf("    **** VEC item ****** : '%s', with parent %p \n", path, parent);
+  printf("    **** VEC item ****** : '%s', with parent %p, and node : %p \n", path, parent, cb_data);
   Eo* pbx = pb->box;
   if (parent) {
     if (index > 0)

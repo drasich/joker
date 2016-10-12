@@ -1090,7 +1090,8 @@ _jk_entry_changed_cb_list(
   memcpy(val->data, &f, sizeof f);
 
   if (cbs->changed_float) {
-    cbs->changed_float(cbs->data, val->path, &v);
+    printf("CHANGED FLOAT : %p \n", val->node);
+    cbs->changed_float(cbs->data, val->node, &v);
   }
 }
 

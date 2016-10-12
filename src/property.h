@@ -14,11 +14,11 @@ typedef const char* (*property_get)(const void* object);
 
 typedef void (*property_changed2)(
       const void* object,
-      const char* path,
+      const void* node,
       const void* data);
 typedef void (*property_register_change)(
       const void* object,
-      const char* path,
+      const void* node,
       const void* old,
       const void* new,
       int action_type);
@@ -303,6 +303,23 @@ struct _BtCb
 
 void _bt_cb(void* data);
 void _bt_cb_box(void* data);
+
+PropertyValue*
+property_box_single_item_add(
+      JkPropertyBox* pb,
+      void* node,
+      PropertyValue* val,
+      PropertyValue* parent
+      );
+
+PropertyValue*
+property_box_vec_item_add(
+      JkPropertyBox* pb,
+      void* cb_data,
+      PropertyValue* val,
+      PropertyValue* parent,
+      int index
+      );
 
 
 #endif

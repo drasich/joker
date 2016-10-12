@@ -240,6 +240,8 @@ void _bt_cb_box(void* data)
   printf("val  :%p \n", val);
   printf("val cbs :%p \n", val->cbs);
   printf("val cbs data :%p \n", val->cbs->data);
+  printf("val cbs node :%p \n", val->node);
+  printf("val cbs node, NO btcb data2 :%p \n", btcb->data2);
   btcb->cb(
        val->cbs->data,
         btcb->data2,
