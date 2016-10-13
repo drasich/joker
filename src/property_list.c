@@ -139,7 +139,7 @@ _entry_changed_cb_list(
 
   if (cbs->register_change_string) {
     //pl->changed_string(pl->data, val->path, value);
-    cbs->register_change_string(cbs->data, val->path, NULL, value, 0);
+    cbs->register_change_string(cbs->data, val->node, NULL, value, 0);
   }
 }
 
