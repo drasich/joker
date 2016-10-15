@@ -417,31 +417,7 @@ void property_box_add(
 {
 }
 
-
-void property_box_enum_update(
-      JkPropertyBox* pb,
-      PropertyValue* val,
-      const char* value)
-{
-  if (!strcmp(value, val->data)) {
-    printf("value are same so return : %s = %s \n", value, val->data);
-    return;
-  }
-
-  if (val->data) free(val->data);
-
-  printf("CCCCCCCCCCCCCCCCCCCCc :: %p %s \n", val->item_eo, value);
-  elm_box_clear(val->child);
-  elm_object_text_set(val->item_eo, value);
-
-  //TODO clear items
-
-  val->data = strdup(value);
-
-  //TODO add items
-}
-
-PropertyValue* property_vec_add(
+PropertyValue* property_vec_new(
       const char* path,
       int len
       )

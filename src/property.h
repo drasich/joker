@@ -182,11 +182,11 @@ void property_list_nodes_remove(
       JkPropertyList* pl,
       const char* path);
 
-PropertyValue* property__float_add(
+PropertyValue* property_float_new(
       const char* path,
       float value);
 
-PropertyValue* property_string_add(
+PropertyValue* property_string_new(
       const char* path,
       const char* value);
 
@@ -223,7 +223,7 @@ void property_list_enum_update(
 
 PropertyNode* property_list_node_new();
 
-void property_list_string_update(
+void property_string_update(
       PropertyValue* val,
       const char* value);
 
@@ -235,7 +235,7 @@ void property_list_option_update(
       PropertyValue* val,
       const char* value);
 
-void property_list_float_update(
+void property_float_update(
       PropertyValue* val,
       float value);
 
@@ -289,7 +289,7 @@ void property_box_string_update(
       const char* value);
 void property_box_float_update(JkPropertyBox* set, const char* path, float value);
 Eo* _node_create(PropertyValue* val, Evas_Object* o);
-PropertyValue* property_node_add(const char* path);
+PropertyValue* property_node_new(const char* path);
 
 Eo* vec_new(PropertyValue* val, Eo* obj);
 void vec_update_len(PropertyValue* val);

@@ -189,7 +189,7 @@ Eo* _node_create(PropertyValue* val, Evas_Object* o)
   return bx;
 }
 
-PropertyValue* property_node_add(const char* path)
+PropertyValue* property_node_new(const char* path)
 {
   PropertyValue *val = calloc(1, sizeof *val);
   val->path = strdup(path);

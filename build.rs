@@ -44,6 +44,7 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
         .file("src/monitor.c")
         .file("src/panel.c")
         .file("src/property.c")
+        .file("src/property/float.c")
         .file("src/property/string.c")
         .file("src/property/enum.c")
         .file("src/property_list.c")

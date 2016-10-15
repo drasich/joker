@@ -99,9 +99,8 @@ _entry_register_change_cb(
   }
 }
 
-
-
-Eo* entry_new(PropertyValue* val, Eo* obj)
+Eo*
+entry_new(PropertyValue* val, Eo* obj)
 {
   Eo* bx = elm_box_add(obj);
   elm_box_horizontal_set(bx, EINA_TRUE);
@@ -151,7 +150,7 @@ Eo* entry_new(PropertyValue* val, Eo* obj)
 
 
 PropertyValue*
-property_string_add(
+property_string_new(
       const char* path,
       const char* value)
 {
@@ -163,5 +162,17 @@ property_string_add(
   val->style = VALUE;
 
   return val;
+}
+
+void
+property_string_update(
+      PropertyValue* val,
+      const char* value)
+{
+  if (val->data) free(val->data);
+
+  val->data = strdup(value);
+  elm_genlist_item_update(val->item);
+  elm_object_text_set(val->item_eo, value);
 }
 
