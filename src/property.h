@@ -182,11 +182,11 @@ void property_list_nodes_remove(
       JkPropertyList* pl,
       const char* path);
 
-PropertyValue* property_list_float_add(
+PropertyValue* property__float_add(
       const char* path,
       float value);
 
-PropertyValue* property_list_string_add(
+PropertyValue* property_string_add(
       const char* path,
       const char* value);
 

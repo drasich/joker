@@ -31,6 +31,8 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
         config.include(path);
     }
 
+    config.include("src");
+
     config.file("src/action.c")
         .file("src/command.c")
         .file("src/common.c")
@@ -42,6 +44,7 @@ fn build_elementary_key(include_paths: &[PathBuf]) {
         .file("src/monitor.c")
         .file("src/panel.c")
         .file("src/property.c")
+        .file("src/property/string.c")
         .file("src/property_list.c")
         .file("src/property_box.c")
         .file("src/tree.c")
