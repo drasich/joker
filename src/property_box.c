@@ -353,64 +353,6 @@ property_box_single_item_add(
 
 }
 
-PropertyValue* property_box_single_node_add(
-      JkPropertyBox* pb,
-      PropertyValue* val)
-{
-  const char* path = val->path;
-  /*
-  PropertyNode* node = _property_list_node_find_parent(pl, path);
-  if (!node) {
-    printf("%s, could not find a root for %s\n", __FUNCTION__, path);
-    return NULL;
-  }
-  */
-
-  PropertyNode *node = pb->node;
-
-  unsigned int num;
-  char** s = eina_str_split_full(path, "/", 0, &num);
-  PropertyNode* child = property_list_node_new();
-  eina_hash_add(node->nodes, strdup(s[num-1]), child);
-
-  val->cbs = pb->cbs;
-  free(s[0]);
-  free(s);
-
-
-  Eo* bx = elm_box_add(pb->box);
-  evas_object_show(bx);
-  elm_box_horizontal_set(bx, EINA_TRUE);
-  elm_box_padding_set(bx, 4, 0);
-  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
-
-  elm_box_align_set(bx, 0, 0.5f);
-
-  if (val->create_child) {
-    elm_box_pack_end(bx, val->create_child(val, pb->root));
-  }
-  else {
-    Evas_Object* label = _node_create(val, bx);
-    evas_object_show(label);
-    elm_box_pack_end(bx, label);
-  }
-
-  val->eo = bx;
-  elm_box_pack_end(pb->box, bx);
-
-  return val;
-}
-
-void property_box_remove(
-      JkPropertyBox* pb,
-      PropertyValue* val)
-{
-  printf("dance !!!!!!!!!!!!!!! %p \n", val->eo);
-  elm_box_unpack(pb->box, val->eo);
-  evas_object_del(val->eo);
-}
-
 void property_box_add(
       JkPropertyBox* pb,
       PropertyValue* val)
@@ -437,7 +379,7 @@ void property_box_vec_update(
       int len)
 {
   if (val->len == len) {
-    printf("value are same so return : %d = %d \n", len, val->len);
+    // len did not change so return
     return;
   }
 
