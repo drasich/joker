@@ -8,11 +8,9 @@ _entry_changed_cb_list(
 {
   PropertyValue* val = data;
   JkPropertyCb* cbs = val->cbs;
-  //const char* name = evas_object_name_get(obj);
   const char* value = elm_object_text_get(obj);
 
   if (cbs->register_change_string) {
-    //pl->changed_string(pl->data, val->path, value);
     cbs->register_change_string(cbs->data, val->node, NULL, value, 0);
   }
 }
@@ -47,8 +45,6 @@ _mouse_move(void *data, Evas* e, Eo* o, void* event)
 {
     s_mouse_move = EINA_TRUE;
 }
-
-
 
 static void
 _entry_clicked_cb(void *data, Evas_Object *obj, void *event_info)

@@ -206,7 +206,7 @@ void property_list_group_add(
       const char* path);
 
 PropertyValue*
-property_list_enum_add(
+property_enum_new(
       const char* path,
       char* possible_values,
       const char* value);
@@ -321,5 +321,6 @@ property_box_vec_item_add(
       int index
       );
 
+Eo* _enum_create(PropertyValue* val, Evas_Object* obj);
 
 #endif
