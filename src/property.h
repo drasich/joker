@@ -272,22 +272,10 @@ struct _PropertyBox
   panel_geom_cb resize;
 };
 
-PropertyNode* property_box_node_new();
-
 JkPropertyBox* property_box_new(Evas_Object* win);
 
 void property_box_clear(JkPropertyBox* set);
 
-void property_box_node_add(
-      JkPropertyBox* ps,
-      const char* path);
-
-//TODO TO BE TESTED
-void property_box_string_update(
-      JkPropertyBox* set,
-      const char* path,
-      const char* value);
-void property_box_float_update(JkPropertyBox* set, const char* path, float value);
 Eo* _node_create(PropertyValue* val, Evas_Object* o);
 PropertyValue* property_node_new(const char* path);
 

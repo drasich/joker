@@ -2,22 +2,17 @@
 #include <string.h>
 #include <stdbool.h>
 #include "common.h"
-//#include "entry.h"
-//#include "entry/jk_entry.eo.h"
 #include "panel.h"
 
-static void
-_entry_changed_cb_ps(void *data, Evas_Object *obj, void *event)
+static PropertyNode*
+_property_box_node_new()
 {
-  const char* s = elm_object_text_get(obj);
-  JkPropertyCb* cbs = data;
+  PropertyNode* node = calloc(1, sizeof *node);
+  node->leafs = eina_hash_string_superfast_new(NULL);
+  node->nodes = eina_hash_string_superfast_new(NULL);
 
-  const char* name = evas_object_name_get(obj);
-  if (cbs->changed_string) {
-    cbs->changed_string(cbs->data, name, s);
-  }
+  return node;
 }
-
 
 JkPropertyBox*
 property_box_new(Evas_Object* win)
@@ -47,152 +42,14 @@ property_box_new(Evas_Object* win)
   elm_object_content_set(scroller, bx);
   p->root = scroller;
 
-  p->node = property_box_node_new();
+  p->node = _property_box_node_new();
   p->win = win;
 
   return p;
 }
 
-PropertyNode* property_box_node_new()
-{
-  PropertyNode* node = calloc(1, sizeof *node);
-  node->leafs = eina_hash_string_superfast_new(NULL);
-  node->nodes = eina_hash_string_superfast_new(NULL);
-
-  return node;
-}
-
-PropertyNode* _property_node_find(
-      PropertyNode* node,
-      const char* path)
-{
-  char** s = eina_str_split(path, "/", 0);
-
-  int i = 0;
-  while (s[i]) {
-
-    if (s[i+1]) {
-      PropertyNode* next = eina_hash_find(node->nodes, s[i]);
-      if (next) {
-        node = next;
-        i++;
-      }
-      else {
-        //eina_hash_foreach(node->nodes,_nodes_print, NULL);
-        break;
-      }
-    }
-    else {
-      break;
-    }
-  }
-
-   free(s[0]);
-   free(s);
-
-   return node;
-}
-
-
-static PropertyNode* _property_box_node_find(
-      JkPropertyBox* ps,
-      const char* path)
-{
-  return _property_node_find(ps->node, path);
-}
-
-
-Evas_Object* _property_leaf_find(
-      JkPropertyBox* ps,
-      const char* path)
-{
-  PropertyNode* node = _property_box_node_find(ps, path);
-
-  if (node) {
-    return eina_hash_find(node->leafs, path);
-  }
-
-  return NULL;
-}
-
-void property_box_string_update(
-      JkPropertyBox* set,
-      const char* path,
-      const char* value)
-{
-  Evas_Object* o = _property_leaf_find(set, path);
-
-  if (o) {
-    elm_object_text_set(o, value);
-  }
-  else {
-    printf("could not find string property with path '%s'\n", path);
-  }
-}
-
-void property_box_float_update(JkPropertyBox* set, const char* path, float value)
-{
-  Evas_Object* o = _property_leaf_find(set, path);
-
-  if (o) {
-    elm_spinner_value_set(o, value);
-  }
-  else {
-    printf("could not find float property with path '%s'\n", path);
-  }
-
-}
-
-void property_box_node_add(
-      JkPropertyBox* ps, 
-      const char* path)
-{
-  PropertyNode* node = _property_box_node_find(ps, path);
-  if (!node) {
-    printf("$s, could not find a root\n", __FUNCTION__);
-    return;
-  }
-
-  unsigned int num;
-  char** s = eina_str_split_full(path, "/", 0, &num);
-  PropertyNode* child = property_box_node_new();
-  eina_hash_add(node->nodes, s[num-1], child);
-  
-  Evas_Object* label = elm_label_add(ps->box);
-  char ls[256];
-  sprintf(ls, "<b> %s </b> : ", s[num-1]);
-
-  elm_object_text_set(label, ls);
-  evas_object_show(label);
-  elm_box_pack_end(ps->box, label);
-  evas_object_show(label);
-}
-
-/*
-JkPropertySet* jk_property_set_new(Window* w)
-{
-  JkPropertySet* ps = property_set_new(w->win);
-  //edje_object_part_swallow(w->edje, "part_property_test", ps->root);
-  return ps;
-}
-*/
-
-static void _on_panel_geom(
-      void *data,
-      Evas *evas,
-      Evas_Object *o,
-      void *einfo)
-{
-  JkPropertyBox* p = data;
-  if (p->move) {
-    int x, y, w, h;
-    evas_object_geometry_get(o, &x, &y, &w, &h);
-    p->move(p->cbs->data, x , y, w, h);
-  }
-}
-
-
-JkPropertyBox* jk_property_box_new(Evas_Object* panel)
+JkPropertyBox*
+jk_property_box_new(Evas_Object* panel)
 {
   JkPropertyBox* p = property_box_new(panel);
   elm_object_part_content_set(panel, "content", p->root);
@@ -218,7 +75,8 @@ void jk_property_box_register_cb(
   p->move = move;
 }
 
-JkPropertyCb* property_box_cb_get(JkPropertyBox* p)
+JkPropertyCb*
+property_box_cb_get(JkPropertyBox* p)
 {
   return p->cbs;
 }
@@ -246,11 +104,8 @@ property_box_single_item_add(
   val->cbs = pb->cbs;
   val->node = node;
 
-  printf("    **** single item ****** : '%s', with parent %p, and node : %p \n", path, parent, node);
-
   Eo* pbx = pb->box;
   if (parent) {
-    printf("there is a parent, and child is : %p \n", parent->child);
     if (!parent->child) {
 
       pbx = parent->eo;
@@ -278,7 +133,6 @@ property_box_single_item_add(
       elm_box_pack_end(bx_child_container, bx_child);
 
       parent->child = bx_child;
-      printf("Single: I created a child for '%s', it is %p \n", parent->path, parent->child);
     }
 
       pbx = parent->child;
@@ -335,7 +189,6 @@ property_box_single_item_add(
   elm_box_pack_end(bx, val->create_child(val, pb->box));
 
   val->eo = bxeo;
-  printf("valeo box : %p\n", bx);
   elm_box_pack_end(bxeo, bx);
 
   /*
@@ -351,12 +204,6 @@ property_box_single_item_add(
 
   return val;
 
-}
-
-void property_box_add(
-      JkPropertyBox* pb,
-      PropertyValue* val)
-{
 }
 
 PropertyValue* property_vec_new(
@@ -409,7 +256,6 @@ property_box_vec_item_add(
   val->cbs = pb->cbs;
   val->node = cb_data;
 
-  printf("    **** VEC item ****** : '%s', with parent %p, and node : %p \n", path, parent, cb_data);
   Eo* pbx = pb->box;
   if (parent) {
     if (index > 0)
@@ -417,7 +263,6 @@ property_box_vec_item_add(
     else
     parent->children = eina_list_prepend(parent->children, val);
 
-    printf("VEC PATH :::: %s,,,,,,,,,,,there is a parent, and child is : %p, children count : %d \n", path, parent->child, eina_list_count(parent->children));
     if (!parent->child) {
 
       pbx = parent->eo;
@@ -445,8 +290,6 @@ property_box_vec_item_add(
       elm_box_pack_end(bx_child_container, bx_child);
 
       parent->child = bx_child;
-
-      printf("Vec: I created a child for '%s', it is %p \n", parent->path, parent->child);
     }
 
       pbx = parent->child;
@@ -460,7 +303,6 @@ property_box_vec_item_add(
   //elm_box_align_set(bx, 0, 0.5);
 
   Eo* beforethis = _box_child_get(pbx, index);
-  printf("000000000000000000000000 after this : %p \n", beforethis);
   if (beforethis) 
   elm_box_pack_before(pbx, bxeo, beforethis);
   else
@@ -501,7 +343,6 @@ property_box_vec_item_add(
   elm_box_pack_end(bx, val->create_child(val, pb->box));
   
   val->eo = bxeo;
-  printf("valeo box : %p\n", bx);
   elm_box_pack_end(bxeo, bx);
 
 
@@ -544,25 +385,20 @@ property_box_vec_item_add(
   EINA_LIST_FOREACH(parent->children, list, child_val)
   {
   	const char* t = elm_object_text_get(child_val->name);
-	printf("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOO_____ NAME %s \n", t);
   }
 
 
   int i = index + 1;
   Eina_List* start = eina_list_nth_list(parent->children, i);
-  printf("start len : %d, children len : %d \n", eina_list_count(start),
-		  eina_list_count(parent->children));
   //EINA_LIST_FOREACH(start, list, child_val)
   for(list = start; list; list = eina_list_next(list))
   {
-	  printf("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOO %d \n", i);
   	sprintf(index_str, "%d  ", i++);
 	child_val = eina_list_data_get(list);
   	elm_object_text_set(child_val->name, index_str);
   }
 
   return val;
-
 }
 
 void
@@ -575,7 +411,6 @@ property_box_vec_item_del(
   Eina_List* children = elm_box_children_get(parent->child);
   Eo* item = eina_list_nth(children, index);
   eina_list_free(children);
-  printf("!TODODODODODOTODOTODO :::: %d \n", index);
   elm_box_unpack(parent->child, item);
 
 
@@ -592,7 +427,6 @@ property_box_vec_item_del(
   char index_str[256];
   for(list = start; list; list = eina_list_next(list))
   {
-	  printf("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOO %d \n", i);
   	sprintf(index_str, "%d  ", i++);
 	child_val = eina_list_data_get(list);
   	elm_object_text_set(child_val->name, index_str);
