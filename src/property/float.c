@@ -76,7 +76,6 @@ Eo* float_new(PropertyValue* val, Eo* obj)
    //Evas_Object* en = smart_entry_add(evas_object_evas_get(obj));
    //Evas_Object* en = smart_entry_add(obj);
    //chris
-   printf("parent obj : %p \n", obj);
    //Evas_Object *en = eo_add(JK_ENTRY_CLASS, obj);
    Evas_Object *en = jk_entry_add(obj);
 
@@ -95,7 +94,6 @@ Eo* float_new(PropertyValue* val, Eo* obj)
 //
    //elm_box_pack_end(bx, rect);
 
-   printf("en : %p \n", en);
   evas_object_smart_callback_add(en, "changed,end", _jk_entry_changed_end_cb_list, val);
   evas_object_smart_callback_add(en, "changed", _jk_entry_changed_cb_list, val);
 
@@ -119,8 +117,6 @@ property_float_new(
   //val->list = pl;
   val->data = calloc(1, sizeof value);
   memcpy(val->data, &value, sizeof value);
-
-  printf("adding float with %s \n", path);
 
   val->create_child = float_new;
   val->style = VALUE;

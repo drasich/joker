@@ -89,7 +89,7 @@ void _value_set(Jk_Entry_Data* pd, double val)
 
   int size = 128;
   if (!pd->value_str) {
-    printf("value is null so create %f \n \n", val);
+    // "value is null so create
     pd->value_str = calloc(1, size);
   }
 
@@ -426,7 +426,6 @@ EOLIAN static void
 //_jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 _jk_entry_efl_canvas_group_group_add(Eo *obj, Jk_Entry_Data *pd)
 {
-  printf("jk entry group group add \n");
   ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd);
   //JK_ENTRY_DATA_GET(obj, ed);
 

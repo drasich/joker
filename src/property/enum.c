@@ -85,7 +85,6 @@ Eo* _enum_create(PropertyValue* val, Evas_Object* obj)
 
   evas_object_show(hoversel);
   val->item_eo = hoversel;
-  printf("setting hoverselllllllllllllllllllll : %p \n", hoversel);
    }
 
   elm_box_pack_end(bx_root, bx);
