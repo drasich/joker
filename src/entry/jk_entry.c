@@ -240,11 +240,11 @@ _entry_activated(
 
   printf("entry activated : %f, %f, %f \n", pd->value_saved, pd->value, n);
 
-  if (n == pd->value) return;
+  if (n == pd->value_saved) return;
 
   pd->value = n;
 
-  //printf("wrote %s, %f,, ENTRY ACTIVATED will send changed signal \n ", str, pd->value);
+  printf("wrote %s, %f,, ENTRY ACTIVATED will send changed signal \n ", str, pd->value);
   //eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED_END, NULL));
    eo_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED_END, NULL);
 }
