@@ -48,6 +48,7 @@ enum _State
   STATE_MOUSE_DOWN,
   STATE_MOVE,
   STATE_ENTRY,
+  STATE_AFTER_MOVE,
 };
 
 
@@ -162,9 +163,14 @@ _onup(
 {
   Eo* parent = data;
   JK_ENTRY_DATA_GET(parent, pd);
-  //printf(" on up : %s, %s \n", emission, source);
+  printf(" on up : %s, %s \n", emission, source);
   elm_object_scroll_hold_pop(o);
-  pd->state = STATE_SHOW;
+  if (pd->state == STATE_MOVE) {
+    pd->state = STATE_AFTER_MOVE;
+  }
+  else {
+    pd->state = STATE_SHOW;
+  }
   //eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED_END, NULL));
   eo_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED_END, NULL);
 }
@@ -202,9 +208,18 @@ _onclicked(
 
 {
   Jk_Entry_Data* pd = data;
-  if (pd->state != STATE_MOUSE_DOWN) {
+  printf(" 00000 on clicked : %s, %s, %s, state : %d \n", emission, source, elm_object_text_get(pd->entry), pd->state);
+
+  if (pd->state == STATE_AFTER_MOVE)
+  {
+    pd->state = STATE_SHOW;
     return;
   }
+
+  if (!(pd->state == STATE_MOUSE_DOWN || pd->state == STATE_SHOW)) {
+    return;
+  }
+
 
   //_sig_print(emission, source);
   printf(" on clicked : %s, %s, %s \n", emission, source, elm_object_text_get(pd->entry));
@@ -548,6 +563,7 @@ _jk_entry_efl_canvas_group_group_del(Eo *obj, Jk_Entry_Data *pd)
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_focus_next_manager_is(Eo *obj, Jk_Entry_Data *pd)
 {
+  printf("focus next manager is %s \n", __FUNCTION__);
   return EINA_FALSE;
 }
 
@@ -564,12 +580,14 @@ _jk_entry_elm_widget_focus_next(
       Jk_Entry_Data *pd,
       Elm_Focus_Direction dir, Evas_Object **next, Elm_Object_Item **next_item)
 {
+  printf("jkjk %s \n", __FUNCTION__);
   return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_focus_direction(Eo *obj, Jk_Entry_Data *pd, const Evas_Object *base, double degree, Evas_Object **direction, Elm_Object_Item **direction_item, double *weight)
 {
+  printf("jkjk %s \n", __FUNCTION__);
   return EINA_FALSE;
 }
 
@@ -581,10 +599,6 @@ _jk_entry_elm_widget_on_focus(Eo *obj, Jk_Entry_Data *pd, Elm_Object_Item* item)
   //eo_do_super(obj, MY_CLASS, int_ret = elm_obj_widget_on_focus(NULL));
   int_ret = elm_obj_widget_on_focus(eo_super(obj, MY_CLASS),NULL);
   if (!int_ret) return EINA_FALSE;
-
-  if (elm_widget_focus_get(obj)){
-    _show_entry(obj, pd, EINA_TRUE);
-  }
 
   return EINA_TRUE;
 }
