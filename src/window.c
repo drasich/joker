@@ -8,6 +8,7 @@
 #include "window.h"
 #include "panel.h"
 #include "input.h"
+#include "Ecore_Input.h"
 
 #define __UNUSED__
 
@@ -32,6 +33,63 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
           ev->keycode,
           ev->timestamp);
   }
+}
+
+static bool
+_key_down_ecore(void *data, int type, void *event)
+{
+  printf("key down ecore \n");
+  Ecore_Event_Key *ev = (Ecore_Event_Key*) event;
+
+  Window* w = data;
+  if (w->key_down) {
+    w->key_down(
+          w->data,
+          jk_key_modifier_get(ev->modifiers),
+          ev->keyname,
+          ev->key,
+          ev->keycode,
+          ev->timestamp);
+  }
+  return true;
+}
+
+static Eina_Bool
+_elm_event_win(void *data, Evas_Object* o, Evas_Object* src, Evas_Callback_Type type, void* event_info)
+{
+  printf("elm event test\n");
+  Window* w = data;
+
+  if (type == EVAS_CALLBACK_KEY_DOWN) {
+    if (w->key_down) {
+      Evas_Event_Key_Down *ev = event_info;
+      printf ("Key Down: %s\n", ev->key);
+      w->key_down(
+          w->data,
+          jk_key_modifier_get(ev->modifiers),
+          ev->keyname,
+          ev->key,
+          ev->keycode,
+          ev->timestamp);
+
+      //ev->event_flags |= EVAS_EVENT_FLAG_ON_HOLD;
+    }
+  }
+  else if (type == EVAS_CALLBACK_KEY_UP) {
+   //   printf ("Key Up:");
+  }
+  else
+      return EINA_FALSE;
+  //printf("%s\n", ev->key);
+
+ return EINA_TRUE;
+ //return EINA_FALSE;
+}
+
+static Eina_Bool
+_elm_event_glview(void *data, Evas_Object* o, Evas_Object* src, Evas_Callback_Type type, void* event_info)
+{
+  return EINA_FALSE;
 }
 
 static void
@@ -252,7 +310,12 @@ window_new(int width, int height)
 
   //TODO
   //evas_object_event_callback_add(glview, EVAS_CALLBACK_DEL, _del, glview);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, w);
+  //
+  //ecore_event_handler_add(ECORE_EVENT_KEY_DOWN,_key_down_ecore,w);
+  elm_object_event_callback_add(win, _elm_event_win, w);
+  elm_object_event_callback_add(glview, _elm_event_glview, w);
+
+  //evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, w);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move, w);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_DOWN, _mouse_down, w);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, w);
