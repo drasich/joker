@@ -8,7 +8,6 @@
 #include "window.h"
 #include "panel.h"
 #include "input.h"
-#include "Ecore_Input.h"
 
 #define __UNUSED__
 
@@ -310,12 +309,9 @@ window_new(int width, int height)
 
   //TODO
   //evas_object_event_callback_add(glview, EVAS_CALLBACK_DEL, _del, glview);
-  //
-  //ecore_event_handler_add(ECORE_EVENT_KEY_DOWN,_key_down_ecore,w);
   elm_object_event_callback_add(win, _elm_event_win, w);
   elm_object_event_callback_add(glview, _elm_event_glview, w);
 
-  //evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, w);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move, w);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_DOWN, _mouse_down, w);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, w);
