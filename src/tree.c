@@ -38,7 +38,7 @@ gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
    JkTree* t = data;
 
-   if (t->item_selected) {
+   if (t->item_selected && !dontCallback) {
      Elm_Object_Item *glit = event_info;
      void* o = elm_object_item_data_get(glit);
 
@@ -112,7 +112,7 @@ gl4_unselect(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_inf
    void* o = elm_object_item_data_get(glit);
    JkTree* t = data;
 
-    if (t->unselected) {
+    if (t->unselected && !dontCallback) {
       t->unselected(t->data, o, glit);
     }
 }
@@ -315,6 +315,7 @@ void tree_item_select(Elm_Object_Item* item)
 
 void tree_deselect_all(JkTree *t)
 {
+  dontCallback = true;
   Eina_List* items = elm_genlist_realized_items_get(t->gl);
   Elm_Object_Item* i;
   Eina_List* l;
@@ -325,6 +326,7 @@ void tree_deselect_all(JkTree *t)
   }
 
   eina_list_free(items);
+  dontCallback = false;
 }
 
 void tree_item_expand(Elm_Object_Item* item)
