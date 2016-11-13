@@ -1,10 +1,14 @@
 //#define EFL_BETA_API_SUPPORT
-#include <Elementary.h>
+#define EFL_CANVAS_GROUP_PROTECTED
+#define EFL_CANVAS_GROUP_BETA
+#define EFL_CANVAS_OBJECT_PROTECTED
+
 #include <Eo.h>
-#include "elm_widget.h"
+#include <Elementary.h>
+#include <elm_widget.h>
+
 #include "jk_entry.eo.h"
-//#include <Ecore_Evas.h>
-//
+
 #undef MY_CLASS
 
 #define MY_CLASS JK_ENTRY_CLASS
@@ -15,32 +19,7 @@
 #endif
 
 #define JK_ENTRY_DATA_GET(o, sd) \
- Jk_Entry_Data * sd = eo_data_scope_get(o, JK_ENTRY_CLASS)
-
-/*
-#define ELM_SPINNER_DATA_GET_OR_RETURN(o, ptr)       \
-ELM_SPINNER_DATA_GET(o, ptr);                      \
-if (EINA_UNLIKELY(!ptr))                           \
-{                                                \
-CRI("No widget data for object %p (%s)",      \
-o, evas_object_type_get(o));              \
-return;                                       \
-}
-
-#define ELM_SPINNER_DATA_GET_OR_RETURN_VAL(o, ptr, val) \
-ELM_SPINNER_DATA_GET(o, ptr);                         \
-if (EINA_UNLIKELY(!ptr))                              \
-{                                                   \
-CRI("No widget data for object %p (%s)",         \
-o, evas_object_type_get(o));                 \
-return val;                                      \
-}
-
-#define ELM_SPINNER_CHECK(obj)                              \
-if (EINA_UNLIKELY(!eo_isa((obj), ELM_SPINNER_CLASS))) \
-return
-*/
-
+   Jk_Entry_Data * sd = efl_data_scope_get(o, JK_ENTRY_CLASS)
 
 enum _State
 {
@@ -75,11 +54,10 @@ static char *user_style =
 "ul='+ underline=on underline_color=#AAA'";
 
 
-EOLIAN static Eo*
-_jk_entry_eo_base_constructor(Eo *obj, Jk_Entry_Data *pd EINA_UNUSED)
+EOLIAN static Efl_Object *
+_jk_entry_efl_object_constructor(Eo *obj, Jk_Entry_Data *pd)
 {
-  //obj = eo_do_super_ret(obj, JK_ENTRY_CLASS, obj, eo_constructor());
-  obj = eo_constructor(eo_super(obj, JK_ENTRY_CLASS));
+  obj = efl_constructor(efl_super(obj, JK_ENTRY_CLASS));
   efl_canvas_object_type_set(obj, MY_CLASS_NAME_LEGACY);
   return obj;
 }
@@ -146,7 +124,7 @@ _onmove(
     //printf(" on move : %s, %s, %d, %d, diff : %d \n", emission, source, pd->startx, mx, pd->diff);
     _value_set(pd, pd->value_saved + 0.5f * pd->diff);
     //eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED, NULL));
-    eo_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED, NULL);
+    efl_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED, NULL);
     //efl_event_callback_legacy_call(parent, JK_ENTRY_EVENT_CHANGED, NULL);
     Ecore_Evas *ee = ecore_evas_ecore_evas_get(e);
     ecore_evas_pointer_warp(ee, pd->startx, my);
@@ -172,7 +150,7 @@ _onup(
     pd->state = STATE_SHOW;
   }
   //eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED_END, NULL));
-  eo_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED_END, NULL);
+  efl_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED_END, NULL);
 }
 
 static void
@@ -261,7 +239,7 @@ _entry_activated(
 
   printf("wrote %s, %f,, ENTRY ACTIVATED will send changed signal \n ", str, pd->value);
   //eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED_END, NULL));
-   eo_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED_END, NULL);
+   efl_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED_END, NULL);
 }
 
 static void
@@ -300,7 +278,7 @@ _entry_unfocused(
 
   printf("wrote %s, %f,, ENTRY UNFOCUSED will send changed signal \n ", str, pd->value);
   //eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED_END, NULL));
-  eo_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED_END, NULL);
+  efl_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED_END, NULL);
 }
 
 static void
@@ -325,7 +303,7 @@ _entry_changed(
 
   //printf("wrote %s, %f,, ENTRY CHANGED will send changed signal \n ", str, pd->value);
   //eo_do(parent, eo_event_callback_call(JK_ENTRY_EVENT_CHANGED, NULL));
-  eo_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED, NULL);
+  efl_event_callback_call(parent, JK_ENTRY_EVENT_CHANGED, NULL);
 }
 
 
@@ -437,15 +415,16 @@ _drag_stop_cb(void *data,
    printf("drag stop cb \n");
 }
 
+
+
 EOLIAN static void
-//_jk_entry_evas_object_smart_add(Eo *obj, Jk_Entry_Data *pd)
 _jk_entry_efl_canvas_group_group_add(Eo *obj, Jk_Entry_Data *pd)
 {
   ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd);
   //JK_ENTRY_DATA_GET(obj, ed);
 
   //eo_do_super(obj, JK_ENTRY_CLASS, evas_obj_smart_add());
-  efl_canvas_group_add(eo_super(obj, JK_ENTRY_CLASS));
+  efl_canvas_group_add(efl_super(obj, JK_ENTRY_CLASS));
   elm_widget_sub_object_parent_add(obj);
 
   /*
@@ -550,12 +529,9 @@ _jk_entry_efl_canvas_group_group_add(Eo *obj, Jk_Entry_Data *pd)
 }
 
 EOLIAN static void
-//_jk_entry_evas_object_smart_del(Eo *obj, Jk_Entry_Data *pd)
 _jk_entry_efl_canvas_group_group_del(Eo *obj, Jk_Entry_Data *pd)
 {
-  //eo_do_super(obj, MY_CLASS, evas_obj_smart_del());
-  //evas_obj_smart_del(eo_super(obj), MY_CLASS);
-  efl_canvas_group_del(eo_super(obj, MY_CLASS));
+  efl_canvas_group_del(efl_super(obj, MY_CLASS));
   if (pd->value_saved_str) free(pd->value_saved_str);
   if (pd->value_str) free(pd->value_str);
 }
@@ -563,51 +539,44 @@ _jk_entry_efl_canvas_group_group_del(Eo *obj, Jk_Entry_Data *pd)
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_focus_next_manager_is(Eo *obj, Jk_Entry_Data *pd)
 {
-  printf("focus next manager is %s \n", __FUNCTION__);
   return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
 _jk_entry_elm_widget_focus_direction_manager_is(Eo *obj, Jk_Entry_Data *pd)
 {
-  printf("jkjkjkjkjkjk %s \n", __FUNCTION__);
   return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
-_jk_entry_elm_widget_focus_next(
-      Eo *obj,
-      Jk_Entry_Data *pd,
-      Elm_Focus_Direction dir, Evas_Object **next, Elm_Object_Item **next_item)
+_jk_entry_elm_widget_focus_next(Eo *obj, Jk_Entry_Data *pd, Elm_Focus_Direction dir, Efl_Canvas_Object **next, Elm_Widget_Item **next_item)
 {
-  printf("jkjk %s \n", __FUNCTION__);
   return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
-_jk_entry_elm_widget_focus_direction(Eo *obj, Jk_Entry_Data *pd, const Evas_Object *base, double degree, Evas_Object **direction, Elm_Object_Item **direction_item, double *weight)
+_jk_entry_elm_widget_focus_direction(Eo *obj, Jk_Entry_Data *pd, const Efl_Canvas_Object *base, double degree, Efl_Canvas_Object **direction, Elm_Widget_Item **direction_item, double *weight)
 {
-  printf("jkjk %s \n", __FUNCTION__);
   return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
-_jk_entry_elm_widget_on_focus(Eo *obj, Jk_Entry_Data *pd, Elm_Object_Item* item)
+_jk_entry_elm_widget_on_focus(Eo *obj, Jk_Entry_Data *pd, Elm_Widget_Item *item)
 {
   printf("jk entry on focus\n");
   Eina_Bool int_ret = EINA_FALSE;
   //eo_do_super(obj, MY_CLASS, int_ret = elm_obj_widget_on_focus(NULL));
-  int_ret = elm_obj_widget_on_focus(eo_super(obj, MY_CLASS),NULL);
+  int_ret = elm_obj_widget_on_focus(efl_super(obj, MY_CLASS),NULL);
   if (!int_ret) return EINA_FALSE;
 
   return EINA_TRUE;
 }
 
 EOLIAN static Eina_Bool
-_jk_entry_elm_widget_event(Eo *obj, Jk_Entry_Data *pd, Evas_Object *source, Evas_Callback_Type type, void *event_info)
+_jk_entry_elm_widget_event(Eo *obj, Jk_Entry_Data *pd, Efl_Canvas_Object *source, Evas_Callback_Type type, void *event_info)
 {
-  printf("jkjkjkjkjkjk %s \n", __FUNCTION__);
   return EINA_FALSE;
+
 }
 
 EOLIAN static void
@@ -724,6 +693,12 @@ _jk_entry_value_get(Eo *obj, Jk_Entry_Data *pd)
   return pd->value;
 }
 
+EOLIAN static double
+_jk_entry_value_saved_get(Eo *obj, Jk_Entry_Data *pd)
+{
+  return pd->value_saved;
+}
+
 EOLIAN static void
 _jk_entry_label_format_set(Eo *obj, Jk_Entry_Data *pd, const char *fmt)
 {
@@ -743,51 +718,16 @@ _jk_entry_special_value_add(Eo *obj, Jk_Entry_Data *pd, double value, const char
 }
 
 EOLIAN static void
-_jk_entry_class_constructor(Eo_Class *klass)
+_jk_entry_class_constructor(Efl_Class *klass)
 {
    evas_smart_legacy_type_register(MY_CLASS_NAME_LEGACY, klass);
 }
-
-EOLIAN static void
-_jk_entry_evas_object_smart_move(Eo *obj, Jk_Entry_Data *pd, Evas_Coord x, Evas_Coord y)
-{
-  //eo_do_super(obj, MY_CLASS, evas_obj_smart_move(x, y));
-  efl_canvas_group_move(eo_super(obj, MY_CLASS), x, y);
-
-  //evas_object_move(pd->rect, x, y);
-}
-
-EOLIAN static void
-_jk_entry_evas_object_smart_resize(Eo *obj, Jk_Entry_Data *pd, Evas_Coord w, Evas_Coord h)
-{
-  //eo_do_super(obj, MY_CLASS, evas_obj_smart_resize(w, h));
-  efl_canvas_group_resize(eo_super(obj, MY_CLASS), w, h);
-
-  //evas_object_resize(pd->rect, w, h);
-}
-
-EOLIAN static double
-_jk_entry_value_saved_get(Eo *obj, Jk_Entry_Data *pd)
-{
-  return pd->value_saved;
-}
-
-/*
-EOLIAN static Efl_Object *
-_jk_entry_efl_object_constructor(Eo *obj, Jk_Entry_Data *pd)
-{
-
-  obj = efl_constructor(efl_super(obj, JK_ENTRY_CLASS));
-  return obj;
-
-}
-*/
 
 Evas_Object*
 jk_entry_add(Evas_Object *parent)
 {
    EINA_SAFETY_ON_NULL_RETURN_VAL(parent, NULL);
-   Evas_Object *obj = eo_add(MY_CLASS, parent);
+   Evas_Object *obj = efl_add(MY_CLASS, parent);
    return obj;
 }
 

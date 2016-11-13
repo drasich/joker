@@ -15,7 +15,7 @@ typedef Eo Jk_Entry;
 #endif
 #define JK_ENTRY_CLASS jk_entry_class_get()
 
-EWAPI const Eo_Class *jk_entry_class_get(void);
+EWAPI const Efl_Class *jk_entry_class_get(void);
 
 EOAPI void jk_obj_entry_min_max_set(Eo *obj, double min, double max);
 
@@ -57,37 +57,42 @@ EOAPI const char *jk_obj_entry_label_format_get(const Eo *obj);
 
 EOAPI void jk_obj_entry_special_value_add(Eo *obj, double value, const char *label);
 
-EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_CHANGED;
-EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_CHANGED_END;
-EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_DELAY_CHANGED;
-EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_SPINNER_DRAG_START;
-EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_SPINNER_DRAG_STOP;
-EOAPI extern const Eo_Event_Description _JK_ENTRY_EVENT_LANGUAGE_CHANGED;
+EWAPI extern const Efl_Event_Description _JK_ENTRY_EVENT_CHANGED;
 
 /**
  * No description
  */
 #define JK_ENTRY_EVENT_CHANGED (&(_JK_ENTRY_EVENT_CHANGED))
 
+EWAPI extern const Efl_Event_Description _JK_ENTRY_EVENT_CHANGED_END;
+
 /**
  * No description
  */
 #define JK_ENTRY_EVENT_CHANGED_END (&(_JK_ENTRY_EVENT_CHANGED_END))
+
+EWAPI extern const Efl_Event_Description _JK_ENTRY_EVENT_DELAY_CHANGED;
 
 /**
  * No description
  */
 #define JK_ENTRY_EVENT_DELAY_CHANGED (&(_JK_ENTRY_EVENT_DELAY_CHANGED))
 
+EWAPI extern const Efl_Event_Description _JK_ENTRY_EVENT_SPINNER_DRAG_START;
+
 /**
  * No description
  */
 #define JK_ENTRY_EVENT_SPINNER_DRAG_START (&(_JK_ENTRY_EVENT_SPINNER_DRAG_START))
 
+EWAPI extern const Efl_Event_Description _JK_ENTRY_EVENT_SPINNER_DRAG_STOP;
+
 /**
  * No description
  */
 #define JK_ENTRY_EVENT_SPINNER_DRAG_STOP (&(_JK_ENTRY_EVENT_SPINNER_DRAG_STOP))
+
+EWAPI extern const Efl_Event_Description _JK_ENTRY_EVENT_LANGUAGE_CHANGED;
 
 /**
  * No description

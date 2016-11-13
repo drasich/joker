@@ -90,20 +90,19 @@ class Jk.Entry (Elm.Layout, Elm.Widget)
          get {
          }
          values {
-            fmt: const(char)* @nullable;
+            fmt: string @nullable;
          }
       }
       special_value_add {
          params {
             @in value: double;
-            @in label: const(char)*;
+            @in label: string;
          }
       }
    }
    implements {
       class.constructor;
-      //Efl.Object.constructor;
-      Eo.Base.constructor;
+      Efl.Object.constructor;
       Efl.Canvas.Group.group_add;
       Efl.Canvas.Group.group_del;
       Elm.Widget.focus_next_manager_is;

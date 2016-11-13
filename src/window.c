@@ -56,7 +56,7 @@ _key_down_ecore(void *data, int type, void *event)
 static Eina_Bool
 _elm_event_win(void *data, Evas_Object* o, Evas_Object* src, Evas_Callback_Type type, void* event_info)
 {
-  printf("elm event test\n");
+  //printf("elm event test\n");
   Window* w = data;
 
   if (type == EVAS_CALLBACK_KEY_DOWN) {
